@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/NevMoney/TsaishenCrypto#readme",
   "dependencies": {
-    "@openzeppelin/contracts": "^3.2.0"
+    "@openzeppelin/contracts": "^3.2.0",
+    "@truffle/hdwallet-provider": "^1.1.1"
   }
 }
