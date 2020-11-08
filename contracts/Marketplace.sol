@@ -102,4 +102,16 @@ contract Marketplace is Ownable, IHouseMarketplace, Storage {
 
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
+
+    // function for owner to sell house
+    function sell(uint256 id) {
+        houseInfo[id].value;
+        houseInfo[id].income;
+    }
+
+    // function for owner to borrow funds
+    function borrow(uint256 id) {
+        houseInfo[id].value;
+        houseInfo[id].income;
+    }
 }

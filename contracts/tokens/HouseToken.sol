@@ -12,7 +12,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
 
     struct House {
         uint256 value;
-        bool incomeProducing;
+        uint256 income;
     }
 
     // generate house on blockchain: value, ID, owner address
@@ -75,17 +75,6 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         
     function ownerOfHouse (uint256 id) public view returns (address){
         return ownerOf(id);
-    }
-
-    // function for owner to sell house
-    function sell(uint256 id) {
-        houseInfo[id].value;
-    }
-
-    // function for owner to borrow funds
-    function borrow(uint256 id) {
-        houseInfo[id].value;
-        houseInfo[id].incomeProducing;
     }
 
 }
