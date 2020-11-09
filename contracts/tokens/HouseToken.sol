@@ -44,14 +44,14 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
 
         //this creates new house and places it in array, then assigns ID
         // WARNING: Following line does NOT compile
-        uint256 newHouseId = houses.push(_house);
+        // uint256 newHouseId = houses.push(_house);
 
-        emit Minted(_owner, newHouseId, _tokenURI);
+        emit Minted(_owner, houses.push(_house), tokenURI);
 
         //mint new token, transfer to the owner with the house ID
-        _transfer(address(0), _owner, newHouseId);
+        _transfer(address(0), _owner, houses.push(_house));
 
-        return newHouseId;
+        return houses.push(_house);
     }
 
     function getHouseByOwner(address _owner) external view returns(uint[] memory){
