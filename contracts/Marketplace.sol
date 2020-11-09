@@ -2,6 +2,11 @@
 
 pragma solidity ^0.6.10;
 
+/*
+additional integration is with Chainlink oracles to get pricing exchange rates
+for ETH to stablecoins - perhaps DAI and/or USDC
+*/
+
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Storage.sol";
 import "./tokens/HouseToken.sol";
