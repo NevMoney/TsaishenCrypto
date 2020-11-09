@@ -1,28 +1,23 @@
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.6.10;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Storage.sol";
 import "./tokens/HouseToken.sol";
-import "./interfaces/IHouseMarketplace.sol";
 
-contract Marketplace is Ownable, IHouseMarketplace, Storage {
-    HouseContract private _houseContract;
+contract Marketplace is Ownable, Storage {
+    HouseToken private _houseToken;
 
-    struct Offer {
-        address payable seller;
-        uint256 price;
-        uint256 index;
-        uint256 tokenId;
-        bool active;
+    function setHouseToken(address _houseTokenAddress) public onlyOwner{
+        _houseToken = HouseToken(_houseTokenAddress);
     }
 
-    function setHouseContract(address _houseContractAddress) public onlyOwner{
-        _houseContract = HouseContract(_houseContractAddress);
+    constructor(address _houseTokenAddress) public {
+        setHouseToken(_houseTokenAddress);
     }
 
-    constructor(address _houseContractAddress) public {
-        setHouseContract(_houseContractAddress);
-    }
+    event MarketTransaction (string, address, uint);
         
     function getOffer(uint256 _tokenId) public view returns (address seller, uint256 price, uint256 index, uint256 tokenId, bool active){
         Offer storage offer = tokenIdToOffer[_tokenId];//get the tokenId from the mapping
@@ -51,13 +46,13 @@ contract Marketplace is Ownable, IHouseMarketplace, Storage {
 
     //internal function to verify that particular address owns particular tokenID
     function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool){
-        return (_houseContract.ownerOf(_tokenId) == _address);
+        return (_houseToken.ownerOf(_tokenId) == _address);
     }
 
     function setOffer(uint256 _price, uint256 _tokenId) public {
         require(_ownsHouse(msg.sender, _tokenId), "ERR20");
         require(tokenIdToOffer[_tokenId].active == false, "ERR30");
-        require(_houseContract.isApprovedForAll(msg.sender, address(this)), "ERR40");
+        require(_houseToken.isApprovedForAll(msg.sender, address(this)), "ERR40");
 
         //create offer by inserting items into the array
         Offer memory _offer = Offer({
@@ -92,7 +87,7 @@ contract Marketplace is Ownable, IHouseMarketplace, Storage {
         // transfer the funds to the seller
         offer.seller.transfer(offer.price);
         //finalize by transfering the token/cat ownership
-        _houseContract.transferFrom(offer.seller, msg.sender, _tokenId);
+        _houseToken.transferFrom(offer.seller, msg.sender, _tokenId);
 
         // set the id to inactive
         offers[offer.index].active = false;
@@ -104,13 +99,13 @@ contract Marketplace is Ownable, IHouseMarketplace, Storage {
     }
 
     // function for owner to sell house
-    function sell(uint256 id) {
+    function sell(uint256 id) public {
         houseInfo[id].value;
         houseInfo[id].income;
     }
 
     // function for owner to borrow funds
-    function borrow(uint256 id) {
+    function borrow(uint256 id) public {
         houseInfo[id].value;
         houseInfo[id].income;
     }
