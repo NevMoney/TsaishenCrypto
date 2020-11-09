@@ -16,7 +16,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         _;
     }
 
-    event Minted(address _owner, uint256 id, string _tokenURI);
+    event Minted(address _owner, uint256 id);
 
     // generate house on blockchain: value, ID, owner address
     // QUESTION: do i need to have address(0) or have as address only?
@@ -43,15 +43,16 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         });
 
         //this creates new house and places it in array, then assigns ID
-        // WARNING: Following line does NOT compile
-        // uint256 newHouseId = houses.push(_house);
+        houses.push(_house);
+        uint256 newHouseId = houses.length;
+        
 
-        emit Minted(_owner, houses.push(_house), tokenURI);
+        emit Minted(_owner, newHouseId);
 
         //mint new token, transfer to the owner with the house ID
-        _transfer(address(0), _owner, houses.push(_house));
+        _transfer(address(0), _owner, newHouseId);
 
-        return houses.push(_house);
+        return newHouseId;
     }
 
     function getHouseByOwner(address _owner) external view returns(uint[] memory){

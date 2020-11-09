@@ -57,7 +57,7 @@ simply share the risks on the website, so that each user can make their
 own educated decision.
 */
 
-contract TsaishenLending {
-    // lendingCap function, 35% of the equity, 6 months of income, or combo
-    // crowdFunding function, allowing for multiple users to lend up to cap
-}
+// contract TsaishenLending {
+//     // lendingCap function, 35% of the equity, 6 months of income, or combo
+//     // crowdFunding function, allowing for multiple users to lend up to cap
+// }
