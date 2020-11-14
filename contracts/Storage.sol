@@ -10,9 +10,9 @@ contract Storage {
     mapping (string => bytes4) _bytesStorage;
     
     mapping (uint256 => address) public houseIndexToOwner;
-    mapping (address => uint256) public ownershipTokenCount; //when i had this private housetoken contract didn't recognize it
+    mapping (address => uint256) public ownershipTokenCount;
     mapping (uint256 => address) public houseIndexToApproved;
-    // mapping (address => mapping (address => bool)) private operatorApprovals;
+    mapping (address => mapping (address => bool)) private operatorApprovals;
     mapping(uint256 => Offer) tokenIdToOffer;
 
     // this is where we'll store house information about each property for easy recall

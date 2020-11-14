@@ -16,17 +16,9 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         _;
     }
 
-    event Minted(address _owner, uint256 id, string _tokenURI);
+    event Minted(address _owner, uint256 id, string tokenURI);
 
     // generate house on blockchain: value, ID, owner address
-    // QUESTION: do i need to have address(0) or have as address only?
-    // QUESTION: do i need both value and ID and should ID be displayed as uint256(-1)??
-    // can't use this as I already have a constructor, but HOW do I get value & index and address of owner?
-    // constructor () public {
-    //     _createHouse(uint256, uint256, address(0));
-    // }
-
-    // QUESTION: is this possible, the payable part?!
     function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
         // would need to require identification of the user KYC/AML 
         // would that be called here?! 
@@ -44,22 +36,22 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
 
         //this creates new house and places it in array, then assigns ID
         houses.push(_house);
-        uint256 newHouseId = houses.length;
+        uint256 newHouseId = houses.length - 1;
 
         emit Minted(_owner, newHouseId, "");
 
         //mint new token, transfer to the owner with the house ID
-        mint(_owner);
-        // _transfer(address(0), _owner, newHouseId);
+        _mint(_owner, _tokenIdTracker.current());
+        _tokenIdTracker.increment();
 
         return newHouseId;
     }
 
     function getHouseByOwner(address _owner) external view returns(uint[] memory){
-        uint[] memory result = new uint[](ownershipTokenCount[_owner]);
+        uint[] memory result = new uint[](_holderTokens[_owner]);
         uint counter = 0;
         for (uint i = 0; i < houses.length; i++) {
-            if (houseIndexToOwner[i] == _owner) {
+            if (_tokenOwners[i] == _owner) {
                 result[counter] = i;
                 counter++;
             }
@@ -67,13 +59,9 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         return result;
     }
 
-    function getHouse(uint256 _id) public view returns(uint256 value) {
+    function getHouse(uint256 _id) public view returns(uint256 value, uint256 income) {
         House storage house = houses[_id];
         value = uint256 (house.value);
+        income = uint256 (house.income);
     }
-        
-    function ownerOfHouse (uint256 id) public view returns (address){
-        return ownerOf(id);
-    }
-
 }

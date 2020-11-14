@@ -1,4 +1,5 @@
 // File: node_modules\@openzeppelin\contracts\utils\EnumerableSet.sol
+
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
@@ -390,6 +391,7 @@ library Address {
 // File: node_modules\@openzeppelin\contracts\GSN\Context.sol
 
 
+
 pragma solidity ^0.6.0;
 
 /*
@@ -414,6 +416,8 @@ abstract contract Context {
 }
 
 // File: node_modules\@openzeppelin\contracts\access\AccessControl.sol
+
+
 
 pragma solidity ^0.6.0;
 
@@ -632,6 +636,8 @@ abstract contract AccessControl is Context {
 
 // File: node_modules\@openzeppelin\contracts\math\SafeMath.sol
 
+
+
 pragma solidity ^0.6.0;
 
 /**
@@ -792,6 +798,8 @@ library SafeMath {
 
 // File: node_modules\@openzeppelin\contracts\utils\Counters.sol
 
+
+
 pragma solidity ^0.6.0;
 
 
@@ -832,6 +840,8 @@ library Counters {
 
 // File: node_modules\@openzeppelin\contracts\introspection\IERC165.sol
 
+
+
 pragma solidity ^0.6.0;
 
 /**
@@ -856,6 +866,8 @@ interface IERC165 {
 }
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721.sol
+
+
 
 pragma solidity ^0.6.2;
 
@@ -986,6 +998,8 @@ interface IERC721 is IERC165 {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721Metadata.sol
 
+
+
 pragma solidity ^0.6.2;
 
 
@@ -1012,6 +1026,8 @@ interface IERC721Metadata is IERC721 {
 }
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721Enumerable.sol
+
+
 
 pragma solidity ^0.6.2;
 
@@ -1042,6 +1058,8 @@ interface IERC721Enumerable is IERC721 {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721Receiver.sol
 
+
+
 pragma solidity ^0.6.0;
 
 /**
@@ -1064,6 +1082,8 @@ interface IERC721Receiver {
 }
 
 // File: node_modules\@openzeppelin\contracts\introspection\ERC165.sol
+
+
 
 pragma solidity ^0.6.0;
 
@@ -1118,6 +1138,8 @@ contract ERC165 is IERC165 {
 }
 
 // File: node_modules\@openzeppelin\contracts\utils\EnumerableMap.sol
+
+
 
 pragma solidity ^0.6.0;
 
@@ -1357,6 +1379,8 @@ library EnumerableMap {
 
 // File: node_modules\@openzeppelin\contracts\utils\Strings.sol
 
+
+
 pragma solidity ^0.6.0;
 
 /**
@@ -1392,6 +1416,8 @@ library Strings {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\ERC721.sol
 
+
+
 pragma solidity ^0.6.0;
 
 
@@ -1421,10 +1447,10 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
     bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
 
     // Mapping from holder address to their (enumerable) set of owned tokens
-    mapping (address => EnumerableSet.UintSet) private _holderTokens;
+    mapping (address => EnumerableSet.UintSet) internal _holderTokens;
 
     // Enumerable mapping from token ids to their owners
-    EnumerableMap.UintToAddressMap private _tokenOwners;
+    EnumerableMap.UintToAddressMap internal _tokenOwners;
 
     // Mapping from token ID to approved address
     mapping (uint256 => address) private _tokenApprovals;
@@ -1865,6 +1891,8 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\ERC721Burnable.sol
 
+
+
 pragma solidity ^0.6.0;
 
 
@@ -1889,6 +1917,8 @@ abstract contract ERC721Burnable is Context, ERC721 {
 }
 
 // File: node_modules\@openzeppelin\contracts\utils\Pausable.sol
+
+
 
 pragma solidity ^0.6.0;
 
@@ -1980,6 +2010,8 @@ contract Pausable is Context {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\ERC721Pausable.sol
 
+
+
 pragma solidity ^0.6.0;
 
 
@@ -2007,6 +2039,8 @@ abstract contract ERC721Pausable is ERC721, Pausable {
 }
 
 // File: @openzeppelin\contracts\presets\ERC721PresetMinterPauserAutoId.sol
+
+
 
 pragma solidity ^0.6.0;
 
@@ -2037,7 +2071,7 @@ contract ERC721PresetMinterPauserAutoId is Context, AccessControl, ERC721Burnabl
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
-    Counters.Counter private _tokenIdTracker;
+    Counters.Counter internal _tokenIdTracker;
 
     /**
      * @dev Grants `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE` and `PAUSER_ROLE` to the
@@ -2110,6 +2144,8 @@ contract ERC721PresetMinterPauserAutoId is Context, AccessControl, ERC721Burnabl
 
 // File: @openzeppelin\contracts\access\Ownable.sol
 
+
+
 pragma solidity ^0.6.0;
 
 /**
@@ -2177,18 +2213,18 @@ contract Ownable is Context {
 }
 
 // File: contracts\Storage.sol
+
+
 pragma solidity ^0.6.0;
 
 contract Storage {
 
     mapping (string => uint256) _uintStorage;
     mapping (string => address) _addressStorage;
-    mapping (string => bool) _boolStorage;
-    mapping (string => string) _stringStorage;
     mapping (string => bytes4) _bytesStorage;
     
     mapping (uint256 => address) public houseIndexToOwner;
-    mapping (address => uint256) public ownershipTokenCount; //when i had this private housetoken contract didn't recognize it
+    mapping (address => uint256) public ownershipTokenCount;
     mapping (uint256 => address) public houseIndexToApproved;
     // mapping (address => mapping (address => bool)) private operatorApprovals;
     mapping(uint256 => Offer) tokenIdToOffer;
@@ -2203,10 +2239,10 @@ contract Storage {
     bool public _initialized;
     uint public balance;
 
+    uint256 public houseCounter;
+
     House [] houses;
     Offer[] offers;
-
-    uint256 public houseCounter;
 
     struct House {
         uint256 value;
@@ -2225,6 +2261,8 @@ contract Storage {
 
 // File: contracts\tokens\HouseToken.sol
 
+
+
 pragma solidity 0.6.10;
 
 
@@ -2240,17 +2278,9 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         _;
     }
 
-    event Minted(address _owner, uint256 id, string _tokenURI);
+    event Minted(address _owner, uint256 id, string tokenURI);
 
     // generate house on blockchain: value, ID, owner address
-    // QUESTION: do i need to have address(0) or have as address only?
-    // QUESTION: do i need both value and ID and should ID be displayed as uint256(-1)??
-    // can't use this as I already have a constructor, but HOW do I get value & index and address of owner?
-    // constructor () public {
-    //     _createHouse(uint256, uint256, address(0));
-    // }
-
-    // QUESTION: is this possible, the payable part?!
     function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
         // would need to require identification of the user KYC/AML 
         // would that be called here?! 
@@ -2268,21 +2298,22 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
 
         //this creates new house and places it in array, then assigns ID
         houses.push(_house);
-        uint256 newHouseId = houses.length;
+        uint256 newHouseId = houses.length - 1;
 
         emit Minted(_owner, newHouseId, "");
 
         //mint new token, transfer to the owner with the house ID
-        _transfer(address(0), _owner, newHouseId);
+        _mint(_owner, _tokenIdTracker.current());
+        _tokenIdTracker.increment();
 
         return newHouseId;
     }
 
     function getHouseByOwner(address _owner) external view returns(uint[] memory){
-        uint[] memory result = new uint[](ownershipTokenCount[_owner]);
+        uint[] memory result = new uint[](_holderTokens[_owner]);
         uint counter = 0;
         for (uint i = 0; i < houses.length; i++) {
-            if (houseIndexToOwner[i] == _owner) {
+            if (_tokenOwners[i] == _owner) {
                 result[counter] = i;
                 counter++;
             }
@@ -2290,13 +2321,9 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         return result;
     }
 
-    function getHouse(uint256 _id) public view returns(uint256 value) {
+    function getHouse(uint256 _id) public view returns(uint256 value, uint256 income) {
         House storage house = houses[_id];
         value = uint256 (house.value);
+        income = uint256 (house.income);
     }
-        
-    function ownerOfHouse (uint256 id) public view returns (address){
-        return ownerOf(id);
-    }
-
 }
