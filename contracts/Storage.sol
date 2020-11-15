@@ -9,10 +9,7 @@ contract Storage {
     mapping (string => string) _stringStorage;
     mapping (string => bytes4) _bytesStorage;
     
-    // mapping (uint256 => address) public houseIndexToOwner;
-    // mapping (address => uint256) public ownershipTokenCount;
     mapping (uint256 => address) public houseIndexToApproved;
-    //mapping (address => mapping (address => bool)) private operatorApprovals;
     mapping(uint256 => Offer) tokenIdToOffer;
 
     // this is where we'll store house information about each property for easy recall
@@ -27,7 +24,8 @@ contract Storage {
     uint public balance;
 
     House [] houses;
-    Offer[] offers;
+    Offer [] offers;
+    User [] users;
 
     uint256 public houseCounter;
 
@@ -41,6 +39,13 @@ contract Storage {
         uint256 price;
         uint256 index;
         uint256 tokenId;
+        bool active;
+    }
+
+    struct User {
+        address payable user;
+        uint256 reward;
+        uint256 index;
         bool active;
     }
 

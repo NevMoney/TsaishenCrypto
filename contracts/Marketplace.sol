@@ -10,19 +10,43 @@ for ETH to stablecoins - perhaps DAI and/or USDC
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Storage.sol";
 import "./tokens/HouseToken.sol";
+import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+import "./MyChainlinkedProject/contracts/MyContract.sol";
 
-contract Marketplace is Ownable, Storage {
+contract Marketplace is Ownable, Storage, MyContract {
     HouseToken private _houseToken;
+    AggregatorV3Interface internal priceFeed;
+
+    /*
+    *Using Chainlink for price conversion in real time
+        - network: Kovan
+        - aggregator: usd/eth
+        - address: 0x9326BFA02ADD2366b30bacB125260Af641031331
+
+    */
+
+    constructor(address _houseTokenAddress, address chainlinkPriceFeedTestnet) public {
+        setHouseToken(_houseTokenAddress);
+        chainlinkPriceFeedTestnet = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
+    }
+
+    event MarketTransaction (string, address, uint);
+
+    // function to get the latest price    
+    function getLatestPrice() public view returns (int) {
+        (
+            uint80 roundID, 
+            int price,
+            uint startedAt,
+            uint timeStamp,
+            uint80 answeredInRound
+        ) = priceFeed.latestRoundData();
+        return price;
+    }
 
     function setHouseToken(address _houseTokenAddress) public onlyOwner{
         _houseToken = HouseToken(_houseTokenAddress);
     }
-
-    constructor(address _houseTokenAddress) public {
-        setHouseToken(_houseTokenAddress);
-    }
-
-    event MarketTransaction (string, address, uint);
         
     function getOffer(uint256 _tokenId) public view returns (address seller, uint256 price, uint256 index, uint256 tokenId, bool active){
         Offer storage offer = tokenIdToOffer[_tokenId];//get the tokenId from the mapping
