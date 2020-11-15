@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "flat": "truffle-flattener contracts/tokens/HouseToken.sol > flats/HouseToken.sol"
+    "flat": "truffle-flattener contracts/tokens/HouseToken.sol > flats/HouseToken.sol",
+    "flat": "truffle-flattener contracts/tokens/TsaishenToken.sol > flats/TsaishenToken.sol"
   },
   "repository": {
     "type": "git",
