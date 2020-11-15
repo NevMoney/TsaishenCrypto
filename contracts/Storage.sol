@@ -9,14 +9,15 @@ contract Storage {
     mapping (string => string) _stringStorage;
     mapping (string => bytes4) _bytesStorage;
     
-    mapping (uint256 => address) public houseIndexToOwner;
-    mapping (address => uint256) public ownershipTokenCount;
+    // mapping (uint256 => address) public houseIndexToOwner;
+    // mapping (address => uint256) public ownershipTokenCount;
     mapping (uint256 => address) public houseIndexToApproved;
-    mapping (address => mapping (address => bool)) private operatorApprovals;
+    //mapping (address => mapping (address => bool)) private operatorApprovals;
     mapping(uint256 => Offer) tokenIdToOffer;
 
     // this is where we'll store house information about each property for easy recall
-    mapping (uint256 => House) houseInfo;
+    mapping (uint256 => House) public houseInfo; //not working! .push, .add, ,.set, ++ tried
+    
 
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;

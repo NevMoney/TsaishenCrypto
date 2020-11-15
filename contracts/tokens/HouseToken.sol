@@ -16,15 +16,24 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         _;
     }
 
+    // using EnumerableMap for EnumerableMap.UintToAddressMap;
+    using EnumerableMap for EnumerableMap.UintToAddressMap;
+    using EnumerableSet for EnumerableSet.UintSet;
+    EnumerableSet.UintSet private ownershipTokenCount;
+    EnumerableMap.UintToAddressMap private houseIndexToOwner;
+
     event Minted(address _owner, uint256 id, string tokenURI);
 
     // generate house on blockchain: value, ID, owner address
     function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
-        // would need to require identification of the user KYC/AML 
-        // would that be called here?! 
+        // require identification of the user KYC/AML before execution
         balance += msg.value;
 
+        ownershipTokenCount.add;
+        houseIndexToOwner.set;
+
         houseCounter++;
+
         return _createHouse(value, income, msg.sender);
     }
 
@@ -45,18 +54,6 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         _tokenIdTracker.increment();
 
         return newHouseId;
-    }
-
-    function getHouseByOwner(address _owner) external view returns(uint[] memory){
-        uint[] memory result = new uint[](_holderTokens[_owner]);
-        uint counter = 0;
-        for (uint i = 0; i < houses.length; i++) {
-            if (_tokenOwners[i] == _owner) {
-                result[counter] = i;
-                counter++;
-            }
-        }
-        return result;
     }
 
     function getHouse(uint256 _id) public view returns(uint256 value, uint256 income) {

@@ -2223,14 +2223,16 @@ contract Storage {
     mapping (string => address) _addressStorage;
     mapping (string => bytes4) _bytesStorage;
     
-    mapping (uint256 => address) public houseIndexToOwner;
-    mapping (address => uint256) public ownershipTokenCount;
+    //mapping (uint256 => address) public houseIndexToOwner;
+    // mapping (address => uint256) public ownershipTokenCount;
     mapping (uint256 => address) public houseIndexToApproved;
     // mapping (address => mapping (address => bool)) private operatorApprovals;
     mapping(uint256 => Offer) tokenIdToOffer;
 
     // this is where we'll store house information about each property for easy recall
-    mapping (uint256 => House) houseInfo;
+    mapping (uint256 => House) public houseInfo;
+    // mapping (address => EnumerableSet.uintSet) private houseIndexToOwner;
+
 
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
@@ -2277,17 +2279,26 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         require(msg.value >= cost);
         _;
     }
+    
+    //using EnumerableMap for EnumerableMap.UintToAddressMap;
+    using EnumerableMap for EnumerableMap.UintToAddressMap;
+    using EnumerableSet for EnumerableSet.UintSet;
+    EnumerableSet.UintSet private ownershipTokenCount;
+    EnumerableMap.UintToAddressMap private houseIndexToOwner;
+    
 
     event Minted(address _owner, uint256 id, string tokenURI);
 
     // generate house on blockchain: value, ID, owner address
     function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
-        // would need to require identification of the user KYC/AML 
-        // would that be called here?! 
         balance += msg.value;
 
+        ownershipTokenCount.add;
+        houseIndexToOwner.set;
+        
         houseCounter++;
         return _createHouse(value, income, msg.sender);
+        
     }
 
     function _createHouse(uint256 _value, uint256 _income, address _owner) private returns (uint256) {    
@@ -2295,7 +2306,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
             value: _value,
             income: _income
         });
-
+        
         //this creates new house and places it in array, then assigns ID
         houses.push(_house);
         uint256 newHouseId = houses.length - 1;
@@ -2308,19 +2319,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
 
         return newHouseId;
     }
-
-    function getHouseByOwner(address _owner) external view returns(uint[] memory){
-        uint[] memory result = new uint[](_holderTokens[_owner]);
-        uint counter = 0;
-        for (uint i = 0; i < houses.length; i++) {
-            if (_tokenOwners[i] == _owner) {
-                result[counter] = i;
-                counter++;
-            }
-        }
-        return result;
-    }
-
+    
     function getHouse(uint256 _id) public view returns(uint256 value, uint256 income) {
         House storage house = houses[_id];
         value = uint256 (house.value);
