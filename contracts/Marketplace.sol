@@ -11,9 +11,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Storage.sol";
 import "./tokens/HouseToken.sol";
 import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
-import "./MyChainlinkedProject/contracts/MyContract.sol";
 
-contract Marketplace is Ownable, Storage, MyContract {
+contract Marketplace is Ownable, Storage {
     HouseToken private _houseToken;
     AggregatorV3Interface internal priceFeed;
 
@@ -22,12 +21,11 @@ contract Marketplace is Ownable, Storage, MyContract {
         - network: Kovan
         - aggregator: usd/eth
         - address: 0x9326BFA02ADD2366b30bacB125260Af641031331
-
     */
 
     constructor(address _houseTokenAddress, address chainlinkPriceFeedTestnet) public {
         setHouseToken(_houseTokenAddress);
-        chainlinkPriceFeedTestnet = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
+        // chainlinkPriceFeedTestnet = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
     }
 
     event MarketTransaction (string, address, uint);
