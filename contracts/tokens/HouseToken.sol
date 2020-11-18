@@ -57,6 +57,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
     }
 
     function getHouse(uint256 _id) public view returns(uint256 value, uint256 income) {
+        //change to mapping & uri
         House storage house = houses[_id];
         value = uint256 (house.value);
         income = uint256 (house.income);
