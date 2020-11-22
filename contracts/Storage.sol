@@ -12,14 +12,14 @@ contract Storage {
     mapping (uint256 => address) public houseIndexToApproved;
     
 
-    // this is where we'll store house information about each property for easy recall
+    // store house information
     mapping (uint256 => House) public houseInfo;
 
     // store offer information
     mapping(uint256 => Offer) public tokenIdToOffer;
 
-    // srote user information
-    mapping(address => User) public users;
+    // store user information
+    mapping(address => User) public userInfo;
     
 
     mapping (address => uint256) private _balances;
@@ -30,7 +30,7 @@ contract Storage {
     uint public balance;
 
     Offer [] offers;
-    // User [] users;
+    User [] users;
 
     uint256 public houseCounter;
 
@@ -49,7 +49,7 @@ contract Storage {
 
     struct User {
         address payable user;
-        uint256 reward;
+        uint256 points;
         uint256 index;
         bool active;
     }

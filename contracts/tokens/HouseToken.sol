@@ -4,6 +4,7 @@ pragma solidity 0.6.10;
 
 import "@openzeppelin/contracts/presets/ERC721PresetMinterPauserAutoId.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../Storage.sol";
 
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
@@ -33,6 +34,19 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
             income: _income
         });
 
+        User memory _user = User({
+        user: msg.sender,
+        points: 200,
+        index: users.length,
+        active: true
+        });
+
+        // place users in array
+        users.push(_user);
+
+        // add user to userInfo mapping
+        userInfo[msg.sender] = _user;
+
         //places house in mapping and assigns ID
         houseInfo[_tokenIdTracker.current()] = _house;
 
@@ -51,4 +65,5 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         income = houseInfo[_id].income;
         uri = tokenURI(_id);
     }
+
 }

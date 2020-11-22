@@ -1,5 +1,3 @@
-// File: node_modules\@openzeppelin\contracts\GSN\Context.sol
-
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
@@ -109,10 +107,16 @@ contract Storage {
     mapping (string => bytes4) _bytesStorage;
     
     mapping (uint256 => address) public houseIndexToApproved;
-    mapping(uint256 => Offer) tokenIdToOffer;
+    
 
-    // this is where we'll store house information about each property for easy recall
-    mapping (uint256 => House) public houseInfo; //not working! .push, .add, ,.set, ++ tried
+    // store house information
+    mapping (uint256 => House) public houseInfo;
+
+    // store offer information
+    mapping(uint256 => Offer) public tokenIdToOffer;
+
+    // srote user information
+    mapping(address => User) public users;
     
 
     mapping (address => uint256) private _balances;
@@ -122,9 +126,7 @@ contract Storage {
     bool public _initialized;
     uint public balance;
 
-    House [] houses;
     Offer [] offers;
-    User [] users;
 
     uint256 public houseCounter;
 
@@ -2277,20 +2279,13 @@ pragma solidity 0.6.10;
 
 
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
-    constructor() public ERC721PresetMinterPauserAutoId("Real Estate Token", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
+    constructor() public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
     }
 
-    // QUESTION: does it make sense for this to live here or do I put it in storage?
     modifier costs (uint cost){
         require(msg.value >= cost);
         _;
     }
-
-    // using EnumerableMap for EnumerableMap.UintToAddressMap;
-    using EnumerableMap for EnumerableMap.UintToAddressMap;
-    using EnumerableSet for EnumerableSet.UintSet;
-    EnumerableSet.UintSet private ownershipTokenCount;
-    EnumerableMap.UintToAddressMap private houseIndexToOwner;
 
     event Minted(address _owner, uint256 id, string tokenURI);
 
@@ -2298,9 +2293,6 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
     function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
         // require identification of the user KYC/AML before execution
         balance += msg.value;
-
-        ownershipTokenCount.add;
-        houseIndexToOwner.set;
 
         houseCounter++;
 
@@ -2313,29 +2305,34 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
             income: _income
         });
 
-        //this creates new house and places it in array, then assigns ID
-        houses.push(_house);
-        uint256 newHouseId = houses.length - 1;
+        //places house in mapping and assigns ID
+        houseInfo[_tokenIdTracker.current()] = _house;
 
-        emit Minted(_owner, newHouseId, "");
+        emit Minted(_owner, _tokenIdTracker.current(), "");
 
         //mint new token, transfer to the owner with the house ID
         _mint(_owner, _tokenIdTracker.current());
         _tokenIdTracker.increment();
 
-        return newHouseId;
+        return _tokenIdTracker.current();
     }
 
-    function getHouse(uint256 _id) public view returns(uint256 value, uint256 income) {
-        House storage house = houses[_id];
-        value = uint256 (house.value);
-        income = uint256 (house.income);
+    function getHouse(uint256 _id) public view returns(uint256 value, uint256 income, string memory uri) {
+        //change to mapping & uri
+        value = houseInfo[_id].value;
+        income = houseInfo[_id].income;
+        uri = tokenURI(_id);
     }
 }
 
-// File: @chainlink\contracts\src\v0.6\interfaces\AggregatorV3Interface.sol
+// File: contracts\Marketplace.sol
 
-pragma solidity >=0.6.0;
+
+
+pragma solidity ^0.6.10;
+
+
+
 
 interface AggregatorV3Interface {
 
@@ -2346,20 +2343,15 @@ interface AggregatorV3Interface {
   // getRoundData and latestRoundData should both raise "No data present"
   // if they do not have data to report, instead of returning unset values
   // which could be misinterpreted as actual reported values.
-  function getRoundData(uint80 _roundId)
-    external
-    view
-    returns (
+  function getRoundData(uint80 _roundId) external view returns (
       uint80 roundId,
       int256 answer,
       uint256 startedAt,
       uint256 updatedAt,
       uint80 answeredInRound
     );
-  function latestRoundData()
-    external
-    view
-    returns (
+
+  function latestRoundData() external view returns (
       uint80 roundId,
       int256 answer,
       uint256 startedAt,
@@ -2369,49 +2361,24 @@ interface AggregatorV3Interface {
 
 }
 
-// File: contracts\Marketplace.sol
-
-
-
-pragma solidity ^0.6.10;
-
-/*
-additional integration is with Chainlink oracles to get pricing exchange rates
-for ETH to stablecoins - perhaps DAI and/or USDC
-*/
-
-
-
-
-
 contract Marketplace is Ownable, Storage {
     HouseToken private _houseToken;
-    AggregatorV3Interface internal priceFeed;
 
-    /*
-    *Using Chainlink for price conversion in real time
-        - network: Kovan
-        - aggregator: usd/eth
-        - address: 0x9326BFA02ADD2366b30bacB125260Af641031331
-    */
+    // using chainlink for realtime ETH/USD conversion -- @Dev this is TESTNET rinkeby!!
+    AggregatorV3Interface internal priceFeedETH = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
 
-    constructor(address _houseTokenAddress, address chainlinkPriceFeedTestnet) public {
+    uint housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
+
+    constructor(address _houseTokenAddress) public {
         setHouseToken(_houseTokenAddress);
-        // chainlinkPriceFeedTestnet = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
     }
 
     event MarketTransaction (string, address, uint);
 
-    // function to get the latest price    
-    function getLatestPrice() public view returns (int) {
-        (
-            uint80 roundID, 
-            int price,
-            uint startedAt,
-            uint timeStamp,
-            uint80 answeredInRound
-        ) = priceFeed.latestRoundData();
-        return price;
+    // @notice get latest ETH/USD price from Chainlink
+    function getPrice() public view returns (int256, uint256){
+        (, int256 answer, , uint256 updatedAt, ) = priceFeedETH.latestRoundData();
+        return (answer, updatedAt);
     }
 
     function setHouseToken(address _houseTokenAddress) public onlyOwner{
@@ -2449,9 +2416,9 @@ contract Marketplace is Ownable, Storage {
     }
 
     function setOffer(uint256 _price, uint256 _tokenId) public {
-        require(_ownsHouse(msg.sender, _tokenId), "ERR20");
-        require(tokenIdToOffer[_tokenId].active == false, "ERR30");
-        require(_houseToken.isApprovedForAll(msg.sender, address(this)), "ERR40");
+        require(_ownsHouse(msg.sender, _tokenId), "Seller not owner");
+        require(tokenIdToOffer[_tokenId].active == false, "House not for sale");
+        require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved");
 
         //create offer by inserting items into the array
         Offer memory _offer = Offer({
@@ -2470,7 +2437,7 @@ contract Marketplace is Ownable, Storage {
 
     function removeOffer(uint256 _tokenId) public{
         Offer storage offer = tokenIdToOffer[_tokenId]; //first access the offer
-        require(offer.seller == msg.sender, "ERR20"); //ensure owner only can do this
+        require(offer.seller == msg.sender, "Seller not owner"); //ensure owner only can do this
 
         delete offers[offer.index]; //first delete the index within the array
         delete tokenIdToOffer[_tokenId]; //then remove the id from the mapping
@@ -2480,8 +2447,18 @@ contract Marketplace is Ownable, Storage {
 
     function buyHouse(uint256 _tokenId) public payable{
         Offer storage offer = tokenIdToOffer[_tokenId];
-        require(msg.value == offer.price, "ERR10"); 
-        require(offer.active == true, "ERR50"); 
+        require(msg.value > offer.price, "Price not matching"); 
+        require(offer.active == true, "House not for sale"); 
+
+        (int256 currentEthPrice, uint256 updatedAt) = (getPrice());
+
+         // check if the user sent enough ether according to the price of the housePrice
+        uint256 housePriceInETH = housePrice * 1 ether / uint256(currentEthPrice);
+
+        offer.price = housePriceInETH;
+
+        //price data should be fresher than 1 hour
+        require(updatedAt >= now - 1, "Data too old");
 
         // transfer the funds to the seller
         offer.seller.transfer(offer.price);
@@ -2492,7 +2469,12 @@ contract Marketplace is Ownable, Storage {
         offers[offer.index].active = false;
         // remove from mapping BEFORE transfer takes place to ensure there is no double sale
         delete tokenIdToOffer[_tokenId];
-        
+
+        // refund user if sent more than the price
+        if (msg.value > housePriceInETH){
+            msg.sender.transfer(msg.value - housePriceInETH);
+        }
+       
 
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
