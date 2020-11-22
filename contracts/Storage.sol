@@ -10,10 +10,16 @@ contract Storage {
     mapping (string => bytes4) _bytesStorage;
     
     mapping (uint256 => address) public houseIndexToApproved;
-    mapping(uint256 => Offer) tokenIdToOffer;
+    
 
     // this is where we'll store house information about each property for easy recall
-    mapping (uint256 => House) public houseInfo; //not working! .push, .add, ,.set, ++ tried
+    mapping (uint256 => House) public houseInfo;
+
+    // store offer information
+    mapping(uint256 => Offer) public tokenIdToOffer;
+
+    // srote user information
+    mapping(address => User) public users;
     
 
     mapping (address => uint256) private _balances;
@@ -23,9 +29,8 @@ contract Storage {
     bool public _initialized;
     uint public balance;
 
-    House [] houses;
     Offer [] offers;
-    User [] users;
+    // User [] users;
 
     uint256 public houseCounter;
 

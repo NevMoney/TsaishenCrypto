@@ -2221,18 +2221,22 @@ contract Storage {
 
     mapping (string => uint256) _uintStorage;
     mapping (string => address) _addressStorage;
+    mapping (string => bool) _boolStorage;
+    mapping (string => string) _stringStorage;
     mapping (string => bytes4) _bytesStorage;
     
-    //mapping (uint256 => address) public houseIndexToOwner;
-    // mapping (address => uint256) public ownershipTokenCount;
     mapping (uint256 => address) public houseIndexToApproved;
-    // mapping (address => mapping (address => bool)) private operatorApprovals;
-    mapping(uint256 => Offer) tokenIdToOffer;
+    
 
     // this is where we'll store house information about each property for easy recall
     mapping (uint256 => House) public houseInfo;
-    // mapping (address => EnumerableSet.uintSet) private houseIndexToOwner;
 
+    // store offer information
+    mapping(uint256 => Offer) public tokenIdToOffer;
+
+    // srote user information
+    mapping(address => User) public users;
+    
 
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
@@ -2241,10 +2245,10 @@ contract Storage {
     bool public _initialized;
     uint public balance;
 
-    uint256 public houseCounter;
+    Offer [] offers;
+    // User [] users;
 
-    House [] houses;
-    Offer[] offers;
+    uint256 public houseCounter;
 
     struct House {
         uint256 value;
@@ -2259,6 +2263,13 @@ contract Storage {
         bool active;
     }
 
+    struct User {
+        address payable user;
+        uint256 reward;
+        uint256 index;
+        bool active;
+    }
+
 }
 
 // File: contracts\tokens\HouseToken.sol
@@ -2267,38 +2278,25 @@ contract Storage {
 
 pragma solidity 0.6.10;
 
-
-
-
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
-    constructor() public ERC721PresetMinterPauserAutoId("Real Estate Token", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
+    constructor() public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
     }
 
-    // QUESTION: does it make sense for this to live here or do I put it in storage?
     modifier costs (uint cost){
         require(msg.value >= cost);
         _;
     }
-    
-    //using EnumerableMap for EnumerableMap.UintToAddressMap;
-    using EnumerableMap for EnumerableMap.UintToAddressMap;
-    using EnumerableSet for EnumerableSet.UintSet;
-    EnumerableSet.UintSet private ownershipTokenCount;
-    EnumerableMap.UintToAddressMap private houseIndexToOwner;
-    
 
     event Minted(address _owner, uint256 id, string tokenURI);
 
     // generate house on blockchain: value, ID, owner address
     function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
+        // require identification of the user KYC/AML before execution
         balance += msg.value;
 
-        ownershipTokenCount.add;
-        houseIndexToOwner.set;
-        
         houseCounter++;
+
         return _createHouse(value, income, msg.sender);
-        
     }
 
     function _createHouse(uint256 _value, uint256 _income, address _owner) private returns (uint256) {    
@@ -2306,23 +2304,23 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
             value: _value,
             income: _income
         });
-        
-        //this creates new house and places it in array, then assigns ID
-        houses.push(_house);
-        uint256 newHouseId = houses.length - 1;
 
-        emit Minted(_owner, newHouseId, "");
+        //places house in mapping and assigns ID
+        houseInfo[_tokenIdTracker.current()] = _house;
+
+        emit Minted(_owner, _tokenIdTracker.current(), "");
 
         //mint new token, transfer to the owner with the house ID
         _mint(_owner, _tokenIdTracker.current());
         _tokenIdTracker.increment();
 
-        return newHouseId;
+        return _tokenIdTracker.current();
     }
-    
-    function getHouse(uint256 _id) public view returns(uint256 value, uint256 income) {
-        House storage house = houses[_id];
-        value = uint256 (house.value);
-        income = uint256 (house.income);
+
+    function getHouse(uint256 _id) public view returns(uint256 value, uint256 income, string memory uri) {
+        //change to mapping & uri
+        value = houseInfo[_id].value;
+        income = houseInfo[_id].income;
+        uri = tokenURI(_id);
     }
 }
