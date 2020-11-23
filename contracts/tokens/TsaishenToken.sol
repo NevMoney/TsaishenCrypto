@@ -5,7 +5,9 @@ pragma solidity 0.6.10;
 import "@openzeppelin/contracts/presets/ERC20PresetMinterPauser.sol";
 
 contract TsaishenToken is ERC20PresetMinterPauser {
-    constructor() public ERC20PresetMinterPauser("Tsaishen Token", "TSHN") {
-        _mint(msg.sender, 100e6 * 1 ether);
+    
+    constructor() public ERC20PresetMinterPauser("Tsaishen Coin", "CASH") {
+        _mint(msg.sender, 100e6 * 1 ether); //1 ether - same as saying 18 decimals
     }
+
 }
