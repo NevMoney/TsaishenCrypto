@@ -66,4 +66,11 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         uri = tokenURI(_id);
     }
 
+    function withdrawAll() public onlyOwner returns(uint){
+        uint toTransfer = balance;
+        balance = 0;
+        msg.sender.transfer(toTransfer);
+        return toTransfer;
+    }
+
 }
