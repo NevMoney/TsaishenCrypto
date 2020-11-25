@@ -118,8 +118,12 @@ contract Marketplace is Ownable, Storage {
     }
 
     function buyHouse(uint256 _tokenId) public payable{
-        Offer storage offer = tokenIdToOffer[_tokenId];
-        require(msg.value > offer.price, "Price not matching"); 
+        Offer storage offer = tokenIdToOffer[_tokenId];      
+        /*
+        
+        use SAFEMATH for the claculations
+        
+        */ 
         require(offer.active == true, "House not for sale"); 
 
         (int256 currentEthPrice, uint256 updatedAt) = (getPrice());
@@ -128,12 +132,16 @@ contract Marketplace is Ownable, Storage {
         uint256 housePriceInETH = housePrice * 1 ether / uint256(currentEthPrice);
 
         offer.price = housePriceInETH;
+        require(msg.value > housePriceInETH, "Price not matching"); //move this down and check eth price of home with sent
 
         //price data should be fresher than 1 hour
         require(updatedAt >= now - 1, "Data too old");
 
+        // charge 1% to seller before transaction msg.value + fee (1%) - you can charge this in refund line 152+
+        uint256 transactionFee = housePriceInETH 
+
         // transfer the funds to the seller
-        offer.seller.transfer(offer.price);
+        offer.seller.transfer(housePriceInETH);
         //finalize by transfering the token/cat ownership
         _houseToken.transferFrom(offer.seller, msg.sender, _tokenId);
 
@@ -146,7 +154,6 @@ contract Marketplace is Ownable, Storage {
         if (msg.value > housePriceInETH){
             msg.sender.transfer(msg.value - housePriceInETH);
         }
-       
 
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
