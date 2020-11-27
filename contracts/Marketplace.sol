@@ -3,6 +3,7 @@
 pragma solidity ^0.6.10;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./Storage.sol";
 import "./tokens/HouseToken.sol";
 
@@ -36,6 +37,35 @@ interface AggregatorV3Interface {
 contract Marketplace is Ownable, Storage {
     HouseToken private _houseToken;
 
+    using SafeMath for uint256;
+
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a + b;
+        require(c >= a, "SafeMath: addition overflow");
+        return c;
+    }
+
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        require(b <= a, "SafeMath: subtraction overflow");
+        uint256 c = a - b;
+        return c;
+    }
+
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        if (a == 0) {
+            return 0;
+        }
+        uint256 c = a * b;
+        require(c / a == b, "SafeMath: multiplication overflow");
+        return c;
+    }
+
+    function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        require(b > 0, "SafeMath: division by zero");
+        uint256 c = a / b;
+        return c;
+    }
+    
     // using chainlink for realtime ETH/USD conversion -- @Dev this is TESTNET rinkeby!!
     AggregatorV3Interface internal priceFeedETH = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
 
@@ -119,34 +149,40 @@ contract Marketplace is Ownable, Storage {
 
     function buyHouse(uint256 _tokenId) public payable{
         Offer storage offer = tokenIdToOffer[_tokenId];      
-        /*
-        
-        use SAFEMATH for the claculations
-        
-        */ 
         require(offer.active == true, "House not for sale"); 
 
+        // get ETHUSD conversion
         (int256 currentEthPrice, uint256 updatedAt) = (getPrice());
 
          // check if the user sent enough ether according to the price of the housePrice
-        uint256 housePriceInETH = housePrice * 1 ether / uint256(currentEthPrice);
+        uint256 priceConversion = mul(offer.price, housePrice);
+        uint256 priceXETH = mul(priceConversion, 1 ether);
+        uint256 housePriceInETH = div(priceXETH, uint(currentEthPrice));
 
+        // set 1% transaction fee and make it house specific (MIGHT NOT BE WORKING)
+        uint256 txFee = div(1, 100);
+        uint256 houseTransactionFee = mul(txFee, housePriceInETH);
+
+        // convert offer price from USD to ETH and ensure enough funds are sent by buyer
         offer.price = housePriceInETH;
-        require(msg.value > housePriceInETH, "Price not matching"); //move this down and check eth price of home with sent
+        require(msg.value > housePriceInETH, "Price not matching");
 
         //price data should be fresher than 1 hour
-        require(updatedAt >= now - 1, "Data too old");
+        require(updatedAt >= now - 1 hours, "Data too old");
 
-        // charge 1% to seller before transaction msg.value + fee (1%) - you can charge this in refund line 152+
-        uint256 transactionFee = housePriceInETH 
+        // transfer the funds to the seller minus the 1% transaction fee
+        offer.seller.transfer(sub(housePriceInETH, houseTransactionFee));
 
-        // transfer the funds to the seller
-        offer.seller.transfer(housePriceInETH);
-        //finalize by transfering the token/cat ownership
+        // transfer fee to creator (NOT WORKING)
+        address payable creator = (0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95);
+        creator.transfer(houseTransactionFee);
+
+        //finalize by transfering token ownership
         _houseToken.transferFrom(offer.seller, msg.sender, _tokenId);
 
         // set the id to inactive
         offers[offer.index].active = false;
+
         // remove from mapping BEFORE transfer takes place to ensure there is no double sale
         delete tokenIdToOffer[_tokenId];
 
