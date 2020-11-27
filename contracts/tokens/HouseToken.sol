@@ -8,6 +8,12 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../Storage.sol";
 
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
+
+    uint public balance;    
+    uint256 public houseCounter;
+
+    mapping (uint256 => address) public houseIndexToApproved;
+
     constructor() public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
     }
 

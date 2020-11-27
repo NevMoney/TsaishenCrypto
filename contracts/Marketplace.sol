@@ -37,6 +37,18 @@ interface AggregatorV3Interface {
 contract Marketplace is Ownable, Storage {
     HouseToken private _houseToken;
 
+    struct Offer {
+        address payable seller;
+        uint256 price;
+        uint256 index;
+        uint256 tokenId;
+        bool active;
+    }
+
+    // store offer information
+    mapping(uint256 => Offer) public tokenIdToOffer;
+    Offer [] offers;
+
     using SafeMath for uint256;
 
     function add(uint256 a, uint256 b) internal pure returns (uint256) {

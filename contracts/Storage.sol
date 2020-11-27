@@ -9,42 +9,23 @@ contract Storage {
     mapping (string => string) _stringStorage;
     mapping (string => bytes4) _bytesStorage;
     
-    mapping (uint256 => address) public houseIndexToApproved;
-    
-
     // store house information
     mapping (uint256 => House) public houseInfo;
-
-    // store offer information
-    mapping(uint256 => Offer) public tokenIdToOffer;
 
     // store user information
     mapping(address => User) public userInfo;
     
-
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
 
     address public _owner;
     bool public _initialized;
-    uint public balance;
-
-    Offer [] offers;
+  
     User [] users;
-
-    uint256 public houseCounter;
 
     struct House {
         uint256 value;
         uint256 income;
-    }
-
-    struct Offer {
-        address payable seller;
-        uint256 price;
-        uint256 index;
-        uint256 tokenId;
-        bool active;
     }
 
     struct User {
