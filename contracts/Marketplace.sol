@@ -40,6 +40,7 @@ contract Marketplace is Ownable, Storage {
     struct Offer {
         address payable seller;
         uint256 price;
+        uint256 loan;
         uint256 index;
         uint256 tokenId;
         bool active;
@@ -48,6 +49,9 @@ contract Marketplace is Ownable, Storage {
     // store offer information
     mapping(uint256 => Offer) public tokenIdToOffer;
     Offer [] offers;
+
+    // set 1% transaction fee (MIGHT NOT BE WORKING)
+    uint256 txFee = div(1, 100);
 
     using SafeMath for uint256;
 
@@ -99,10 +103,10 @@ contract Marketplace is Ownable, Storage {
         _houseToken = HouseToken(_houseTokenAddress);
     }
         
-    function getOffer(uint256 _tokenId) public view returns (address seller, uint256 price, uint256 index, uint256 tokenId, bool active){
+    function getOffer(uint256 _tokenId) public view returns (address seller, uint256 price, uint256 loan, uint256 index, uint256 tokenId, bool active){
         Offer storage offer = tokenIdToOffer[_tokenId];//get the tokenId from the mapping
 
-        return (offer.seller, offer.price, offer.index, offer.tokenId, offer.active);//return details for that offer
+        return (offer.seller, offer.price, offer.loan, offer.index, offer.tokenId, offer.active);//return details for that offer
     }
 
     function getAllTokenOnSale() public view returns(uint256[] memory listOfOffers){
@@ -129,15 +133,16 @@ contract Marketplace is Ownable, Storage {
         return (_houseToken.ownerOf(_tokenId) == _address);
     }
 
-    function setOffer(uint256 _price, uint256 _tokenId) public {
+    function setSaleOffer(uint256 _price, uint256 _tokenId) public {
         require(_ownsHouse(msg.sender, _tokenId), "Seller not owner");
-        require(tokenIdToOffer[_tokenId].active == false, "House not for sale");
+        require(tokenIdToOffer[_tokenId].active == false, "House already listed");
         require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved");
 
         //create offer by inserting items into the array
         Offer memory _offer = Offer({
             seller: msg.sender,
             price: _price,
+            loan: 0,
             active: true,
             tokenId: _tokenId,
             index: offers.length
@@ -151,7 +156,7 @@ contract Marketplace is Ownable, Storage {
 
     function removeOffer(uint256 _tokenId) public{
         Offer storage offer = tokenIdToOffer[_tokenId]; //first access the offer
-        require(offer.seller == msg.sender, "Seller not owner"); //ensure owner only can do this
+        require(offer.seller == msg.sender, "Not an owner"); //ensure owner only can do this
 
         delete offers[offer.index]; //first delete the index within the array
         delete tokenIdToOffer[_tokenId]; //then remove the id from the mapping
@@ -159,7 +164,7 @@ contract Marketplace is Ownable, Storage {
         emit MarketTransaction("Offer removed", msg.sender, _tokenId);
     }
 
-    function buyHouse(uint256 _tokenId) public payable{
+    function buyHouse (uint256 _tokenId) public payable{
         Offer storage offer = tokenIdToOffer[_tokenId];      
         require(offer.active == true, "House not for sale"); 
 
@@ -171,8 +176,7 @@ contract Marketplace is Ownable, Storage {
         uint256 priceXETH = mul(priceConversion, 1 ether);
         uint256 housePriceInETH = div(priceXETH, uint(currentEthPrice));
 
-        // set 1% transaction fee and make it house specific (MIGHT NOT BE WORKING)
-        uint256 txFee = div(1, 100);
+        // make transaction fee house specific (MIGHT NOT BE WORKING)
         uint256 houseTransactionFee = mul(txFee, housePriceInETH);
 
         // convert offer price from USD to ETH and ensure enough funds are sent by buyer
@@ -206,9 +210,34 @@ contract Marketplace is Ownable, Storage {
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
 
-    // function for owner to borrow funds
-    function borrow(uint256 id) public {
-        houseInfo[id].value;
+    // internal borrow function to set parameters
+    function _loanAmount (uint256 _tokenId) internal returns (uint256 _loanMax) {
+        uint256 maxLTV = div(35, 100);
+        uint256 _loanMax = mul(houseInfo[id].value, maxLTV);
+        return _loanMax;
+    }
+
+    // function for owner to borrow funding
+    function borrowFunds (uint256 _loan, uint256 _tokenId) public {
+        require(_ownsHouse(msg.sender, _tokenId), "Seller not owner");
+        require(tokenIdToOffer[_tokenId].active == false, "House already listed");
+        require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved");
+
+        //create offer by inserting items into the array
+        Offer memory _offer = Offer({
+            seller: msg.sender,
+            price: houseInfo[id].value,
+            loan: _loan,
+            active: true,
+            tokenId: _tokenId,
+            index: offers.length
+        });
+      
         houseInfo[id].income;
+
+        tokenIdToOffer[_tokenId] = _offer; //add offer to the mapping
+        offers.push(_offer); //add to the offers array
+
+        emit MarketTransaction("Offer created", msg.sender, _tokenId);
     }
 }
