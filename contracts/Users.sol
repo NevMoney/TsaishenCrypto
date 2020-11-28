@@ -1,51 +1,54 @@
-// // SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 
-// pragma solidity 0.6.10;
+pragma solidity 0.6.10;
 
-// import "../CRUD.sol";
-// import "../Storage.sol";
+import "../CRUD.sol";
+import "../Storage.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-// contract Users is Ownable, Storage, CRUD {
+contract TsaishenUsers is Ownable, Storage {
+    using AddressSet for AddressSet.Set;
+    AddressSet.Set users;
 
-//     event userCreated(address user, bool active);
-//     event userDeleted(address user, bool active);
+    using UintSet for UintSet.Set;
 
-//     function _createUser(address _user) internal returns (address, uint256, uint256, bool){
-//         User memory _user = User({
-//         user: msg.sender,
-//         points: 25,
-//         index: users.length,
-//         active: true
-//         });
+    struct User {
+        string name;
+        string emailAddress;
+        uint256 cellPhone;
+        address payable user;
+        uint256 points;
+        uint256 index;
+        bool active;
+        House house;
+        UintSet.Set homes;
+    }    
 
-//         insertUser(_user);
+    event userAdded(address user, bool active);
+    event userDeleted(address user, bool active);
 
-//         // place users in array
-//         users.push(_user);
+    function addUser(address newUser) public{
+        users.insert(newUser);
 
-//         // add user to userInfo mapping
-//         // userInfo[msg.sender] = _user;
+        emit userAdded("New user added", msg.sender, true);
+    }
 
-//         emit userCreated(_user.address, _user.active);
-//     }
+    function isUser(address userToSearch) public view returns(bool){
+        return users.exsists(userToSearch);
+    }
 
-//     function insertUser(User memory newUser) public view returns(address, uint256, uint256, bool){
-//         address user = msg.sender;
-//         userInfo[user] = newUser;
-//     }
+    function deleteUser(address userToDelete) public{
+        users.remove(userToDelete);
 
-//     function inactivateUser(address user) public onlyOwner returns(address, bool){
-//         bool active = false;
-//         return(address user, bool active);
-//     }
+        emit userDeleted("User deleted", msg.sender, false);
+    }
 
-//     function deleteUser(address owner) internal onlyOwner{
-//         address user = userInfo[user].address;
-//         bool active = userInfo[user].active;
-//         delete userInfo[user];
-//         assert(userInfo[user].active == false);
-        
-//         emit userDeleted(user, active);
-//     }
+    function userAmount() public view returns(uint256){
+        return users.count();
+    }
 
-// }
+    function getAllUsers() public view returns(address[] memory){
+        return users.keyList;
+    }
+
+}

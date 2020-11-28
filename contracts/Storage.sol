@@ -21,18 +21,11 @@ contract Storage {
     address public _owner;
     bool public _initialized;
   
-    User [] users;
+    // User [] users;
 
     struct House {
         uint256 value;
         uint256 income;
-    }
-
-    struct User {
-        address payable user;
-        uint256 points;
-        uint256 index;
-        bool active;
     }
 
 }
