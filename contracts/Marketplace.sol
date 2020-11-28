@@ -50,42 +50,13 @@ contract Marketplace is Ownable, Storage {
     mapping(uint256 => Offer) public tokenIdToOffer;
     Offer [] offers;
 
-    // set 1% transaction fee (MIGHT NOT BE WORKING)
-    uint256 txFee = div(1, 100);
-
     using SafeMath for uint256;
-
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        uint256 c = a + b;
-        require(c >= a, "SafeMath: addition overflow");
-        return c;
-    }
-
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b <= a, "SafeMath: subtraction overflow");
-        uint256 c = a - b;
-        return c;
-    }
-
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a == 0) {
-            return 0;
-        }
-        uint256 c = a * b;
-        require(c / a == b, "SafeMath: multiplication overflow");
-        return c;
-    }
-
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b > 0, "SafeMath: division by zero");
-        uint256 c = a / b;
-        return c;
-    }
-    
+ 
     // using chainlink for realtime ETH/USD conversion -- @Dev this is TESTNET rinkeby!!
     AggregatorV3Interface internal priceFeedETH = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
 
     uint housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
+    uint256 txFee = 2; //2% transaction fee
 
     constructor(address _houseTokenAddress) public {
         setHouseToken(_houseTokenAddress);
@@ -171,27 +142,24 @@ contract Marketplace is Ownable, Storage {
         // get ETHUSD conversion
         (int256 currentEthPrice, uint256 updatedAt) = (getPrice());
 
-         // check if the user sent enough ether according to the price of the housePrice
-        uint256 priceConversion = mul(offer.price, housePrice);
-        uint256 priceXETH = mul(priceConversion, 1 ether);
-        uint256 housePriceInETH = div(priceXETH, uint(currentEthPrice));
+        // check if the user sent enough ether according to the price of the housePrice
+        uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
 
-        // make transaction fee house specific (MIGHT NOT BE WORKING)
-        uint256 houseTransactionFee = mul(txFee, housePriceInETH);
+        // make transaction fee house specific
+        uint256 houseTransactionFee = housePriceInETH.mul(txFee).div(100);
 
         // convert offer price from USD to ETH and ensure enough funds are sent by buyer
-        offer.price = housePriceInETH;
         require(msg.value > housePriceInETH, "Price not matching");
 
         //price data should be fresher than 1 hour
         require(updatedAt >= now - 1 hours, "Data too old");
 
-        // transfer the funds to the seller minus the 1% transaction fee
-        offer.seller.transfer(sub(housePriceInETH, houseTransactionFee));
-
-        // transfer fee to creator (NOT WORKING)
+        // transfer fee to creator
         address payable creator = (0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95);
         creator.transfer(houseTransactionFee);
+
+        // transfer proceeds to seller - txFee
+         offer.seller.transfer(housePriceInETH.sub(houseTransactionFee));
 
         //finalize by transfering token ownership
         _houseToken.transferFrom(offer.seller, msg.sender, _tokenId);
