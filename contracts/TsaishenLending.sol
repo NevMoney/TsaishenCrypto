@@ -87,7 +87,7 @@ import "./Marketplace.sol";
 //     // function for owner to borrow
 //     function borrowFunds (uint256 _loan, uint256 _tokenId) public {
 //         require(_ownsHouse(msg.sender, _tokenId), "Seller not owner");
-//         require(tokenIdToOffer[_tokenId].active == false, "House already listed");
+//         require(offerDetails[_tokenId].active == false, "House already listed");
 //         require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved");
 //         require(_loan <= _loanMax(_tokenId), "Loan cannot exceed 35% LTV");
 
@@ -102,7 +102,7 @@ import "./Marketplace.sol";
 //             index: offers.length
 //         });
 
-//         tokenIdToOffer[_tokenId] = _offer; //add offer to the mapping
+//         offerDetails[_tokenId] = _offer; //add offer to the mapping
 //         offers.push(_offer); //add to the offers array
 
 //         emit MarketTransaction("Loan requested", msg.sender, _tokenId);
@@ -110,7 +110,7 @@ import "./Marketplace.sol";
 
 //     //function to lend money
 //     function lendFunds (uint256 _tokenId) public payable{
-//         Offer storage offer = tokenIdToOffer[_tokenId];      
+//         Offer storage offer = offerDetails[_tokenId];      
 //         require(offer.active == true, "House not on market"); 
 
 //         // get ETHUSD conversion
@@ -143,7 +143,7 @@ import "./Marketplace.sol";
 //         offers[offer.index].active = false;
 
 //         // remove from mapping BEFORE transfer takes place to ensure there is no double dipping
-//         delete tokenIdToOffer[_tokenId];
+//         delete offerDetails[_tokenId];
 
 //         // refund user if sent more than the price
 //         if (msg.value > housePriceInETH){

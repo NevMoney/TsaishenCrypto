@@ -7,11 +7,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../Storage.sol";
 import "../CRUD.sol";
-import "../Users.sol";
+import "../TsaishenUsers.sol";
 
-contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
+contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage, TsaishenUsers {
     using UintSet for UintSet.Set;
-    // UintSet.Set offers;
+    UintSet.Set homes;
 
     constructor() public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
     }
@@ -20,6 +20,10 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         require(msg.value >= cost);
         _;
     }
+
+    uint public balance;    
+    uint256 public houseCounter;
+
 
     event Minted(address _owner, uint256 id, string tokenURI);
 
@@ -39,19 +43,6 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
             income: _income
         });
 
-        // User memory _user = User({
-        // user: msg.sender,
-        // points: 200,
-        // index: users.length,
-        // active: true
-        // });
-
-        // // place users in array
-        // users.push(_user);
-
-        // // add user to userInfo mapping
-        // userInfo[msg.sender] = _user;
-
         //places house in mapping and assigns ID
         houseInfo[_tokenIdTracker.current()] = _house;
 
@@ -60,6 +51,21 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         //mint new token, transfer to the owner with the house ID
         _mint(_owner, _tokenIdTracker.current());
         _tokenIdTracker.increment();
+
+        // add users and house info
+        User memory _user = User('', '', 0, msg.sender, _house, homes);
+        
+        // add user if new
+        if(isUser(msg.sender)!= true){
+            users.insert(msg.sender);
+        }
+        
+        // add house to user to get array of all homes user has THIS IS NOT WORKING!
+        userInfo[msg.sender].homes.insert(_tokenIdTracker.current());
+        addHome(_owner, _tokenIdTracker.current());
+        
+        // add user to userInfo mapping
+        userInfo[msg.sender] = _user;
 
         return _tokenIdTracker.current();
     }

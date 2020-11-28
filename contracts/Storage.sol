@@ -4,9 +4,8 @@ pragma solidity ^0.6.0;
 import "./CRUD.sol";
 
 contract Storage {
-
+    using AddressSet for AddressSet.Set;
     using UintSet for UintSet.Set;
-    // UintSet.Set offers;
 
     mapping (string => uint256) _uintStorage;
     mapping (string => address) _addressStorage;
@@ -20,18 +19,14 @@ contract Storage {
     address public _owner;
     bool public _initialized;
 
-    //houseToken Stuff
-    uint public balance;    
-    uint256 public houseCounter;
-
     struct House {
         uint256 value;
         uint256 income;
-        // UintSet.Set offers;
+        // UintSet.Set offerDetails;
     }
 
     mapping (uint256 => address) public houseIndexToApproved;
-    mapping (uint256 => House) public houseInfo;
+    mapping (uint256 => House) internal houseInfo;
 
     // marketplace & lending stuff
     struct Offer {
@@ -45,7 +40,20 @@ contract Storage {
     }
 
     // store offer information
-    mapping(uint256 => Offer) public tokenIdToOffer;
+    mapping(uint256 => Offer) internal offerDetails;
     Offer [] offers;
+
+    // user stuff
+    struct User {
+        string name;
+        string emailAddress;
+        uint256 cellPhone;
+        address payable user;
+        House house;
+        UintSet.Set homes;
+    }    
+
+    // store user information
+    mapping(address => User) internal userInfo;
 
 }

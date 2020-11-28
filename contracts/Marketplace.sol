@@ -46,7 +46,7 @@ contract Marketplace is Ownable, Storage {
     uint256 txFee = 2; //2% transaction fee
 
     constructor(address _houseTokenAddress) public {
-        _setHouseToken(_houseTokenAddress);
+        setHouseToken(_houseTokenAddress);
     }
 
     event MarketTransaction (string, address, uint);
@@ -57,7 +57,7 @@ contract Marketplace is Ownable, Storage {
         return (answer, updatedAt);
     }
 
-    function _setHouseToken(address _houseTokenAddress) internal onlyOwner {
+    function setHouseToken(address _houseTokenAddress) public onlyOwner {
         _houseToken = HouseToken(_houseTokenAddress);
     }
         
@@ -69,7 +69,7 @@ contract Marketplace is Ownable, Storage {
         uint256 index, 
         uint256 tokenId, 
         bool active) {
-        Offer storage offer = tokenIdToOffer[_tokenId];//get the tokenId from the mapping
+        Offer storage offer = offerDetails[_tokenId];//get the tokenId from the mapping
 
         //return details for that offer
         return 
@@ -108,7 +108,7 @@ contract Marketplace is Ownable, Storage {
 
     function sellHouse(uint256 _price, uint256 _tokenId) public {
         require(_ownsHouse(msg.sender, _tokenId), "Seller not owner");
-        require(tokenIdToOffer[_tokenId].active == false, "House already listed");
+        require(offerDetails[_tokenId].active == false, "House already listed");
         require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved");
 
         //create offer by inserting items into the array
@@ -122,24 +122,24 @@ contract Marketplace is Ownable, Storage {
             index: offers.length
         });
 
-        tokenIdToOffer[_tokenId] = _offer; //add offer to the mapping
+        offerDetails[_tokenId] = _offer; //add offer to the mapping
         offers.push(_offer); //add to the offers array
 
         emit MarketTransaction("House listed for sale", msg.sender, _tokenId);
     }
 
     function removeOffer(uint256 _tokenId) public {
-        Offer storage offer = tokenIdToOffer[_tokenId]; //first access the offer
+        Offer storage offer = offerDetails[_tokenId]; //first access the offer
         require(offer.seller == msg.sender, "Not an owner"); //ensure owner only can do this
 
         delete offers[offer.index]; //first delete the index within the array
-        delete tokenIdToOffer[_tokenId]; //then remove the id from the mapping
+        delete offerDetails[_tokenId]; //then remove the id from the mapping
 
         emit MarketTransaction("Offer removed", msg.sender, _tokenId);
     }
 
     function buyHouse (uint256 _tokenId) public payable {
-        Offer storage offer = tokenIdToOffer[_tokenId];      
+        Offer storage offer = offerDetails[_tokenId];      
         require(offer.active == true, "House not for sale"); 
 
         // get ETHUSD conversion
@@ -171,7 +171,7 @@ contract Marketplace is Ownable, Storage {
         offers[offer.index].active = false;
 
         // remove from mapping BEFORE transfer takes place to ensure there is no double sale
-        delete tokenIdToOffer[_tokenId];
+        delete offerDetails[_tokenId];
 
         // refund user if sent more than the price
         if (msg.value > housePriceInETH){

@@ -2232,7 +2232,7 @@ contract Storage {
     mapping (uint256 => House) public houseInfo;
 
     // store offer information
-    mapping(uint256 => Offer) public tokenIdToOffer;
+    mapping(uint256 => Offer) public offerDetails;
 
     // srote user information
     mapping(address => User) public users;
