@@ -24,8 +24,11 @@ contract TsaishenUsers is Ownable, Storage {
         UintSet.Set homes;
     }    
 
-    event userAdded(address user, bool active);
-    event userDeleted(address user, bool active);
+    // store user information
+    mapping(address => User) internal userInfo;
+
+    event userAdded(string, address user, bool active);
+    event userDeleted(string, address user, bool active);
 
     function addUser(address newUser) public{
         users.insert(newUser);
@@ -34,7 +37,7 @@ contract TsaishenUsers is Ownable, Storage {
     }
 
     function isUser(address userToSearch) public view returns(bool){
-        return users.exsists(userToSearch);
+        return users.exists(userToSearch);
     }
 
     function deleteUser(address userToDelete) public{

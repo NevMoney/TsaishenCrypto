@@ -2,8 +2,6 @@
 
 pragma solidity ^0.6.10;
 
-import "./tokens/HouseToken.sol";
-
 /*
 This contract is needed for lending/borrowing.
 
@@ -57,7 +55,128 @@ simply share the risks on the website, so that each user can make their
 own educated decision.
 */
 
-// contract TsaishenLending {
-//     // lendingCap function, 35% of the equity, 6 months of income, or combo
-//     // crowdFunding function, allowing for multiple users to lend up to cap
-// }
+// lendingCap function, 35% of the equity, 6 months of income, or combo
+// crowdFunding function, allowing for multiple users to lend up to cap
+
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./Storage.sol";
+import "./tokens/HouseToken.sol";
+import "./Marketplace.sol";
+
+interface AggregatorV3Interface {
+
+  function decimals() external view returns (uint8);
+  function description() external view returns (string memory);
+  function version() external view returns (uint256);
+
+  // getRoundData and latestRoundData should both raise "No data present"
+  // if they do not have data to report, instead of returning unset values
+  // which could be misinterpreted as actual reported values.
+  function getRoundData(uint80 _roundId) external view returns (
+      uint80 roundId,
+      int256 answer,
+      uint256 startedAt,
+      uint256 updatedAt,
+      uint80 answeredInRound
+    );
+
+  function latestRoundData() external view returns (
+      uint80 roundId,
+      int256 answer,
+      uint256 startedAt,
+      uint256 updatedAt,
+      uint80 answeredInRound
+    );
+
+}
+
+contract TsaishenLending is Ownable, Storage, Marketplace {
+    HouseToken private _houseToken;
+
+    using SafeMath for uint256;
+
+    uint256 txFee = 2; //2% transaction fee
+
+    constructor(address _houseTokenAddress) public {
+        setHouseToken(_houseTokenAddress);
+    }
+
+    event MarketTransaction (string, address, uint);
+
+    // internal borrow function to set parameters
+    function _loanAmount (uint256 _tokenId) internal returns (uint256 _loanMax) {
+        uint256 maxLTV = 35; //35% is max one can borrow
+        uint256 _loanMax = houseInfo[id].value.mul(maxLTV);
+        return _loanMax;
+    }
+
+    // function for owner to borrow
+    function borrowFunds (uint256 _loan, uint256 _tokenId) public {
+        require(_ownsHouse(msg.sender, _tokenId), "Seller not owner");
+        require(tokenIdToOffer[_tokenId].active == false, "House already listed");
+        require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved");
+        require(_loan <= _loanMax[_tokenId], "Loan cannot exceed 35% LTV");
+
+        //create offer by inserting items into the array
+        Offer memory _offer = Offer({
+            seller: msg.sender,
+            price: houseInfo[id].value,
+            income: houseInfo[id].income,
+            loan: _loan,
+            active: true,
+            tokenId: _tokenId,
+            index: offers.length
+        });
+
+        tokenIdToOffer[_tokenId] = _offer; //add offer to the mapping
+        offers.push(_offer); //add to the offers array
+
+        emit MarketTransaction("Loan requested", msg.sender, _tokenId);
+    }
+
+    //function to lend money
+    function lendFunds (uint256 _tokenId) public payable{
+        Offer storage offer = tokenIdToOffer[_tokenId];      
+        require(offer.active == true, "House not on market"); 
+
+        // get ETHUSD conversion
+        (int256 currentEthPrice, uint256 updatedAt) = (getPrice());
+
+        // check if the user sent enough ether according to the price of the housePrice
+        uint256 housePriceInETH = offer.loan.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
+
+        // make transaction fee house specific
+        uint256 houseTransactionFee = housePriceInETH.mul(txFee).div(100);
+
+        // convert offer price from USD to ETH and ensure enough funds are sent by buyer
+        require(msg.value > housePriceInETH, "Price not matching");
+
+        //price data should be fresher than 1 hour
+        require(updatedAt >= now - 1 hours, "Data too old");
+
+        // transfer fee to creator
+        address payable creator = (0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95);
+        creator.transfer(houseTransactionFee);
+
+        // transfer proceeds to seller - txFee
+         offer.seller.transfer(housePriceInETH.sub(houseTransactionFee));
+
+        // THIS NEEDS TO BE REWORKED - have to transfer only 35% of the token
+        //finalize by transfering token ownership
+        _houseToken.transferFrom(offer.seller, msg.sender, _tokenId);
+
+        // set the id to inactive
+        offers[offer.index].active = false;
+
+        // remove from mapping BEFORE transfer takes place to ensure there is no double dipping
+        delete tokenIdToOffer[_tokenId];
+
+        // refund user if sent more than the price
+        if (msg.value > housePriceInETH){
+            msg.sender.transfer(msg.value - housePriceInETH);
+        }
+
+        emit MarketTransaction("Loan funded", msg.sender, _tokenId);
+    }
+}
