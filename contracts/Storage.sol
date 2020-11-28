@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 
+import "./CRUD.sol";
+
 contract Storage {
+
+    using UintSet for UintSet.Set;
+    // UintSet.Set offers;
 
     mapping (string => uint256) _uintStorage;
     mapping (string => address) _addressStorage;
@@ -15,6 +20,20 @@ contract Storage {
     address public _owner;
     bool public _initialized;
 
+    //houseToken Stuff
+    uint public balance;    
+    uint256 public houseCounter;
+
+    struct House {
+        uint256 value;
+        uint256 income;
+        // UintSet.Set offers;
+    }
+
+    mapping (uint256 => address) public houseIndexToApproved;
+    mapping (uint256 => House) public houseInfo;
+
+    // marketplace & lending stuff
     struct Offer {
         address payable seller;
         uint256 price;

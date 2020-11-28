@@ -46,7 +46,7 @@ contract Marketplace is Ownable, Storage {
     uint256 txFee = 2; //2% transaction fee
 
     constructor(address _houseTokenAddress) public {
-        setHouseToken(_houseTokenAddress);
+        _setHouseToken(_houseTokenAddress);
     }
 
     event MarketTransaction (string, address, uint);
@@ -115,7 +115,7 @@ contract Marketplace is Ownable, Storage {
         Offer memory _offer = Offer({
             seller: msg.sender,
             price: _price,
-            income: houseInfo[id].income,
+            income: houseInfo[_tokenId].income,
             loan: 0,
             active: true,
             tokenId: _tokenId,

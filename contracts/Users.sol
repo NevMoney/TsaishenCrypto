@@ -2,8 +2,8 @@
 
 pragma solidity 0.6.10;
 
-import "../CRUD.sol";
-import "../Storage.sol";
+import "./CRUD.sol";
+import "./Storage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract TsaishenUsers is Ownable, Storage {
@@ -20,7 +20,7 @@ contract TsaishenUsers is Ownable, Storage {
         uint256 points;
         uint256 index;
         bool active;
-        House house;
+        // House house;
         UintSet.Set homes;
     }    
 

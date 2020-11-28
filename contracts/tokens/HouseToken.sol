@@ -7,24 +7,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../Storage.sol";
 import "../CRUD.sol";
+import "../Users.sol";
 
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
     using UintSet for UintSet.Set;
     // UintSet.Set offers;
-
-    uint public balance;    
-    uint256 public houseCounter;
-
-    struct House {
-        uint256 value;
-        uint256 income;
-        UintSet.Set offers;
-    }
-
-    mapping (uint256 => address) public houseIndexToApproved;
-    
-    // store house information
-    mapping (uint256 => House) public houseInfo;
 
     constructor() public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
     }
@@ -52,18 +39,18 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
             income: _income
         });
 
-        User memory _user = User({
-        user: msg.sender,
-        points: 200,
-        index: users.length,
-        active: true
-        });
+        // User memory _user = User({
+        // user: msg.sender,
+        // points: 200,
+        // index: users.length,
+        // active: true
+        // });
 
-        // place users in array
-        users.push(_user);
+        // // place users in array
+        // users.push(_user);
 
-        // add user to userInfo mapping
-        userInfo[msg.sender] = _user;
+        // // add user to userInfo mapping
+        // userInfo[msg.sender] = _user;
 
         //places house in mapping and assigns ID
         houseInfo[_tokenIdTracker.current()] = _house;
