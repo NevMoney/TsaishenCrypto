@@ -1,3 +1,5 @@
+// File: node_modules\@openzeppelin\contracts\GSN\Context.sol
+
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
@@ -25,7 +27,7 @@ abstract contract Context {
 
 // File: @openzeppelin\contracts\access\Ownable.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -93,12 +95,355 @@ contract Ownable is Context {
     }
 }
 
-// File: contracts\Storage.sol
+// File: @openzeppelin\contracts\math\SafeMath.sol
 
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
+/**
+ * @dev Wrappers over Solidity's arithmetic operations with added overflow
+ * checks.
+ *
+ * Arithmetic operations in Solidity wrap on overflow. This can easily result
+ * in bugs, because programmers usually assume that an overflow raises an
+ * error, which is the standard behavior in high level programming languages.
+ * `SafeMath` restores this intuition by reverting the transaction when an
+ * operation overflows.
+ *
+ * Using this library instead of the unchecked operations eliminates an entire
+ * class of bugs, so it's recommended to use it always.
+ */
+library SafeMath {
+    /**
+     * @dev Returns the addition of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `+` operator.
+     *
+     * Requirements:
+     *
+     * - Addition cannot overflow.
+     */
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a + b;
+        require(c >= a, "SafeMath: addition overflow");
+
+        return c;
+    }
+
+    /**
+     * @dev Returns the subtraction of two unsigned integers, reverting on
+     * overflow (when the result is negative).
+     *
+     * Counterpart to Solidity's `-` operator.
+     *
+     * Requirements:
+     *
+     * - Subtraction cannot overflow.
+     */
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        return sub(a, b, "SafeMath: subtraction overflow");
+    }
+
+    /**
+     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
+     * overflow (when the result is negative).
+     *
+     * Counterpart to Solidity's `-` operator.
+     *
+     * Requirements:
+     *
+     * - Subtraction cannot overflow.
+     */
+    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        require(b <= a, errorMessage);
+        uint256 c = a - b;
+
+        return c;
+    }
+
+    /**
+     * @dev Returns the multiplication of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `*` operator.
+     *
+     * Requirements:
+     *
+     * - Multiplication cannot overflow.
+     */
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
+        // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
+        if (a == 0) {
+            return 0;
+        }
+
+        uint256 c = a * b;
+        require(c / a == b, "SafeMath: multiplication overflow");
+
+        return c;
+    }
+
+    /**
+     * @dev Returns the integer division of two unsigned integers. Reverts on
+     * division by zero. The result is rounded towards zero.
+     *
+     * Counterpart to Solidity's `/` operator. Note: this function uses a
+     * `revert` opcode (which leaves remaining gas untouched) while Solidity
+     * uses an invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        return div(a, b, "SafeMath: division by zero");
+    }
+
+    /**
+     * @dev Returns the integer division of two unsigned integers. Reverts with custom message on
+     * division by zero. The result is rounded towards zero.
+     *
+     * Counterpart to Solidity's `/` operator. Note: this function uses a
+     * `revert` opcode (which leaves remaining gas untouched) while Solidity
+     * uses an invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        require(b > 0, errorMessage);
+        uint256 c = a / b;
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+
+        return c;
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
+     * Reverts when dividing by zero.
+     *
+     * Counterpart to Solidity's `%` operator. This function uses a `revert`
+     * opcode (which leaves remaining gas untouched) while Solidity uses an
+     * invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+        return mod(a, b, "SafeMath: modulo by zero");
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
+     * Reverts with custom message when dividing by zero.
+     *
+     * Counterpart to Solidity's `%` operator. This function uses a `revert`
+     * opcode (which leaves remaining gas untouched) while Solidity uses an
+     * invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        require(b != 0, errorMessage);
+        return a % b;
+    }
+}
+
+// File: contracts\CRUD.sol
+
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.6.0;
+
+/*
+Hitchens UnorderedAddressSet v0.93
+Library for managing CRUD operations in dynamic address sets.
+https://github.com/rob-Hitchens/UnorderedKeySet
+Copyright (c), 2019, Rob Hitchens, the MIT License
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+THIS SOFTWARE IS NOT TESTED OR AUDITED. DO NOT USE FOR PRODUCTION.
+*/
+
+/**
+ * @notice Key sets with enumeration and delete. Uses mappings for random
+ * and existence checks and dynamic arrays for enumeration. Key uniqueness is enforced. 
+ * @dev Sets are unordered. Delete operations reorder keys. All operations have a 
+ * fixed gas cost at any scale, O(1). 
+ * author: Rob Hitchens
+ */
+
+library AddressSet {
+    
+    struct Set {
+        mapping(address => uint) keyPointers;
+        address[] keyList;
+    }
+
+    /**
+     * @notice insert a key. 
+     * @dev duplicate keys are not permitted.
+     * @param self storage pointer to a Set. 
+     * @param key value to insert.
+     */    
+    function insert(Set storage self, address key) internal {
+        require(!exists(self, key), "AddressSet: key already exists in the set.");
+        self.keyList.push(key);
+        self.keyPointers[key] = self.keyList.length -1;
+    }
+
+    /**
+     * @notice remove a key.
+     * @dev key to remove must exist. 
+     * @param self storage pointer to a Set.
+     * @param key value to remove.
+     */    
+    function remove(Set storage self, address key) internal {
+        require(exists(self, key), "AddressSet: key does not exist in the set.");
+        uint last = count(self) - 1;
+        uint rowToReplace = self.keyPointers[key];
+        if(rowToReplace != last) {
+            address keyToMove = self.keyList[last];
+            self.keyPointers[keyToMove] = rowToReplace;
+            self.keyList[rowToReplace] = keyToMove;
+        }
+        delete self.keyPointers[key];
+        self.keyList.pop();
+    }
+
+    /**
+     * @notice count the keys.
+     * @param self storage pointer to a Set. 
+     */       
+    function count(Set storage self) internal view returns(uint) {
+        return(self.keyList.length);
+    }
+
+    /**
+     * @notice check if a key is in the Set.
+     * @param self storage pointer to a Set.
+     * @param key value to check. 
+     * @return bool true: Set member, false: not a Set member.
+     */  
+    function exists(Set storage self, address key) internal view returns(bool) {
+        if(self.keyList.length == 0) return false;
+        return self.keyList[self.keyPointers[key]] == key;
+    }
+
+    /**
+     * @notice fetch a key by row (enumerate).
+     * @param self storage pointer to a Set.
+     * @param index row to enumerate. Must be < count() - 1.
+     */      
+    function keyAtIndex(Set storage self, uint index) internal view returns(address) {
+        return self.keyList[index];
+    }
+}
+
+/**
+ * @notice Key sets with enumeration and delete. Uses mappings for random
+ * and existence checks and dynamic arrays for enumeration. Key uniqueness is enforced. 
+ * @dev Sets are unordered. Delete operations reorder keys. All operations have a 
+ * fixed gas cost at any scale, O(1). 
+ * author: Rob Hitchens
+ */
+
+library UintSet {
+    
+    struct Set {
+        mapping(uint => uint) keyPointers;
+        uint[] keyList;
+    }
+
+    /**
+     * @notice insert a key. 
+     * @dev duplicate keys are not permitted.
+     * @param self storage pointer to a Set. 
+     * @param key value to insert.
+     */       
+    function insert(Set storage self, uint key) internal {
+        require(!exists(self, key), "UintSet: key already exists in the set.");
+        self.keyList.push(key);
+        self.keyPointers[key] = self.keyList.length -1;
+    }
+
+    /**
+     * @notice remove a key.
+     * @dev key to remove must exist. 
+     * @param self storage pointer to a Set.
+     * @param key value to remove.
+     */  
+    function remove(Set storage self, uint key) internal {
+        require(exists(self, key), "UintSet: key does not exist in the set.");
+        uint last = count(self) - 1;
+        uint rowToReplace = self.keyPointers[key];        
+        if(rowToReplace != last) {
+            uint keyToMove = self.keyList[last];
+            self.keyPointers[keyToMove] = rowToReplace;
+            self.keyList[rowToReplace] = keyToMove;
+        }
+        delete self.keyPointers[key];
+        self.keyList.pop();
+    }
+
+    /**
+     * @notice count the keys.
+     * @param self storage pointer to a Set. 
+     */   
+    function count(Set storage self) internal view returns(uint) {
+        return(self.keyList.length);
+    }
+
+    /**
+     * @notice check if a key is in the Set.
+     * @param self storage pointer to a Set.
+     * @param key value to check. 
+     * @return bool true: Set member, false: not a Set member.
+     */  
+    function exists(Set storage self, uint key) internal view returns(bool) {
+        if(self.keyList.length == 0) return false;
+        return self.keyList[self.keyPointers[key]] == key;
+    }
+
+    /**
+     * @notice fetch a key by row (enumerate).
+     * @param self storage pointer to a Set.
+     * @param index row to enumerate. Must be < count() - 1.
+     */      
+    function keyAtIndex(Set storage self, uint index) internal view returns(uint) {
+        return self.keyList[index];
+    }
+}
+
+// File: contracts\Storage.sol
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
 contract Storage {
+    using AddressSet for AddressSet.Set;
+    using UintSet for UintSet.Set;
 
     mapping (string => uint256) _uintStorage;
     mapping (string => address) _addressStorage;
@@ -106,55 +451,54 @@ contract Storage {
     mapping (string => string) _stringStorage;
     mapping (string => bytes4) _bytesStorage;
     
-    mapping (uint256 => address) public houseIndexToApproved;
-    
-
-    // store house information
-    mapping (uint256 => House) public houseInfo;
-
-    // store offer information
-    mapping(uint256 => Offer) public offerDetails;
-
-    // srote user information
-    mapping(address => User) public users;
-    
-
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
 
     address public _owner;
     bool public _initialized;
-    uint public balance;
-
-    Offer [] offers;
-
-    uint256 public houseCounter;
 
     struct House {
         uint256 value;
         uint256 income;
+        // UintSet.Set offerDetails;
     }
 
+    mapping (uint256 => address) public houseIndexToApproved;
+    mapping (uint256 => House) internal houseInfo;
+
+    // marketplace & lending stuff
     struct Offer {
         address payable seller;
         uint256 price;
+        uint256 income;
+        uint256 loan;
         uint256 index;
         uint256 tokenId;
         bool active;
     }
 
+    // store offer information
+    mapping(uint256 => Offer) internal offerDetails;
+    Offer [] offers;
+
+    // user stuff
     struct User {
+        string name;
+        string emailAddress;
+        uint256 cellPhone;
         address payable user;
-        uint256 reward;
-        uint256 index;
-        bool active;
-    }
+        House house;
+        UintSet.Set homes;
+    }    
+
+    // store user information
+    mapping(address => User) internal userInfo;
 
 }
 
 // File: node_modules\@openzeppelin\contracts\utils\EnumerableSet.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -400,7 +744,7 @@ library EnumerableSet {
 
 // File: node_modules\@openzeppelin\contracts\utils\Address.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.2;
 
@@ -544,7 +888,7 @@ library Address {
 
 // File: node_modules\@openzeppelin\contracts\access\AccessControl.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -763,7 +1107,7 @@ abstract contract AccessControl is Context {
 
 // File: node_modules\@openzeppelin\contracts\math\SafeMath.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -925,7 +1269,7 @@ library SafeMath {
 
 // File: node_modules\@openzeppelin\contracts\utils\Counters.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -967,7 +1311,7 @@ library Counters {
 
 // File: node_modules\@openzeppelin\contracts\introspection\IERC165.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -994,7 +1338,7 @@ interface IERC165 {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.2;
 
@@ -1125,7 +1469,7 @@ interface IERC721 is IERC165 {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721Metadata.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.2;
 
@@ -1154,7 +1498,7 @@ interface IERC721Metadata is IERC721 {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721Enumerable.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.2;
 
@@ -1185,7 +1529,7 @@ interface IERC721Enumerable is IERC721 {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721Receiver.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -1210,7 +1554,7 @@ interface IERC721Receiver {
 
 // File: node_modules\@openzeppelin\contracts\introspection\ERC165.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -1266,7 +1610,7 @@ contract ERC165 is IERC165 {
 
 // File: node_modules\@openzeppelin\contracts\utils\EnumerableMap.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -1506,7 +1850,7 @@ library EnumerableMap {
 
 // File: node_modules\@openzeppelin\contracts\utils\Strings.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -1543,7 +1887,7 @@ library Strings {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\ERC721.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -2018,7 +2362,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\ERC721Burnable.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -2045,7 +2389,7 @@ abstract contract ERC721Burnable is Context, ERC721 {
 
 // File: node_modules\@openzeppelin\contracts\utils\Pausable.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -2137,7 +2481,7 @@ contract Pausable is Context {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\ERC721Pausable.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -2167,7 +2511,7 @@ abstract contract ERC721Pausable is ERC721, Pausable {
 
 // File: @openzeppelin\contracts\presets\ERC721PresetMinterPauserAutoId.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -2269,16 +2613,136 @@ contract ERC721PresetMinterPauserAutoId is Context, AccessControl, ERC721Burnabl
     }
 }
 
-// File: contracts\tokens\HouseToken.sol
+// File: @openzeppelin\contracts\utils\ReentrancyGuard.sol
 
+// SPDX-License-Identifier: MIT
 
+pragma solidity ^0.6.0;
+
+/**
+ * @dev Contract module that helps prevent reentrant calls to a function.
+ *
+ * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
+ * available, which can be applied to functions to make sure there are no nested
+ * (reentrant) calls to them.
+ *
+ * Note that because there is a single `nonReentrant` guard, functions marked as
+ * `nonReentrant` may not call one another. This can be worked around by making
+ * those functions `private`, and then adding `external` `nonReentrant` entry
+ * points to them.
+ *
+ * TIP: If you would like to learn more about reentrancy and alternative ways
+ * to protect against it, check out our blog post
+ * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
+ */
+contract ReentrancyGuard {
+    // Booleans are more expensive than uint256 or any type that takes up a full
+    // word because each write operation emits an extra SLOAD to first read the
+    // slot's contents, replace the bits taken up by the boolean, and then write
+    // back. This is the compiler's defense against contract upgrades and
+    // pointer aliasing, and it cannot be disabled.
+
+    // The values being non-zero value makes deployment a bit more expensive,
+    // but in exchange the refund on every call to nonReentrant will be lower in
+    // amount. Since refunds are capped to a percentage of the total
+    // transaction's gas, it is best to keep them low in cases like this one, to
+    // increase the likelihood of the full refund coming into effect.
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+
+    uint256 private _status;
+
+    constructor () internal {
+        _status = _NOT_ENTERED;
+    }
+
+    /**
+     * @dev Prevents a contract from calling itself, directly or indirectly.
+     * Calling a `nonReentrant` function from another `nonReentrant`
+     * function is not supported. It is possible to prevent this from happening
+     * by making the `nonReentrant` function external, and make it call a
+     * `private` function that does the actual work.
+     */
+    modifier nonReentrant() {
+        // On the first call to nonReentrant, _notEntered will be true
+        require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+
+        // Any calls to nonReentrant after this point will fail
+        _status = _ENTERED;
+
+        _;
+
+        // By storing the original value once again, a refund is triggered (see
+        // https://eips.ethereum.org/EIPS/eip-2200)
+        _status = _NOT_ENTERED;
+    }
+}
+
+// File: contracts\TsaishenUsers.sol
+
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.6.10;
 
+// import "./CRUD.sol";
 
+contract TsaishenUsers is Ownable, Storage {
+    using AddressSet for AddressSet.Set;
+    AddressSet.Set users;
 
+    using UintSet for UintSet.Set;
 
-contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
+    event userAdded(string, address user, bool active);
+    event userDeleted(string, address user, bool active);
+
+    function addUser (string memory _name, string memory _email, uint _phone) public onlyOwner {
+        UintSet.Set memory _homes;
+        Storage.House memory _House;
+        userInfo[msg.sender] = User(_name, _email, _phone, msg.sender, _House, _homes);
+        users.insert(msg.sender);
+
+        emit userAdded("New user added", msg.sender, true);
+    }
+
+    // this MUST be internal once testing/debuging done!
+    function addHome (address _user, uint homeId) public onlyOwner {
+        userInfo[_user].homes.insert(homeId);
+    }
+
+    function getUserHomes (address _user) public view returns (uint[] memory){
+        return userInfo[_user].homes.keyList;
+    }
+
+    function isUser(address userToSearch) public view returns(bool){
+        return users.exists(userToSearch);
+    }
+
+    function deleteUser(address userToDelete) public onlyOwner {
+        users.remove(userToDelete);
+
+        emit userDeleted("User deleted", msg.sender, false);
+    }
+
+    function userCount() public view returns(uint256){
+        return users.count();
+    }
+
+    function getAllUsers() public view returns(address[] memory) {
+        return users.keyList;
+    }
+
+}
+
+// File: contracts\tokens\HouseToken.sol
+
+// SPDX-License-Identifier: MIT
+
+pragma solidity 0.6.10;
+
+contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage, TsaishenUsers {
+    using UintSet for UintSet.Set;
+    UintSet.Set homes;
+
     constructor() public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
     }
 
@@ -2286,6 +2750,10 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         require(msg.value >= cost);
         _;
     }
+
+    uint public balance;    
+    uint256 public houseCounter;
+
 
     event Minted(address _owner, uint256 id, string tokenURI);
 
@@ -2314,6 +2782,21 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         _mint(_owner, _tokenIdTracker.current());
         _tokenIdTracker.increment();
 
+        // add users and house info
+        User memory _user = User('', '', 0, msg.sender, _house, homes);
+        
+        // add user if new
+        if(isUser(msg.sender)!= true){
+            users.insert(msg.sender);
+        }
+        
+        // add house to user to get array of all homes user has THIS IS NOT WORKING!
+        userInfo[msg.sender].homes.insert(_tokenIdTracker.current());
+        addHome(_owner, _tokenIdTracker.current());
+        
+        // add user to userInfo mapping
+        userInfo[msg.sender] = _user;
+
         return _tokenIdTracker.current();
     }
 
@@ -2323,18 +2806,21 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage {
         income = houseInfo[_id].income;
         uri = tokenURI(_id);
     }
+
+    function withdrawAll() public onlyOwner returns(uint){
+        uint toTransfer = balance;
+        balance = 0;
+        msg.sender.transfer(toTransfer);
+        return toTransfer;
+    }
+
 }
 
 // File: contracts\Marketplace.sol
 
+// SPDX-License-Identifier: MIT
 
-
-pragma solidity ^0.6.10;
-
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "./Storage.sol";
-import "./tokens/HouseToken.sol";
+pragma solidity ^0.6.10;
 
 interface AggregatorV3Interface {
 
@@ -2367,38 +2853,12 @@ contract Marketplace is Ownable, Storage {
     HouseToken private _houseToken;
 
     using SafeMath for uint256;
-
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        uint256 c = a + b;
-        require(c >= a, "SafeMath: addition overflow");
-        return c;
-    }
-
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b <= a, "SafeMath: subtraction overflow");
-        uint256 c = a - b;
-        return c;
-    }
-
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a == 0) {
-            return 0;
-        }
-        uint256 c = a * b;
-        require(c / a == b, "SafeMath: multiplication overflow");
-        return c;
-    }
-
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b > 0, "SafeMath: division by zero");
-        uint256 c = a / b;
-        return c;
-    }
-    
+ 
     // using chainlink for realtime ETH/USD conversion -- @Dev this is TESTNET rinkeby!!
     AggregatorV3Interface internal priceFeedETH = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
 
     uint housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
+    uint256 txFee = 2; //2% transaction fee
 
     constructor(address _houseTokenAddress) public {
         setHouseToken(_houseTokenAddress);
@@ -2407,22 +2867,37 @@ contract Marketplace is Ownable, Storage {
     event MarketTransaction (string, address, uint);
 
     // @notice get latest ETH/USD price from Chainlink
-    function getPrice() public view returns (int256, uint256){
+    function getPrice() public view returns (int256, uint256) {
         (, int256 answer, , uint256 updatedAt, ) = priceFeedETH.latestRoundData();
         return (answer, updatedAt);
     }
 
-    function setHouseToken(address _houseTokenAddress) public onlyOwner{
+    function setHouseToken(address _houseTokenAddress) public onlyOwner {
         _houseToken = HouseToken(_houseTokenAddress);
     }
         
-    function getOffer(uint256 _tokenId) public view returns (address seller, uint256 price, uint256 index, uint256 tokenId, bool active){
+    function getOffer(uint256 _tokenId) public view returns 
+        (address seller, 
+        uint256 price, 
+        uint256 income, 
+        uint256 loan, 
+        uint256 index, 
+        uint256 tokenId, 
+        bool active) {
         Offer storage offer = offerDetails[_tokenId];//get the tokenId from the mapping
 
-        return (offer.seller, offer.price, offer.index, offer.tokenId, offer.active);//return details for that offer
+        //return details for that offer
+        return 
+        (offer.seller, 
+        offer.price, 
+        offer.income, 
+        offer.loan, 
+        offer.index, 
+        offer.tokenId, 
+        offer.active); 
     }
 
-    function getAllTokenOnSale() public view returns(uint256[] memory listOfOffers){
+    function getAllTokenOnSale() public view returns(uint256[] memory listOfOffers) {
         uint256 forSaleList = offers.length;//this gives us the length of the offers array
 
         if(forSaleList == 0) {
@@ -2442,19 +2917,21 @@ contract Marketplace is Ownable, Storage {
     }
 
     //internal function to verify that particular address owns particular tokenID
-    function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool){
+    function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool) {
         return (_houseToken.ownerOf(_tokenId) == _address);
     }
 
-    function setOffer(uint256 _price, uint256 _tokenId) public {
+    function sellHouse(uint256 _price, uint256 _tokenId) public {
         require(_ownsHouse(msg.sender, _tokenId), "Seller not owner");
-        require(offerDetails[_tokenId].active == false, "House not for sale");
+        require(offerDetails[_tokenId].active == false, "House already listed");
         require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved");
 
         //create offer by inserting items into the array
         Offer memory _offer = Offer({
             seller: msg.sender,
             price: _price,
+            income: houseInfo[_tokenId].income,
+            loan: 0,
             active: true,
             tokenId: _tokenId,
             index: offers.length
@@ -2463,12 +2940,12 @@ contract Marketplace is Ownable, Storage {
         offerDetails[_tokenId] = _offer; //add offer to the mapping
         offers.push(_offer); //add to the offers array
 
-        emit MarketTransaction("Offer created", msg.sender, _tokenId);
+        emit MarketTransaction("House listed for sale", msg.sender, _tokenId);
     }
 
-    function removeOffer(uint256 _tokenId) public{
+    function removeOffer(uint256 _tokenId) public {
         Offer storage offer = offerDetails[_tokenId]; //first access the offer
-        require(offer.seller == msg.sender, "Seller not owner"); //ensure owner only can do this
+        require(offer.seller == msg.sender, "Not an owner"); //ensure owner only can do this
 
         delete offers[offer.index]; //first delete the index within the array
         delete offerDetails[_tokenId]; //then remove the id from the mapping
@@ -2476,34 +2953,31 @@ contract Marketplace is Ownable, Storage {
         emit MarketTransaction("Offer removed", msg.sender, _tokenId);
     }
 
-    function buyHouse(uint256 _tokenId) public payable{
+    function buyHouse (uint256 _tokenId) public payable {
         Offer storage offer = offerDetails[_tokenId];      
         require(offer.active == true, "House not for sale"); 
 
         // get ETHUSD conversion
         (int256 currentEthPrice, uint256 updatedAt) = (getPrice());
 
-         // check if the user sent enough ether according to the price of the housePrice
-        uint256 priceXETH = mul(housePrice, 1 ether);
-        uint256 housePriceInETH = div(priceXETH, uint(currentEthPrice));
+        // check if the user sent enough ether according to the price of the housePrice
+        uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
 
-        // set 1% transaction fee and make it house specific
-        uint256 txFee = div(1, 100);
-        uint256 houseTransactionFee = mul(txFee, housePriceInETH);
+        // make transaction fee house specific
+        uint256 houseTransactionFee = housePriceInETH.mul(txFee).div(100);
 
         // convert offer price from USD to ETH and ensure enough funds are sent by buyer
-        offer.price = housePriceInETH;
         require(msg.value > housePriceInETH, "Price not matching");
 
         //price data should be fresher than 1 hour
         require(updatedAt >= now - 1 hours, "Data too old");
 
-        // transfer the funds to the seller minus the 1% transaction fee
-        offer.seller.transfer(sub(housePriceInETH, houseTransactionFee));
-
         // transfer fee to creator
         address payable creator = (0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95);
         creator.transfer(houseTransactionFee);
+
+        // transfer proceeds to seller - txFee
+         offer.seller.transfer(housePriceInETH.sub(houseTransactionFee));
 
         //finalize by transfering token ownership
         _houseToken.transferFrom(offer.seller, msg.sender, _tokenId);
@@ -2522,9 +2996,4 @@ contract Marketplace is Ownable, Storage {
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
 
-    // function for owner to borrow funds
-    function borrow(uint256 id) public {
-        houseInfo[id].value;
-        houseInfo[id].income;
-    }
 }
