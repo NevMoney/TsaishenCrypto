@@ -246,7 +246,7 @@ library EnumerableSet {
 
 // File: node_modules\@openzeppelin\contracts\utils\Address.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.2;
 
@@ -390,7 +390,7 @@ library Address {
 
 // File: node_modules\@openzeppelin\contracts\GSN\Context.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -417,7 +417,7 @@ abstract contract Context {
 
 // File: node_modules\@openzeppelin\contracts\access\AccessControl.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -636,7 +636,7 @@ abstract contract AccessControl is Context {
 
 // File: node_modules\@openzeppelin\contracts\math\SafeMath.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -798,7 +798,7 @@ library SafeMath {
 
 // File: node_modules\@openzeppelin\contracts\utils\Counters.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -840,7 +840,7 @@ library Counters {
 
 // File: node_modules\@openzeppelin\contracts\introspection\IERC165.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -867,7 +867,7 @@ interface IERC165 {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.2;
 
@@ -998,7 +998,7 @@ interface IERC721 is IERC165 {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721Metadata.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.2;
 
@@ -1027,7 +1027,7 @@ interface IERC721Metadata is IERC721 {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721Enumerable.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.2;
 
@@ -1058,7 +1058,7 @@ interface IERC721Enumerable is IERC721 {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\IERC721Receiver.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -1083,7 +1083,7 @@ interface IERC721Receiver {
 
 // File: node_modules\@openzeppelin\contracts\introspection\ERC165.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -1139,7 +1139,7 @@ contract ERC165 is IERC165 {
 
 // File: node_modules\@openzeppelin\contracts\utils\EnumerableMap.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -1379,7 +1379,7 @@ library EnumerableMap {
 
 // File: node_modules\@openzeppelin\contracts\utils\Strings.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -1416,7 +1416,7 @@ library Strings {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\ERC721.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -1891,7 +1891,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\ERC721Burnable.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -1918,7 +1918,7 @@ abstract contract ERC721Burnable is Context, ERC721 {
 
 // File: node_modules\@openzeppelin\contracts\utils\Pausable.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -2010,7 +2010,7 @@ contract Pausable is Context {
 
 // File: node_modules\@openzeppelin\contracts\token\ERC721\ERC721Pausable.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -2040,7 +2040,7 @@ abstract contract ERC721Pausable is ERC721, Pausable {
 
 // File: @openzeppelin\contracts\presets\ERC721PresetMinterPauserAutoId.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -2144,7 +2144,7 @@ contract ERC721PresetMinterPauserAutoId is Context, AccessControl, ERC721Burnabl
 
 // File: @openzeppelin\contracts\access\Ownable.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -2214,7 +2214,7 @@ contract Ownable is Context {
 
 // File: @openzeppelin\contracts\utils\ReentrancyGuard.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -2279,7 +2279,7 @@ contract ReentrancyGuard {
 
 // File: contracts\CRUD.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity ^0.6.0;
 
@@ -2458,8 +2458,9 @@ library UintSet {
 
 // File: contracts\Storage.sol
 
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+
+pragma solidity ^0.6.0;
+
 
 contract Storage {
     using AddressSet for AddressSet.Set;
@@ -2518,11 +2519,13 @@ contract Storage {
 
 // File: contracts\TsaishenUsers.sol
 
-// SPDX-License-Identifier: MIT
+
 
 pragma solidity 0.6.10;
 
-// import "./CRUD.sol";
+// import "./CRUD.sol";
+
+
 
 contract TsaishenUsers is Ownable, Storage {
     using AddressSet for AddressSet.Set;
@@ -2533,7 +2536,7 @@ contract TsaishenUsers is Ownable, Storage {
     event userAdded(string, address user, bool active);
     event userDeleted(string, address user, bool active);
 
-    function addUser (string memory _name, string memory _email, uint _phone) public onlyOwner {
+    function addUser (string memory _name, string memory _email, uint _phone) public {
         UintSet.Set memory _homes;
         Storage.House memory _House;
         userInfo[msg.sender] = User(_name, _email, _phone, msg.sender, _House, _homes);
@@ -2573,9 +2576,15 @@ contract TsaishenUsers is Ownable, Storage {
 
 // File: contracts\tokens\HouseToken.sol
 
-// SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.10;
+
+pragma solidity 0.6.10;
+
+
+
+
+
+
 
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage, TsaishenUsers {
     using UintSet for UintSet.Set;
