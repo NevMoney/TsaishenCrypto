@@ -5,27 +5,17 @@ pragma solidity 0.6.10;
 import "@openzeppelin/contracts/presets/ERC721PresetMinterPauserAutoId.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-// import "../Storage.sol";
-// import "../CRUD.sol";
 import "../TsaishenUsers.sol";
+import "../Storage.sol";
 
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, ReentrancyGuard {
-    using UintSet for UintSet.Set;
-    UintSet.Set homes;
-
-    struct House {
-        uint256 value;
-        uint256 income;
-        // UintSet.Set offerDetails;
-    }
 
     mapping (uint256 => address) public houseIndexToApproved;
-    mapping (uint256 => House) internal houseInfo;
 
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
 
-    address public _owner;
+    address public _contractOwner;
     bool public _initialized;
 
     constructor() public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
@@ -66,21 +56,9 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, R
         //mint new token, transfer to the owner with the house ID
         _mint(_owner, _tokenIdTracker.current());
         _tokenIdTracker.increment();
-
-        // add users and house info
-        User memory _user = User('', '', 0, msg.sender, _house, homes);
         
         // add user if new
-        if(isUser(msg.sender)!= true){
-            users.insert(msg.sender);
-        }
-        
-        // add house to user to get array of all homes user has THIS IS NOT WORKING!
-        userInfo[msg.sender].homes.insert(_tokenIdTracker.current());
-        addHome(_owner, _tokenIdTracker.current());
-        
-        // add user to userInfo mapping
-        userInfo[msg.sender] = _user;
+        addUser(msg.sender);
 
         return _tokenIdTracker.current();
     }
@@ -97,6 +75,11 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, R
         balance = 0;
         msg.sender.transfer(toTransfer);
         return toTransfer;
+    }
+    
+    function ownsHouse(address _address) public view returns(bool){
+        if(balanceOf(_address) >= 1) return true;
+        return false;
     }
 
 }

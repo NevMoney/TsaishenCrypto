@@ -2277,182 +2277,489 @@ contract ReentrancyGuard {
     }
 }
 
-// File: contracts\CRUD.sol
+// File: @openzeppelin\contracts\utils\EnumerableSet.sol
 
 
 
 pragma solidity ^0.6.0;
 
-/*
-Hitchens UnorderedAddressSet v0.93
-Library for managing CRUD operations in dynamic address sets.
-https://github.com/rob-Hitchens/UnorderedKeySet
-Copyright (c), 2019, Rob Hitchens, the MIT License
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-THIS SOFTWARE IS NOT TESTED OR AUDITED. DO NOT USE FOR PRODUCTION.
-*/
-
 /**
- * @notice Key sets with enumeration and delete. Uses mappings for random
- * and existence checks and dynamic arrays for enumeration. Key uniqueness is enforced. 
- * @dev Sets are unordered. Delete operations reorder keys. All operations have a 
- * fixed gas cost at any scale, O(1). 
- * author: Rob Hitchens
+ * @dev Library for managing
+ * https://en.wikipedia.org/wiki/Set_(abstract_data_type)[sets] of primitive
+ * types.
+ *
+ * Sets have the following properties:
+ *
+ * - Elements are added, removed, and checked for existence in constant time
+ * (O(1)).
+ * - Elements are enumerated in O(n). No guarantees are made on the ordering.
+ *
+ * ```
+ * contract Example {
+ *     // Add the library methods
+ *     using EnumerableSet for EnumerableSet.AddressSet;
+ *
+ *     // Declare a set state variable
+ *     EnumerableSet.AddressSet private mySet;
+ * }
+ * ```
+ *
+ * As of v3.0.0, only sets of type `address` (`AddressSet`) and `uint256`
+ * (`UintSet`) are supported.
  */
+library EnumerableSet {
+    // To implement this library for multiple types with as little code
+    // repetition as possible, we write it in terms of a generic Set type with
+    // bytes32 values.
+    // The Set implementation uses private functions, and user-facing
+    // implementations (such as AddressSet) are just wrappers around the
+    // underlying Set.
+    // This means that we can only create new EnumerableSets for types that fit
+    // in bytes32.
 
-library AddressSet {
-    
     struct Set {
-        mapping(address => uint) keyPointers;
-        address[] keyList;
+        // Storage of set values
+        bytes32[] _values;
+
+        // Position of the value in the `values` array, plus 1 because index 0
+        // means a value is not in the set.
+        mapping (bytes32 => uint256) _indexes;
     }
 
     /**
-     * @notice insert a key. 
-     * @dev duplicate keys are not permitted.
-     * @param self storage pointer to a Set. 
-     * @param key value to insert.
-     */    
-    function insert(Set storage self, address key) internal {
-        require(!exists(self, key), "AddressSet: key already exists in the set.");
-        self.keyList.push(key);
-        self.keyPointers[key] = self.keyList.length -1;
-    }
-
-    /**
-     * @notice remove a key.
-     * @dev key to remove must exist. 
-     * @param self storage pointer to a Set.
-     * @param key value to remove.
-     */    
-    function remove(Set storage self, address key) internal {
-        require(exists(self, key), "AddressSet: key does not exist in the set.");
-        uint last = count(self) - 1;
-        uint rowToReplace = self.keyPointers[key];
-        if(rowToReplace != last) {
-            address keyToMove = self.keyList[last];
-            self.keyPointers[keyToMove] = rowToReplace;
-            self.keyList[rowToReplace] = keyToMove;
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function _add(Set storage set, bytes32 value) private returns (bool) {
+        if (!_contains(set, value)) {
+            set._values.push(value);
+            // The value is stored at length-1, but we add 1 to all indexes
+            // and use 0 as a sentinel value
+            set._indexes[value] = set._values.length;
+            return true;
+        } else {
+            return false;
         }
-        delete self.keyPointers[key];
-        self.keyList.pop();
     }
 
     /**
-     * @notice count the keys.
-     * @param self storage pointer to a Set. 
-     */       
-    function count(Set storage self) internal view returns(uint) {
-        return(self.keyList.length);
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function _remove(Set storage set, bytes32 value) private returns (bool) {
+        // We read and store the value's index to prevent multiple reads from the same storage slot
+        uint256 valueIndex = set._indexes[value];
+
+        if (valueIndex != 0) { // Equivalent to contains(set, value)
+            // To delete an element from the _values array in O(1), we swap the element to delete with the last one in
+            // the array, and then remove the last element (sometimes called as 'swap and pop').
+            // This modifies the order of the array, as noted in {at}.
+
+            uint256 toDeleteIndex = valueIndex - 1;
+            uint256 lastIndex = set._values.length - 1;
+
+            // When the value to delete is the last one, the swap operation is unnecessary. However, since this occurs
+            // so rarely, we still do the swap anyway to avoid the gas cost of adding an 'if' statement.
+
+            bytes32 lastvalue = set._values[lastIndex];
+
+            // Move the last value to the index where the value to delete is
+            set._values[toDeleteIndex] = lastvalue;
+            // Update the index for the moved value
+            set._indexes[lastvalue] = toDeleteIndex + 1; // All indexes are 1-based
+
+            // Delete the slot where the moved value was stored
+            set._values.pop();
+
+            // Delete the index for the deleted slot
+            delete set._indexes[value];
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
-     * @notice check if a key is in the Set.
-     * @param self storage pointer to a Set.
-     * @param key value to check. 
-     * @return bool true: Set member, false: not a Set member.
-     */  
-    function exists(Set storage self, address key) internal view returns(bool) {
-        if(self.keyList.length == 0) return false;
-        return self.keyList[self.keyPointers[key]] == key;
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function _contains(Set storage set, bytes32 value) private view returns (bool) {
+        return set._indexes[value] != 0;
     }
 
     /**
-     * @notice fetch a key by row (enumerate).
-     * @param self storage pointer to a Set.
-     * @param index row to enumerate. Must be < count() - 1.
-     */      
-    function keyAtIndex(Set storage self, uint index) internal view returns(address) {
-        return self.keyList[index];
+     * @dev Returns the number of values on the set. O(1).
+     */
+    function _length(Set storage set) private view returns (uint256) {
+        return set._values.length;
+    }
+
+   /**
+    * @dev Returns the value stored at position `index` in the set. O(1).
+    *
+    * Note that there are no guarantees on the ordering of values inside the
+    * array, and it may change when more values are added or removed.
+    *
+    * Requirements:
+    *
+    * - `index` must be strictly less than {length}.
+    */
+    function _at(Set storage set, uint256 index) private view returns (bytes32) {
+        require(set._values.length > index, "EnumerableSet: index out of bounds");
+        return set._values[index];
+    }
+
+    // AddressSet
+
+    struct AddressSet {
+        Set _inner;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function add(AddressSet storage set, address value) internal returns (bool) {
+        return _add(set._inner, bytes32(uint256(value)));
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function remove(AddressSet storage set, address value) internal returns (bool) {
+        return _remove(set._inner, bytes32(uint256(value)));
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function contains(AddressSet storage set, address value) internal view returns (bool) {
+        return _contains(set._inner, bytes32(uint256(value)));
+    }
+
+    /**
+     * @dev Returns the number of values in the set. O(1).
+     */
+    function length(AddressSet storage set) internal view returns (uint256) {
+        return _length(set._inner);
+    }
+
+   /**
+    * @dev Returns the value stored at position `index` in the set. O(1).
+    *
+    * Note that there are no guarantees on the ordering of values inside the
+    * array, and it may change when more values are added or removed.
+    *
+    * Requirements:
+    *
+    * - `index` must be strictly less than {length}.
+    */
+    function at(AddressSet storage set, uint256 index) internal view returns (address) {
+        return address(uint256(_at(set._inner, index)));
+    }
+
+
+    // UintSet
+
+    struct UintSet {
+        Set _inner;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function add(UintSet storage set, uint256 value) internal returns (bool) {
+        return _add(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function remove(UintSet storage set, uint256 value) internal returns (bool) {
+        return _remove(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function contains(UintSet storage set, uint256 value) internal view returns (bool) {
+        return _contains(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Returns the number of values on the set. O(1).
+     */
+    function length(UintSet storage set) internal view returns (uint256) {
+        return _length(set._inner);
+    }
+
+   /**
+    * @dev Returns the value stored at position `index` in the set. O(1).
+    *
+    * Note that there are no guarantees on the ordering of values inside the
+    * array, and it may change when more values are added or removed.
+    *
+    * Requirements:
+    *
+    * - `index` must be strictly less than {length}.
+    */
+    function at(UintSet storage set, uint256 index) internal view returns (uint256) {
+        return uint256(_at(set._inner, index));
     }
 }
 
+// File: @openzeppelin\contracts\utils\EnumerableMap.sol
+
+
+
+pragma solidity ^0.6.0;
+
 /**
- * @notice Key sets with enumeration and delete. Uses mappings for random
- * and existence checks and dynamic arrays for enumeration. Key uniqueness is enforced. 
- * @dev Sets are unordered. Delete operations reorder keys. All operations have a 
- * fixed gas cost at any scale, O(1). 
- * author: Rob Hitchens
+ * @dev Library for managing an enumerable variant of Solidity's
+ * https://solidity.readthedocs.io/en/latest/types.html#mapping-types[`mapping`]
+ * type.
+ *
+ * Maps have the following properties:
+ *
+ * - Entries are added, removed, and checked for existence in constant time
+ * (O(1)).
+ * - Entries are enumerated in O(n). No guarantees are made on the ordering.
+ *
+ * ```
+ * contract Example {
+ *     // Add the library methods
+ *     using EnumerableMap for EnumerableMap.UintToAddressMap;
+ *
+ *     // Declare a set state variable
+ *     EnumerableMap.UintToAddressMap private myMap;
+ * }
+ * ```
+ *
+ * As of v3.0.0, only maps of type `uint256 -> address` (`UintToAddressMap`) are
+ * supported.
  */
+library EnumerableMap {
+    // To implement this library for multiple types with as little code
+    // repetition as possible, we write it in terms of a generic Map type with
+    // bytes32 keys and values.
+    // The Map implementation uses private functions, and user-facing
+    // implementations (such as Uint256ToAddressMap) are just wrappers around
+    // the underlying Map.
+    // This means that we can only create new EnumerableMaps for types that fit
+    // in bytes32.
 
-library UintSet {
-    
-    struct Set {
-        mapping(uint => uint) keyPointers;
-        uint[] keyList;
+    struct MapEntry {
+        bytes32 _key;
+        bytes32 _value;
+    }
+
+    struct Map {
+        // Storage of map keys and values
+        MapEntry[] _entries;
+
+        // Position of the entry defined by a key in the `entries` array, plus 1
+        // because index 0 means a key is not in the map.
+        mapping (bytes32 => uint256) _indexes;
     }
 
     /**
-     * @notice insert a key. 
-     * @dev duplicate keys are not permitted.
-     * @param self storage pointer to a Set. 
-     * @param key value to insert.
-     */       
-    function insert(Set storage self, uint key) internal {
-        require(!exists(self, key), "UintSet: key already exists in the set.");
-        self.keyList.push(key);
-        self.keyPointers[key] = self.keyList.length -1;
-    }
+     * @dev Adds a key-value pair to a map, or updates the value for an existing
+     * key. O(1).
+     *
+     * Returns true if the key was added to the map, that is if it was not
+     * already present.
+     */
+    function _set(Map storage map, bytes32 key, bytes32 value) private returns (bool) {
+        // We read and store the key's index to prevent multiple reads from the same storage slot
+        uint256 keyIndex = map._indexes[key];
 
-    /**
-     * @notice remove a key.
-     * @dev key to remove must exist. 
-     * @param self storage pointer to a Set.
-     * @param key value to remove.
-     */  
-    function remove(Set storage self, uint key) internal {
-        require(exists(self, key), "UintSet: key does not exist in the set.");
-        uint last = count(self) - 1;
-        uint rowToReplace = self.keyPointers[key];        
-        if(rowToReplace != last) {
-            uint keyToMove = self.keyList[last];
-            self.keyPointers[keyToMove] = rowToReplace;
-            self.keyList[rowToReplace] = keyToMove;
+        if (keyIndex == 0) { // Equivalent to !contains(map, key)
+            map._entries.push(MapEntry({ _key: key, _value: value }));
+            // The entry is stored at length-1, but we add 1 to all indexes
+            // and use 0 as a sentinel value
+            map._indexes[key] = map._entries.length;
+            return true;
+        } else {
+            map._entries[keyIndex - 1]._value = value;
+            return false;
         }
-        delete self.keyPointers[key];
-        self.keyList.pop();
     }
 
     /**
-     * @notice count the keys.
-     * @param self storage pointer to a Set. 
-     */   
-    function count(Set storage self) internal view returns(uint) {
-        return(self.keyList.length);
+     * @dev Removes a key-value pair from a map. O(1).
+     *
+     * Returns true if the key was removed from the map, that is if it was present.
+     */
+    function _remove(Map storage map, bytes32 key) private returns (bool) {
+        // We read and store the key's index to prevent multiple reads from the same storage slot
+        uint256 keyIndex = map._indexes[key];
+
+        if (keyIndex != 0) { // Equivalent to contains(map, key)
+            // To delete a key-value pair from the _entries array in O(1), we swap the entry to delete with the last one
+            // in the array, and then remove the last entry (sometimes called as 'swap and pop').
+            // This modifies the order of the array, as noted in {at}.
+
+            uint256 toDeleteIndex = keyIndex - 1;
+            uint256 lastIndex = map._entries.length - 1;
+
+            // When the entry to delete is the last one, the swap operation is unnecessary. However, since this occurs
+            // so rarely, we still do the swap anyway to avoid the gas cost of adding an 'if' statement.
+
+            MapEntry storage lastEntry = map._entries[lastIndex];
+
+            // Move the last entry to the index where the entry to delete is
+            map._entries[toDeleteIndex] = lastEntry;
+            // Update the index for the moved entry
+            map._indexes[lastEntry._key] = toDeleteIndex + 1; // All indexes are 1-based
+
+            // Delete the slot where the moved entry was stored
+            map._entries.pop();
+
+            // Delete the index for the deleted slot
+            delete map._indexes[key];
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
-     * @notice check if a key is in the Set.
-     * @param self storage pointer to a Set.
-     * @param key value to check. 
-     * @return bool true: Set member, false: not a Set member.
-     */  
-    function exists(Set storage self, uint key) internal view returns(bool) {
-        if(self.keyList.length == 0) return false;
-        return self.keyList[self.keyPointers[key]] == key;
+     * @dev Returns true if the key is in the map. O(1).
+     */
+    function _contains(Map storage map, bytes32 key) private view returns (bool) {
+        return map._indexes[key] != 0;
     }
 
     /**
-     * @notice fetch a key by row (enumerate).
-     * @param self storage pointer to a Set.
-     * @param index row to enumerate. Must be < count() - 1.
-     */      
-    function keyAtIndex(Set storage self, uint index) internal view returns(uint) {
-        return self.keyList[index];
+     * @dev Returns the number of key-value pairs in the map. O(1).
+     */
+    function _length(Map storage map) private view returns (uint256) {
+        return map._entries.length;
+    }
+
+   /**
+    * @dev Returns the key-value pair stored at position `index` in the map. O(1).
+    *
+    * Note that there are no guarantees on the ordering of entries inside the
+    * array, and it may change when more entries are added or removed.
+    *
+    * Requirements:
+    *
+    * - `index` must be strictly less than {length}.
+    */
+    function _at(Map storage map, uint256 index) private view returns (bytes32, bytes32) {
+        require(map._entries.length > index, "EnumerableMap: index out of bounds");
+
+        MapEntry storage entry = map._entries[index];
+        return (entry._key, entry._value);
+    }
+
+    /**
+     * @dev Returns the value associated with `key`.  O(1).
+     *
+     * Requirements:
+     *
+     * - `key` must be in the map.
+     */
+    function _get(Map storage map, bytes32 key) private view returns (bytes32) {
+        return _get(map, key, "EnumerableMap: nonexistent key");
+    }
+
+    /**
+     * @dev Same as {_get}, with a custom error message when `key` is not in the map.
+     */
+    function _get(Map storage map, bytes32 key, string memory errorMessage) private view returns (bytes32) {
+        uint256 keyIndex = map._indexes[key];
+        require(keyIndex != 0, errorMessage); // Equivalent to contains(map, key)
+        return map._entries[keyIndex - 1]._value; // All indexes are 1-based
+    }
+
+    // UintToAddressMap
+
+    struct UintToAddressMap {
+        Map _inner;
+    }
+
+    /**
+     * @dev Adds a key-value pair to a map, or updates the value for an existing
+     * key. O(1).
+     *
+     * Returns true if the key was added to the map, that is if it was not
+     * already present.
+     */
+    function set(UintToAddressMap storage map, uint256 key, address value) internal returns (bool) {
+        return _set(map._inner, bytes32(key), bytes32(uint256(value)));
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the key was removed from the map, that is if it was present.
+     */
+    function remove(UintToAddressMap storage map, uint256 key) internal returns (bool) {
+        return _remove(map._inner, bytes32(key));
+    }
+
+    /**
+     * @dev Returns true if the key is in the map. O(1).
+     */
+    function contains(UintToAddressMap storage map, uint256 key) internal view returns (bool) {
+        return _contains(map._inner, bytes32(key));
+    }
+
+    /**
+     * @dev Returns the number of elements in the map. O(1).
+     */
+    function length(UintToAddressMap storage map) internal view returns (uint256) {
+        return _length(map._inner);
+    }
+
+   /**
+    * @dev Returns the element stored at position `index` in the set. O(1).
+    * Note that there are no guarantees on the ordering of values inside the
+    * array, and it may change when more values are added or removed.
+    *
+    * Requirements:
+    *
+    * - `index` must be strictly less than {length}.
+    */
+    function at(UintToAddressMap storage map, uint256 index) internal view returns (uint256, address) {
+        (bytes32 key, bytes32 value) = _at(map._inner, index);
+        return (uint256(key), address(uint256(value)));
+    }
+
+    /**
+     * @dev Returns the value associated with `key`.  O(1).
+     *
+     * Requirements:
+     *
+     * - `key` must be in the map.
+     */
+    function get(UintToAddressMap storage map, uint256 key) internal view returns (address) {
+        return address(uint256(_get(map._inner, bytes32(key))));
+    }
+
+    /**
+     * @dev Same as {get}, with a custom error message when `key` is not in the map.
+     */
+    function get(UintToAddressMap storage map, uint256 key, string memory errorMessage) internal view returns (address) {
+        return address(uint256(_get(map._inner, bytes32(key), errorMessage)));
     }
 }
 
@@ -2461,59 +2768,22 @@ library UintSet {
 
 pragma solidity ^0.6.0;
 
+// import "./CRUD.sol";
 
 contract Storage {
-    using AddressSet for AddressSet.Set;
-    using UintSet for UintSet.Set;
 
     mapping (string => uint256) _uintStorage;
     mapping (string => address) _addressStorage;
     mapping (string => bool) _boolStorage;
     mapping (string => string) _stringStorage;
     mapping (string => bytes4) _bytesStorage;
-    
-    mapping (address => uint256) private _balances;
-    mapping (address => mapping (address => uint256)) private _allowances;
-
-    address public _owner;
-    bool public _initialized;
 
     struct House {
         uint256 value;
         uint256 income;
-        // UintSet.Set offerDetails;
     }
 
-    mapping (uint256 => address) public houseIndexToApproved;
     mapping (uint256 => House) internal houseInfo;
-
-    // marketplace & lending stuff
-    struct Offer {
-        address payable seller;
-        uint256 price;
-        uint256 income;
-        uint256 loan;
-        uint256 index;
-        uint256 tokenId;
-        bool active;
-    }
-
-    // store offer information
-    mapping(uint256 => Offer) internal offerDetails;
-    Offer [] offers;
-
-    // user stuff
-    struct User {
-        string name;
-        string emailAddress;
-        uint256 cellPhone;
-        address payable user;
-        House house;
-        UintSet.Set homes;
-    }    
-
-    // store user information
-    mapping(address => User) internal userInfo;
 
 }
 
@@ -2521,21 +2791,16 @@ contract Storage {
 
 
 
-// SPDX-License-Identifier: MIT
-
 pragma solidity 0.6.10;
+// pragma experimental ABIEncoderV2;
 
-// import "./CRUD.sol";
-// import "./Storage.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
-import "@openzeppelin/contracts/utils/EnumerableMap.sol";
+
+
+
 // import "./tokens/HouseToken.sol";
 
 contract TsaishenUsers is Ownable, Storage {
-    // using AddressSet for AddressSet.Set;
-    // AddressSet.Set users;
-    // using UintSet for UintSet.Set;
+
     using EnumerableSet for EnumerableSet.AddressSet;
     EnumerableSet.AddressSet internal users;
 
@@ -2551,16 +2816,14 @@ contract TsaishenUsers is Ownable, Storage {
 
     // store user information
     mapping(address => User) internal userInfo;
-    // User [] userArray;
+
 
     event userAdded(string, address user, bool active);
     event userDeleted(string, address user, bool active);
 
     function addUser (address newUser) public {
         Storage.House memory _House;
-        // userArray.push(newUser);
         address payable user = address(uint160(newUser));
-        userInfo[newUser] = userArray.length - 1;
         userInfo[newUser] = User(user, _House, false, false, false, false);
         users.add(newUser);
 
@@ -2573,7 +2836,6 @@ contract TsaishenUsers is Ownable, Storage {
 
     function deleteUser(address userToDelete) public onlyOwner {
         users.remove(userToDelete);
-        // userArray.pop(); //don't know if i need this
 
         emit userDeleted("User deleted", userToDelete, false);
     }
@@ -2591,21 +2853,6 @@ contract TsaishenUsers is Ownable, Storage {
     //     return users._values;
     // }
 
-    function ownsHouse(address _address) public view returns(bool){
-        if(balanceOf(address owner) >= 1) return true;
-        return false;
-    }
-
-    function boughtHouse(address buyer) public view returns(bool){
-        if(safeTransferFrom(address to) == 0) return false;
-        return true;
-    }
-
-    function soldHouse(address seller) public view returns(bool){
-        if(safeTransferFrom(address from) == 0) return false;
-        return true;
-    }
-
     function borrowedMoney(address borrower) public view returns(bool){
         return userInfo[borrower].borrower;
     }
@@ -2614,8 +2861,9 @@ contract TsaishenUsers is Ownable, Storage {
         return userInfo[lender].lender;
     }
 
-    function getUserInfo(address user) public view returns(House, bool, bool, bool, bool, uint256){
-        userInfo[user].House;
+    function getUserInfo(address user) public view returns(bool, bool, bool, bool, uint256){
+        // House memory house;
+        // userInfo[user].house;
         userInfo[user].houseOwner;
         userInfo[user].borrower;
         userInfo[user].lender;
@@ -2634,10 +2882,15 @@ pragma solidity 0.6.10;
 
 
 
+contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, ReentrancyGuard {
 
-contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage, TsaishenUsers {
-    using UintSet for UintSet.Set;
-    UintSet.Set homes;
+    mapping (uint256 => address) public houseIndexToApproved;
+
+    mapping (address => uint256) private _balances;
+    mapping (address => mapping (address => uint256)) private _allowances;
+
+    address public _contractOwner;
+    bool public _initialized;
 
     constructor() public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
     }
@@ -2677,21 +2930,9 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage, Tsaishe
         //mint new token, transfer to the owner with the house ID
         _mint(_owner, _tokenIdTracker.current());
         _tokenIdTracker.increment();
-
-        // add users and house info
-        User memory _user = User('', '', 0, msg.sender, _house, homes);
         
         // add user if new
-        if(isUser(msg.sender)!= true){
-            users.insert(msg.sender);
-        }
-        
-        // add house to user to get array of all homes user has THIS IS NOT WORKING!
-        userInfo[msg.sender].homes.insert(_tokenIdTracker.current());
-        addHome(_owner, _tokenIdTracker.current());
-        
-        // add user to userInfo mapping
-        userInfo[msg.sender] = _user;
+        addUser(msg.sender);
 
         return _tokenIdTracker.current();
     }
@@ -2708,6 +2949,11 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage, Tsaishe
         balance = 0;
         msg.sender.transfer(toTransfer);
         return toTransfer;
+    }
+    
+    function ownsHouse(address _address) public view returns(bool){
+        if(balanceOf(_address) >= 1) return true;
+        return false;
     }
 
 }

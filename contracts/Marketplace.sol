@@ -5,9 +5,8 @@ pragma solidity ^0.6.10;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-// import "./Storage.sol";
 import "./tokens/HouseToken.sol";
-import "../TsaishenUsers.sol";
+import "./TsaishenUsers.sol";
 
 interface AggregatorV3Interface {
 
@@ -62,19 +61,19 @@ contract Marketplace is Ownable, TsaishenUsers, ReentrancyGuard {
     uint housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
     uint256 txFee = 2; //2% transaction fee
 
-    constructor(address _houseTokenAddress) public {
+    constructor(address _houseTokenAddress) internal {
         setHouseToken(_houseTokenAddress);
     }
 
     event MarketTransaction (string, address, uint);
 
     // @notice get latest ETH/USD price from Chainlink
-    function getPrice() public view returns (int256, uint256) {
+    function getEthPrice() public view returns (int256, uint256) {
         (, int256 answer, , uint256 updatedAt, ) = priceFeedETH.latestRoundData();
         return (answer, updatedAt);
     }
 
-    function setHouseToken(address _houseTokenAddress) public onlyOwner {
+    function setHouseToken(address _houseTokenAddress) internal onlyOwner {
         _houseToken = HouseToken(_houseTokenAddress);
     }
         
@@ -160,7 +159,7 @@ contract Marketplace is Ownable, TsaishenUsers, ReentrancyGuard {
         require(offer.active == true, "House not for sale"); 
 
         // get ETHUSD conversion
-        (int256 currentEthPrice, uint256 updatedAt) = (getPrice());
+        (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
 
         // check if the user sent enough ether according to the price of the housePrice
         uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
@@ -194,6 +193,9 @@ contract Marketplace is Ownable, TsaishenUsers, ReentrancyGuard {
         if (msg.value > housePriceInETH){
             msg.sender.transfer(msg.value - housePriceInETH);
         }
+
+        // update user info
+        addUser(msg.sender);
 
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
