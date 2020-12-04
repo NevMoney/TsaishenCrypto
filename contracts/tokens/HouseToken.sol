@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../TsaishenUsers.sol";
 import "../Storage.sol";
 
-contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, ReentrancyGuard {
+contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, ReentrancyGuard, Storage {
 
     mapping (uint256 => address) public houseIndexToApproved;
 

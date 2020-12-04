@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./tokens/HouseToken.sol";
 import "./TsaishenUsers.sol";
+import "./Storage.sol";
 
 interface AggregatorV3Interface {
 
@@ -61,7 +62,8 @@ contract Marketplace is Ownable, TsaishenUsers, ReentrancyGuard {
     uint housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
     uint256 txFee = 2; //2% transaction fee
 
-    constructor(address _houseTokenAddress) internal {
+    // MUST ALWAYS BE PUBLIC!
+    constructor(address _houseTokenAddress) public {
         setHouseToken(_houseTokenAddress);
     }
 
