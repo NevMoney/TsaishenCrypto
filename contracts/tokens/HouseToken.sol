@@ -5,13 +5,28 @@ pragma solidity 0.6.10;
 import "@openzeppelin/contracts/presets/ERC721PresetMinterPauserAutoId.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "../Storage.sol";
-import "../CRUD.sol";
+// import "../Storage.sol";
+// import "../CRUD.sol";
 import "../TsaishenUsers.sol";
 
-contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, Storage, TsaishenUsers {
+contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, ReentrancyGuard {
     using UintSet for UintSet.Set;
     UintSet.Set homes;
+
+    struct House {
+        uint256 value;
+        uint256 income;
+        // UintSet.Set offerDetails;
+    }
+
+    mapping (uint256 => address) public houseIndexToApproved;
+    mapping (uint256 => House) internal houseInfo;
+
+    mapping (address => uint256) private _balances;
+    mapping (address => mapping (address => uint256)) private _allowances;
+
+    address public _owner;
+    bool public _initialized;
 
     constructor() public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
     }

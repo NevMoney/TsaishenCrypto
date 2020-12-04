@@ -4,8 +4,10 @@ pragma solidity ^0.6.10;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "./Storage.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+// import "./Storage.sol";
 import "./tokens/HouseToken.sol";
+import "../TsaishenUsers.sol";
 
 interface AggregatorV3Interface {
 
@@ -34,10 +36,25 @@ interface AggregatorV3Interface {
 
 }
 
-contract Marketplace is Ownable, Storage {
+contract Marketplace is Ownable, TsaishenUsers, ReentrancyGuard {
     HouseToken private _houseToken;
 
     using SafeMath for uint256;
+
+    // marketplace & lending stuff
+    struct Offer {
+        address payable seller;
+        uint256 price;
+        uint256 income;
+        uint256 loan;
+        uint256 index;
+        uint256 tokenId;
+        bool active;
+    }
+
+    // store offer information
+    mapping(uint256 => Offer) internal offerDetails;
+    Offer [] offers;
  
     // using chainlink for realtime ETH/USD conversion -- @Dev this is TESTNET rinkeby!!
     AggregatorV3Interface internal priceFeedETH = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
@@ -165,7 +182,7 @@ contract Marketplace is Ownable, Storage {
          offer.seller.transfer(housePriceInETH.sub(houseTransactionFee));
 
         //finalize by transfering token ownership
-        _houseToken.transferFrom(offer.seller, msg.sender, _tokenId);
+        _houseToken.safeTransferFrom(offer.seller, msg.sender, _tokenId);
 
         // set the id to inactive
         offers[offer.index].active = false;
