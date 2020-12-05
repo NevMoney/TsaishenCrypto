@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 
-// import "./CRUD.sol";
-
 contract Storage {
 
     mapping (string => uint256) _uintStorage;

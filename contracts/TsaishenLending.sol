@@ -62,20 +62,23 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./Storage.sol";
 import "./tokens/HouseToken.sol";
-import "./Marketplace.sol";
 
-// contract TsaishenLending is Ownable, Storage, Marketplace {
-//     HouseToken private _houseToken;
+// contract TsaishenLending is Ownable, Storage {
+//     Marketplace private _marketplace;
 
 //     using SafeMath for uint256;
 
 //     uint256 lendingFee = 2; //2% transaction fee
 
-//     constructor(address _houseTokenAddress) public {
-//         _setHouseToken(_houseTokenAddress);
+//     constructor(address _marketplaceAddress) public {
+//         setMarketplace(_marketplaceAddress);
 //     }
 
 //     event MarketTransaction (string, address, uint);
+
+//     function setMarketplace(address _marketplaceAddress) internal onlyOwner {
+//         _marketplaceContract = Marketplace(_marketplaceAddress);
+//     }
 
 //     // internal borrow function to set parameters
 //     function _loanMax (uint256 _tokenId) internal returns (uint256) {

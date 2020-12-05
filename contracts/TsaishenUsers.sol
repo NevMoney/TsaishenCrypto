@@ -7,14 +7,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "@openzeppelin/contracts/utils/EnumerableMap.sol";
 import "./Storage.sol";
-// import "./tokens/HouseToken.sol";
 
 contract TsaishenUsers is Ownable, Storage {
-
     using EnumerableSet for EnumerableSet.AddressSet;
     EnumerableSet.AddressSet internal users;
 
-    // user stuff
     struct User {
         address payable user;
         House house;
@@ -24,9 +21,7 @@ contract TsaishenUsers is Ownable, Storage {
         bool reward;
     }    
 
-    // store user information
     mapping(address => User) internal userInfo;
-
 
     event userAdded(string, address user, bool active);
     event userDeleted(string, address user, bool active);

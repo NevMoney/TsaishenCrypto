@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./tokens/HouseToken.sol";
-import "./TsaishenUsers.sol";
 import "./Storage.sol";
 
 interface AggregatorV3Interface {
@@ -36,7 +35,7 @@ interface AggregatorV3Interface {
 
 }
 
-contract Marketplace is Ownable, TsaishenUsers, ReentrancyGuard {
+contract Marketplace is Ownable, Storage, ReentrancyGuard {
     HouseToken private _houseToken;
 
     using SafeMath for uint256;
@@ -68,15 +67,16 @@ contract Marketplace is Ownable, TsaishenUsers, ReentrancyGuard {
     }
 
     event MarketTransaction (string, address, uint);
+    
+    function setHouseToken(address _houseTokenAddress) internal onlyOwner {
+        _houseToken = HouseToken(_houseTokenAddress);
+    }
 
     // @notice get latest ETH/USD price from Chainlink
     function getEthPrice() public view returns (int256, uint256) {
-        (, int256 answer, , uint256 updatedAt, ) = priceFeedETH.latestRoundData();
-        return (answer, updatedAt);
-    }
-
-    function setHouseToken(address _houseTokenAddress) internal onlyOwner {
-        _houseToken = HouseToken(_houseTokenAddress);
+        // (, int256 answer, , uint256 updatedAt, ) = priceFeedETH.latestRoundData();
+        // return (answer, updatedAt);
+        return (500000000, 1607120462); //this is for local testing DO NOT USE for other networks
     }
         
     function getOffer(uint256 _tokenId) public view returns 
@@ -196,8 +196,8 @@ contract Marketplace is Ownable, TsaishenUsers, ReentrancyGuard {
             msg.sender.transfer(msg.value - housePriceInETH);
         }
 
-        // update user info
-        addUser(msg.sender);
+        // update user info in correct contract!
+        // TsaishenUsers.addUser(msg.sender);
 
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
