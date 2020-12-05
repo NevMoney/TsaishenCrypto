@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./tokens/HouseToken.sol";
 import "./Storage.sol";
+import "./TsaishenUsers.sol";
 
 interface AggregatorV3Interface {
 
@@ -37,6 +38,7 @@ interface AggregatorV3Interface {
 
 contract Marketplace is Ownable, Storage, ReentrancyGuard {
     HouseToken private _houseToken;
+    TsaishenUsers private _tsaishenUsers;
 
     using SafeMath for uint256;
 
@@ -60,10 +62,14 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
 
     uint housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
     uint256 txFee = 2; //2% transaction fee
+    
+    address payable public feeRecipient; 
 
     // MUST ALWAYS BE PUBLIC!
-    constructor(address _houseTokenAddress) public {
+    constructor(address _userContractAddress, address _houseTokenAddress, address payable _feeRecipient) public {
+        setUserContract(_userContractAddress);
         setHouseToken(_houseTokenAddress);
+        feeRecipient = _feeRecipient;
     }
 
     event MarketTransaction (string, address, uint);
@@ -72,11 +78,15 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
         _houseToken = HouseToken(_houseTokenAddress);
     }
 
+    function setUserContract(address _userContractAddress) internal onlyOwner {
+        _tsaishenUsers = TsaishenUsers(_userContractAddress);
+    }
+
     // @notice get latest ETH/USD price from Chainlink
     function getEthPrice() public view returns (int256, uint256) {
         // (, int256 answer, , uint256 updatedAt, ) = priceFeedETH.latestRoundData();
         // return (answer, updatedAt);
-        return (500000000, 1607120462); //this is for local testing DO NOT USE for other networks
+        return (10000000000, 1607202219); //this is for local testing DO NOT USE for other networks
     }
         
     function getOffer(uint256 _tokenId) public view returns 
@@ -129,11 +139,21 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
         require(offerDetails[_tokenId].active == false, "House already listed");
         require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved");
 
+        /*
+        to get income from HouseToken Contract we have to call the function from that
+        contract and pass it onto the variable.
+
+        Because the function called has 3 variables, we have to set it up in this way. If
+        you put in all variables it creates issue of calling items you don't use, so put
+        space to indicate parameters we expect but indicate one that we'll use.
+        */  
+        ( , uint256 _income, ) = _houseToken.getHouse(_tokenId);
+
         //create offer by inserting items into the array
         Offer memory _offer = Offer({
             seller: msg.sender,
             price: _price,
-            income: houseInfo[_tokenId].income,
+            income: _income,
             loan: 0,
             active: true,
             tokenId: _tokenId,
@@ -175,9 +195,8 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
         //price data should be fresher than 1 hour
         require(updatedAt >= now - 1 hours, "Data too old");
 
-        // transfer fee to creator
-        address payable creator = (0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95);
-        creator.transfer(houseTransactionFee);
+        // transfer fee to feeRecipient
+        feeRecipient.transfer(houseTransactionFee);
 
         // transfer proceeds to seller - txFee
          offer.seller.transfer(housePriceInETH.sub(houseTransactionFee));
@@ -196,8 +215,10 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
             msg.sender.transfer(msg.value - housePriceInETH);
         }
 
-        // update user info in correct contract!
-        // TsaishenUsers.addUser(msg.sender);
+        // add/update user info
+        _tsaishenUsers.addUser(msg.sender);
+        _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
 
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }

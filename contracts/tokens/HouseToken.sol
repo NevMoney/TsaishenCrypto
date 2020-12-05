@@ -64,7 +64,8 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         _tokenIdTracker.increment();
         
         // add user if new
-        // TsaishenUsers.addUser(msg.sender);
+        _tsaishenUsers.addUser(msg.sender);
+        _tsaishenUsers.addHouseToUser(msg.sender, _tokenIdTracker.current());
 
         return _tokenIdTracker.current();
     }
@@ -85,7 +86,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     
     // this checks if they own the house BUT I need to export this function into Users Contract
     function ownsHouse(address _address) public view returns(bool){
-        if(balanceOf(_address) >= 1) return true;
+        if(balanceOf(_address) > 0) return true;
         return false;
     }
 
