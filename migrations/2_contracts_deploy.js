@@ -12,6 +12,7 @@ module.exports = async function(deployer, network, accounts) {
     await deployer.deploy(HouseToken, TsaishenUsers.address);
     await deployer.deploy(Marketplace, HouseToken.address);
 
+
     // Basic Tests
     const houseTokenInstance = await HouseToken.deployed();
     console.log("creating house");
@@ -30,4 +31,7 @@ module.exports = async function(deployer, network, accounts) {
     console.log("value", Number(value));
     console.log("income", Number(income));
     console.log("uri", uri);
+
+    const ownsHouse = await houseTokenInstance.ownsHouse(accounts[1]);
+    console.log("ownsHouse", ownsHouse);
 };

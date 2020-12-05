@@ -2277,6 +2277,28 @@ contract ReentrancyGuard {
     }
 }
 
+// File: contracts\Storage.sol
+
+
+pragma solidity ^0.6.0;
+
+contract Storage {
+
+    mapping (string => uint256) _uintStorage;
+    mapping (string => address) _addressStorage;
+    mapping (string => bool) _boolStorage;
+    mapping (string => string) _stringStorage;
+    mapping (string => bytes4) _bytesStorage;
+
+    struct House {
+        uint256 value;
+        uint256 income;
+    }
+
+    mapping (uint256 => House) internal houseInfo;
+
+}
+
 // File: @openzeppelin\contracts\utils\EnumerableSet.sol
 
 
@@ -2763,30 +2785,6 @@ library EnumerableMap {
     }
 }
 
-// File: contracts\Storage.sol
-
-
-pragma solidity ^0.6.0;
-
-// import "./CRUD.sol";
-
-contract Storage {
-
-    mapping (string => uint256) _uintStorage;
-    mapping (string => address) _addressStorage;
-    mapping (string => bool) _boolStorage;
-    mapping (string => string) _stringStorage;
-    mapping (string => bytes4) _bytesStorage;
-
-    struct House {
-        uint256 value;
-        uint256 income;
-    }
-
-    mapping (uint256 => House) internal houseInfo;
-
-}
-
 // File: contracts\TsaishenUsers.sol
 
 
@@ -2797,14 +2795,11 @@ pragma solidity 0.6.10;
 
 
 
-// import "./tokens/HouseToken.sol";
 
 contract TsaishenUsers is Ownable, Storage {
-
     using EnumerableSet for EnumerableSet.AddressSet;
     EnumerableSet.AddressSet internal users;
 
-    // user stuff
     struct User {
         address payable user;
         House house;
@@ -2814,9 +2809,7 @@ contract TsaishenUsers is Ownable, Storage {
         bool reward;
     }    
 
-    // store user information
     mapping(address => User) internal userInfo;
-
 
     event userAdded(string, address user, bool active);
     event userDeleted(string, address user, bool active);
@@ -2882,7 +2875,8 @@ pragma solidity 0.6.10;
 
 
 
-contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, ReentrancyGuard {
+contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard, Storage {
+    TsaishenUsers private _tsaishenUsers;
 
     mapping (uint256 => address) public houseIndexToApproved;
 
@@ -2892,7 +2886,9 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, R
     address public _contractOwner;
     bool public _initialized;
 
-    constructor() public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
+    // MUST ALWAYS BE PUBLIC!
+    constructor(address _userContractAddress) public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
+        setUserContract(_userContractAddress);
     }
 
     modifier costs (uint cost){
@@ -2903,9 +2899,12 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, R
     uint public balance;    
     uint256 public houseCounter;
 
-
     event Minted(address _owner, uint256 id, string tokenURI);
 
+    function setUserContract(address _userContractAddress) internal onlyOwner {
+        _tsaishenUsers = TsaishenUsers(_userContractAddress);
+    }
+      
     // generate house on blockchain: value, ID, owner address
     function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
         // require identification of the user KYC/AML before execution
@@ -2932,7 +2931,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, R
         _tokenIdTracker.increment();
         
         // add user if new
-        addUser(msg.sender);
+        // TsaishenUsers.addUser(msg.sender);
 
         return _tokenIdTracker.current();
     }
@@ -2951,6 +2950,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, TsaishenUsers, R
         return toTransfer;
     }
     
+    // this checks if they own the house BUT I need to export this function into Users Contract
     function ownsHouse(address _address) public view returns(bool){
         if(balanceOf(_address) >= 1) return true;
         return false;
