@@ -30,7 +30,7 @@ else the funds are reverted back to the buyer.
 
 */
 
-contract TsaishenEscrow is RefundEscrow {
-    // need timeOut functions
-    // need oracle
-}
+// contract TsaishenEscrow is RefundEscrow {
+//     // need timeOut functions
+//     // need oracle
+// }

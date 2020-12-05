@@ -8,39 +8,12 @@ contract Storage {
     mapping (string => bool) _boolStorage;
     mapping (string => string) _stringStorage;
     mapping (string => bytes4) _bytesStorage;
-    
-    mapping (uint256 => address) public houseIndexToOwner;
-    mapping (address => uint256) public ownershipTokenCount; //when i had this private housetoken contract didn't recognize it
-    mapping (uint256 => address) public houseIndexToApproved;
-    // mapping (address => mapping (address => bool)) private operatorApprovals;
-    mapping(uint256 => Offer) tokenIdToOffer;
-
-    // this is where we'll store house information about each property for easy recall
-    mapping (uint256 => House) houseInfo;
-
-    mapping (address => uint256) private _balances;
-    mapping (address => mapping (address => uint256)) private _allowances;
-
-    address public _owner;
-    bool public _initialized;
-    uint public balance;
-
-    House [] houses;
-    Offer[] offers;
-
-    uint256 public houseCounter;
 
     struct House {
         uint256 value;
         uint256 income;
     }
 
-    struct Offer {
-        address payable seller;
-        uint256 price;
-        uint256 index;
-        uint256 tokenId;
-        bool active;
-    }
+    mapping (uint256 => House) internal houseInfo;
 
 }
