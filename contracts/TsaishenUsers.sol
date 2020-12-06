@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.6.10;
-// pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
-// import "@openzeppelin/contracts/utils/EnumerableMap.sol";
 import "./Storage.sol";
 
 contract TsaishenUsers is Ownable, Storage {
@@ -19,7 +17,7 @@ contract TsaishenUsers is Ownable, Storage {
         bool houseOwner;
         bool borrower;
         bool lender;
-        bool reward;
+        uint256 reward;
         EnumerableSet.UintSet houses;
     }    
 
@@ -31,7 +29,7 @@ contract TsaishenUsers is Ownable, Storage {
     function addUser (address newUser) public {
         EnumerableSet.UintSet memory _houses;
         address payable user = address(uint160(newUser));
-        userInfo[newUser] = User(user, false, false, false, false, _houses);
+        userInfo[newUser] = User(user, false, false, false, uint256, _houses);
         users.add(newUser);
 
         emit userAdded("New user added", newUser, true);
@@ -42,7 +40,7 @@ contract TsaishenUsers is Ownable, Storage {
         userInfo[user].houseOwner = true;
     }
 
-    function deleteHouseFromUser(address user, uint256 houseId) public{
+    function deleteHouseFromUser(address user, uint256 houseId) internal{
         userInfo[user].houses.remove(houseId);
     }
 
@@ -77,7 +75,7 @@ contract TsaishenUsers is Ownable, Storage {
         return userInfo[lender].lender;
     }
 
-    function getUserInfo(address user) public view returns(bool, bool, bool, bool, uint[] memory){
+    function getUserInfo(address user) public view returns(bool, bool, bool, uint256, uint[] memory){
         EnumerableSet.UintSet memory houses;
         userInfo[user].houseOwner; //showing false even when true - WHY
         userInfo[user].borrower;

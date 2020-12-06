@@ -83,7 +83,7 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
     }
 
     // @notice get latest ETH/USD price from Chainlink
-    function getEthPrice() public view returns (int256, uint256) {
+    function getEthPrice() public pure returns (int256, uint256) {
         // (, int256 answer, , uint256 updatedAt, ) = priceFeedETH.latestRoundData();
         // return (answer, updatedAt);
         return (10000000000, 1607202219); //this is for local testing DO NOT USE for other networks
@@ -134,19 +134,12 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
         return (_houseToken.ownerOf(_tokenId) == _address);
     }
 
-    function sellHouse(uint256 _price, uint256 _tokenId) public {
+    function sellHouse(uint256 _price, uint256 _tokenId) public nonReentrant{
         require(_ownsHouse(msg.sender, _tokenId), "Seller not owner");
         require(offerDetails[_tokenId].active == false, "House already listed");
         require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved");
 
-        /*
-        to get income from HouseToken Contract we have to call the function from that
-        contract and pass it onto the variable.
-
-        Because the function called has 3 variables, we have to set it up in this way. If
-        you put in all variables it creates issue of calling items you don't use, so put
-        space to indicate parameters we expect but indicate one that we'll use.
-        */  
+        // get income amount from houseToken
         ( , uint256 _income, ) = _houseToken.getHouse(_tokenId);
 
         //create offer by inserting items into the array
@@ -176,7 +169,7 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
         emit MarketTransaction("Offer removed", msg.sender, _tokenId);
     }
 
-    function buyHouse (uint256 _tokenId) public payable {
+    function buyHouse (uint256 _tokenId) public payable nonReentrant{
         Offer storage offer = offerDetails[_tokenId];      
         require(offer.active == true, "House not for sale"); 
 

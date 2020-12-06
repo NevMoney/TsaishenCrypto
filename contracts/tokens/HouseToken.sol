@@ -4,12 +4,15 @@ pragma solidity 0.6.10;
 
 import "@openzeppelin/contracts/presets/ERC721PresetMinterPauserAutoId.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../Storage.sol";
 import "../TsaishenUsers.sol";
 
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard, Storage {
     TsaishenUsers private _tsaishenUsers;
+
+    using SafeMath for uint256;
 
     mapping (uint256 => address) public houseIndexToApproved;
 
@@ -77,11 +80,22 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         uri = tokenURI(_id);
     }
 
-    function withdrawAll() public onlyOwner returns(uint){
+    function withdrawAll() public onlyOwner nonReentrant returns(uint){
         uint toTransfer = balance;
         balance = 0;
+        // sendValue(msg.sender, toTransfer);
         msg.sender.transfer(toTransfer);
         return toTransfer;
+    }
+
+    function _autoWithdraw() internal {
+        if(balance >= 2 ether)
+            balance = balance.sub(1 ether);
+            creator.transfer(1 ether);
+    }
+    
+    function sendEth() public payable nonReentrant{
+        _autoWithdraw();
     }
     
     // this checks if they own the house BUT I need to export this function into Users Contract

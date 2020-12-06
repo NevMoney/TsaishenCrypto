@@ -7,7 +7,7 @@ import "./tokens/HouseToken.sol";
 import "./Marketplace.sol";
 
 /* 
-Escrow is needed for both sale. 
+Escrow is needed for sale and lending. 
 
 Idea is that houseOwner lists the house for sale and it shows in Marketplace
 buyer decides to buy and the money goes into the escrow until quit claim deed
@@ -20,17 +20,14 @@ funds are released. PREFERRED OPTION - neutral third party oracle to verify info
     while they get the property and seller gets nothing
     b) seller could enter false information, causing funds to be released but buyer
     not receive the property.
-Oracle solves this problem. With utilization of the parcel mailing call
-to internet (perhaps they have API?!) and perhaps a verification of the deed info. 
-Protocol would give buyer 10 days to confirm/contest before funds are automatically 
+Oracle solves this problem with easypost (through Chainlink). 
+Must have timeOut function 10-14 days to confirm/contest before funds are automatically 
 released if the online verification matches input.
 
-Upon Escrow receiving funds, the seller has 10 days to upload deed and mailing info,
-else the funds are reverted back to the buyer.
+timeOut function for seller: 10 days to mail and upload info, else the payment reverts.
 
 */
 
 // contract TsaishenEscrow is RefundEscrow {
-//     // need timeOut functions
-//     // need oracle
+//     
 // }
