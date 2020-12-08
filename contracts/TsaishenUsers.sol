@@ -17,7 +17,7 @@ contract TsaishenUsers is Ownable, Storage {
         bool houseOwner;
         bool borrower;
         bool lender;
-        uint256 reward;
+        bool reward;
         EnumerableSet.UintSet houses;
     }    
 
@@ -29,7 +29,7 @@ contract TsaishenUsers is Ownable, Storage {
     function addUser (address newUser) public {
         EnumerableSet.UintSet memory _houses;
         address payable user = address(uint160(newUser));
-        userInfo[newUser] = User(user, false, false, false, uint256, _houses);
+        userInfo[newUser] = User(user, false, false, false, false, _houses);
         users.add(newUser);
 
         emit userAdded("New user added", newUser, true);
@@ -75,7 +75,7 @@ contract TsaishenUsers is Ownable, Storage {
         return userInfo[lender].lender;
     }
 
-    function getUserInfo(address user) public view returns(bool, bool, bool, uint256, uint[] memory){
+    function getUserInfo(address user) public view returns(bool, bool, bool, bool, uint[] memory){
         EnumerableSet.UintSet memory houses;
         userInfo[user].houseOwner; //showing false even when true - WHY
         userInfo[user].borrower;

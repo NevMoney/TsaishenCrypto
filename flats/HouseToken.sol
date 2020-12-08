@@ -2567,7 +2567,7 @@ contract TsaishenUsers is Ownable, Storage {
         bool houseOwner;
         bool borrower;
         bool lender;
-        uint256 reward;
+        bool reward;
         EnumerableSet.UintSet houses;
     }    
 
@@ -2625,7 +2625,7 @@ contract TsaishenUsers is Ownable, Storage {
         return userInfo[lender].lender;
     }
 
-    function getUserInfo(address user) public view returns(bool, bool, bool, uint256, uint[] memory){
+    function getUserInfo(address user) public view returns(bool, bool, bool, bool, uint[] memory){
         EnumerableSet.UintSet memory houses;
         userInfo[user].houseOwner;
         userInfo[user].borrower;

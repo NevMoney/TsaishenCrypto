@@ -21,6 +21,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
 
     address public _contractOwner;
     bool public _initialized;
+    address payable internal _creator;
 
     // MUST ALWAYS BE PUBLIC!
     constructor(address _userContractAddress) public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
@@ -91,7 +92,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     function _autoWithdraw() internal {
         if(balance >= 2 ether)
             balance = balance.sub(1 ether);
-            creator.transfer(1 ether);
+            _creator.transfer(1 ether);
     }
     
     function sendEth() public payable nonReentrant{

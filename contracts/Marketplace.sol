@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./tokens/HouseToken.sol";
 import "./Storage.sol";
 import "./TsaishenUsers.sol";
+import "./TsaishenEscrow.sol";
 
 interface AggregatorV3Interface {
 
@@ -39,6 +40,7 @@ interface AggregatorV3Interface {
 contract Marketplace is Ownable, Storage, ReentrancyGuard {
     HouseToken private _houseToken;
     TsaishenUsers private _tsaishenUsers;
+    TsaishenEscrow private _tsaishenEscrow;
 
     using SafeMath for uint256;
 
@@ -63,12 +65,14 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
     uint housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
     uint256 txFee = 2; //2% transaction fee
     
-    address payable public feeRecipient; 
+    address payable internal feeRecipient; 
+    // address payable internal _escrowContractAddress;
 
     // MUST ALWAYS BE PUBLIC!
-    constructor(address _userContractAddress, address _houseTokenAddress, address payable _feeRecipient) public {
+    constructor(address _userContractAddress, address _houseTokenAddress, address _escrowContractAddress, address payable _feeRecipient) public {
         setUserContract(_userContractAddress);
         setHouseToken(_houseTokenAddress);
+        setEscrowContract(_escrowContractAddress);
         feeRecipient = _feeRecipient;
     }
 
@@ -80,6 +84,10 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
 
     function setUserContract(address _userContractAddress) internal onlyOwner {
         _tsaishenUsers = TsaishenUsers(_userContractAddress);
+    }
+
+    function setEscrowContract(address _escrowContractAddress) internal onlyOwner {
+        _tsaishenEscrow = TsaishenEscrow(_escrowContractAddress);
     }
 
     // @notice get latest ETH/USD price from Chainlink
@@ -214,6 +222,39 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
         _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
 
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
+    }
+
+    function buyHouseWithEscrow (uint256 _tokenId) public payable nonReentrant{
+        Offer storage offer = offerDetails[_tokenId];      
+        require(offer.active == true, "House not for sale"); 
+
+        (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
+        uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
+        uint256 houseTransactionFee = housePriceInETH.mul(txFee).div(100);
+        require(msg.value > housePriceInETH, "Price not matching");
+        require(updatedAt >= now - 1 hours, "Data too old");
+
+        // transfer funds to Escrow
+        _tsaishenEscrow.enterEscrow(offer.seller, msg.sender, housePriceInETH);
+
+        //token to escrow - NOT QUITE SURE HOW TO DO THIS!
+        _tsaishenEscrow.enterEscrow(msg.sender, offer.seller, _tokenId);
+
+        offers[offer.index].active = false;
+
+        delete offerDetails[_tokenId];
+
+        // refund user if sent more than the price
+        if (msg.value > housePriceInETH){
+            msg.sender.transfer(msg.value.sub(housePriceInETH));
+        }
+
+        // add/update user info
+        _tsaishenUsers.addUser(msg.sender);
+        _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
+
+        emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
     }
 
 }
