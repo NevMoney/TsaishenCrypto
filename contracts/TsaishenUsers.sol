@@ -2,6 +2,7 @@
 
 pragma solidity 0.6.10;
 
+
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "./Storage.sol";
@@ -15,6 +16,7 @@ contract TsaishenUsers is Ownable, Storage {
     address marketplace;
     address houseToken;
 
+    // for local testing we won't use it but for testNet and mainNet we will
     modifier onlyAuthorized(){
         require(msg.sender == marketplace || msg.sender == houseToken || msg.sender == owner(), "Not authorized.");
         _;
@@ -42,7 +44,7 @@ contract TsaishenUsers is Ownable, Storage {
         houseToken = _houseToken;
     }
 
-    function addUser (address newUser) public onlyAuthorized{
+    function addUser (address newUser) public {
         EnumerableSet.UintSet memory _houses;
         address payable user = address(uint160(newUser));
         userInfo[newUser] = User(user, false, false, false, false, _houses);
@@ -51,12 +53,12 @@ contract TsaishenUsers is Ownable, Storage {
         emit userAdded("New user added", newUser, true);
     }
 
-    function addHouseToUser(address user, uint256 houseId) public onlyAuthorized{
+    function addHouseToUser(address user, uint256 houseId) public {
         userInfo[user].houses.add(houseId);
         userInfo[user].houseOwner = true;
     }
 
-    function deleteHouseFromUser(address user, uint256 houseId) public onlyAuthorized{
+    function deleteHouseFromUser(address user, uint256 houseId) public {
         userInfo[user].houses.remove(houseId);
     }
 
@@ -64,7 +66,7 @@ contract TsaishenUsers is Ownable, Storage {
         return users.contains(userToSearch);
     }
 
-    function deleteUser(address userToDelete) public onlyOwner {
+    function deleteUser(address userToDelete) public {
         users.remove(userToDelete);
 
         emit userDeleted("User deleted", userToDelete, false);
@@ -79,9 +81,9 @@ contract TsaishenUsers is Ownable, Storage {
     }
 
     // CAN'T GET THIS ONE TO WORK!!!
-    // function getAllUsers() public view returns(address[] memory){
-    //     return users.value;
-    // }
+    function getAllUsers() public view returns(bytes32[] memory _users){
+        return _users = users._inner._values;
+    }
 
     function borrowedMoney(address borrower) public view returns(bool){
         return userInfo[borrower].borrower;
@@ -91,16 +93,15 @@ contract TsaishenUsers is Ownable, Storage {
         return userInfo[lender].lender;
     }
 
-    function getUserInfo(address user) public view returns(bool houseOwner, bool borrower, bool lender, bool reward, uint[] memory houses){
-        EnumerableSet.UintSet memory houses;
-        userInfo[user].houseOwner; //showing false even when true - WHY
-        userInfo[user].borrower;
-        userInfo[user].lender;
-        userInfo[user].reward;
-        userInfo[user].houses; //returns empty even when there is a house - WHY
+    function getUserInfo(address user) public view returns(bool houseOwner, bool borrower, bool lender, bool reward, bytes32[] memory houses){
+        houseOwner = userInfo[user].houseOwner;
+        borrower = userInfo[user].borrower;
+        lender = userInfo[user].lender;
+        reward = userInfo[user].reward;
+        houses = userInfo[user].houses._inner._values;
     }
 
-    // function getUserHomes(address user) public view returns(uint[] memory){
-    //     return userInfo[user].houses._values;
-    // }
+    function getUserHomes(address user) public view returns(bytes32[] memory homes){
+        return homes = userInfo[user].houses._inner._values;
+    }
 }

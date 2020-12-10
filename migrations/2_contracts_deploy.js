@@ -30,6 +30,7 @@ module.exports = async function(deployer, network, accounts) {
     in truffle you don't have to doo all that, but can/should specify from which account
     */ 
     await houseTokenInstance.createHouse(1000, 10, {from: accounts[2], value:web3.utils.toWei("1")});
+    await houseTokenInstance.createHouse(2000, 20, {from: accounts[2], value:web3.utils.toWei("1")});
 
     // this is one way to access info, but the latter is better because we're accessing object
     // const houseInfo = await houseTokenInstance.getHouse(0);
@@ -60,6 +61,17 @@ module.exports = async function(deployer, network, accounts) {
     const deleteUser = await tsaishenUsersInstance.deleteUser(accounts[5]);
     const isUser4 = await tsaishenUsersInstance.isUser(accounts[5]);
     console.log("testing if user after deleting", isUser);
+
+    const getUserInfo = await tsaishenUsersInstance.getUserInfo(accounts[2]);
+    console.log("user info for house owner", getUserInfo);
+
+    const getUserHomes = await tsaishenUsersInstance.getUserHomes(accounts[2]);
+    console.log("user should have two homes", getUserHomes);
+
+    const getAllUsers = await tsaishenUsersInstance.getAllUsers();
+    console.log("all users:", getAllUsers);
+
+    return;
 
     const sellHouse = await marketplaceInstance.sellHouse(10, 0, {from: accounts[2]});
     console.log("house listed");
