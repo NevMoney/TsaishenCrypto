@@ -12,6 +12,14 @@ contract TsaishenUsers is Ownable, Storage {
 
     using EnumerableSet for EnumerableSet.UintSet;
 
+    address marketplace;
+    address houseToken;
+
+    modifier onlyAuthorized(){
+        require(msg.sender == marketplace || msg.sender == houseToken || msg.sender == owner(), "Not authorized.");
+        _;
+    }
+
     struct User {
         address payable user;
         bool houseOwner;
@@ -26,7 +34,15 @@ contract TsaishenUsers is Ownable, Storage {
     event userAdded(string, address user, bool active);
     event userDeleted(string, address user, bool active);
 
-    function addUser (address newUser) public {
+    function setMarketplaceAddress(address _marketplace) public onlyOwner{
+        marketplace = _marketplace;
+    }
+
+    function setHouseTokenAddress(address _houseToken) public onlyOwner{
+        houseToken = _houseToken;
+    }
+
+    function addUser (address newUser) public onlyAuthorized{
         EnumerableSet.UintSet memory _houses;
         address payable user = address(uint160(newUser));
         userInfo[newUser] = User(user, false, false, false, false, _houses);
@@ -35,12 +51,12 @@ contract TsaishenUsers is Ownable, Storage {
         emit userAdded("New user added", newUser, true);
     }
 
-    function addHouseToUser(address user, uint256 houseId) public{
+    function addHouseToUser(address user, uint256 houseId) public onlyAuthorized{
         userInfo[user].houses.add(houseId);
         userInfo[user].houseOwner = true;
     }
 
-    function deleteHouseFromUser(address user, uint256 houseId) internal{
+    function deleteHouseFromUser(address user, uint256 houseId) public onlyAuthorized{
         userInfo[user].houses.remove(houseId);
     }
 
@@ -75,7 +91,7 @@ contract TsaishenUsers is Ownable, Storage {
         return userInfo[lender].lender;
     }
 
-    function getUserInfo(address user) public view returns(bool, bool, bool, bool, uint[] memory){
+    function getUserInfo(address user) public view returns(bool houseOwner, bool borrower, bool lender, bool reward, uint[] memory houses){
         EnumerableSet.UintSet memory houses;
         userInfo[user].houseOwner; //showing false even when true - WHY
         userInfo[user].borrower;
