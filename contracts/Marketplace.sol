@@ -60,16 +60,18 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
     enum MarketState { Active, Escrow, Inactive }
     MarketState private _mState;
  
-    // using chainlink for realtime ETH/USD conversion -- @Dev this is TESTNET rinkeby!!
+    // using chainlink for realtime crypto/USD conversion -- @Dev this is TESTNET rinkeby!!
     AggregatorV3Interface internal priceFeedETH = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
+    AggregatorV3Interface internal priceFeedDAI = AggregatorV3Interface(0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF);
+    AggregatorV3Interface internal priceFeedUSDC = AggregatorV3Interface(0xa24de01df22b63d23Ebc1882a5E3d4ec0d907bFB);
 
-    uint housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
+    uint256 housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
     uint256 txFee = 2; //2% transaction fee
     
     address payable internal feeRecipient;
 
     // MUST ALWAYS BE PUBLIC!
-    constructor(address _userContractAddress, address _houseTokenAddress, /*address _escrowContractAddress, */address payable _feeRecipient) public {
+    constructor(address _userContractAddress, address _houseTokenAddress, address payable _feeRecipient) public {
         setUserContract(_userContractAddress);
         setHouseToken(_houseTokenAddress);
         feeRecipient = _feeRecipient;
@@ -85,15 +87,25 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
         _tsaishenUsers = TsaishenUsers(_userContractAddress);
     }
 
-    // function setEscrowContract(address _escrowContractAddress) internal onlyOwner {
-    //     _tsaishenEscrow = TsaishenEscrow(_escrowContractAddress);
-    // }
-
     // @notice get latest ETH/USD price from Chainlink
     function getEthPrice() public pure returns (int256, uint256) {
         // (, int256 answer, , uint256 updatedAt, ) = priceFeedETH.latestRoundData();
         // return (answer, updatedAt);
         return (10000000000, 1607202219); //this is for local testing DO NOT USE for other networks
+    }
+
+    // @notice get latest DAI/USD price from Chainlink
+    function getDaiPrice() public pure returns (int256, uint256) {
+        (, int256 answer, , uint256 updatedAt, ) = priceFeedDAI.latestRoundData();
+        return (answer, updatedAt);
+        // return (10000000000, 1607202219); //this is for local testing DO NOT USE for other networks
+    }
+
+    // @notice get latest USDC/USD price from Chainlink
+    function getUsdcPrice() public pure returns (int256, uint256) {
+        (, int256 answer, , uint256 updatedAt, ) = priceFeedUSDC.latestRoundData();
+        return (answer, updatedAt);
+        // return (10000000000, 1607202219); //this is for local testing DO NOT USE for other networks
     }
         
     function getOffer(uint256 _tokenId) public view returns 
@@ -192,11 +204,18 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
 
         // get ETHUSD conversion
         (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
+        // DAIUSD conversion
+        (int256 currentDaiPrice, uint256 updatedAt) = (getDaiPrice());
+        // USDCUSD conversion
+        (int256 currentUsdcPrice, uint256 updatedAt) = (getUsdcPrice());
 
-        // check if the user sent enough ether according to the price of the housePrice
+        // check if the user sent enough crypto according to the price of the housePrice
         uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
+        uint256 housePriceInDAI = offer.price.mul(housePrice).mul(1 ether).div(uint(currentDaiPrice));
+        uint256 housePriceInUSDC = offer.price.mul(housePrice).mul(1 ether).div(uint(currentUsdcPrice));
 
         // make transaction fee house specific
+        // HOW DO I MAKE THIS WORK for other tokens and dependant on what user chooses?
         uint256 houseTransactionFee = housePriceInETH.mul(txFee).div(100);
 
         // convert offer price from USD to ETH and ensure enough funds are sent by buyer
@@ -264,7 +283,7 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
 
     // need easypost API
     // If API shows no activity within timelock, it automatically executes -- HOW?
-    function permitRefunds(uint256 _tokenId) public onlyOwner {
+    function permitRefunds(uint256 _tokenId) public onlyOwner nonReentrant{
         Offer storage offer = offerDetails[_tokenId];
         require(_mState == MarketState.Escrow, "Must be in escrow");
         enableRefunds();
@@ -278,7 +297,7 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
 
     // need easypost API
     // If time has run out after easypost API showed delivery & buyer didn't confirm this executes
-    function closeEscrow(uint256 _tokenId) public onlyOwner {
+    function closeEscrow(uint256 _tokenId) public onlyOwner nonReentrant{
         Offer storage offer = offerDetails[_tokenId];
         require(_mState == MarketState.Escrow, "Must be in escrow");
 

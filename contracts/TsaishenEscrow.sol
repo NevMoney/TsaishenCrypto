@@ -127,8 +127,8 @@ contract TsaishenEscrow is Ownable{
         _state = State.Active;
     }
 
-    // timelock will be 10 days, however for testing purposes we'll make it 1 minute
-    uint256 private constant _TIMELOCK = 1 minutes;
+    // timelock will be 10 days for seller to prepare and mail deed
+    uint256 private constant _TIMELOCK = 10 days;
     mapping (State => uint256) public timelock;
 
     
