@@ -37,10 +37,10 @@ interface AggregatorV3Interface {
 
 }
 
-contract Marketplace is Ownable, Storage, ReentrancyGuard {
+contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
     HouseToken private _houseToken;
     TsaishenUsers private _tsaishenUsers;
-    TsaishenEscrow private _tsaishenEscrow;
+    // TsaishenEscrow private _tsaishenEscrow;
 
     using SafeMath for uint256;
 
@@ -57,6 +57,9 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
     // store offer information
     mapping(uint256 => Offer) internal offerDetails;
     Offer [] offers;
+
+    enum MarketState { Active, Escrow, Inactive }
+    MarketState private _mState;
  
     // using chainlink for realtime ETH/USD conversion -- @Dev this is TESTNET rinkeby!!
     AggregatorV3Interface internal priceFeedETH = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
@@ -68,10 +71,10 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
     // address payable internal _escrowContractAddress;
 
     // MUST ALWAYS BE PUBLIC!
-    constructor(address _userContractAddress, address _houseTokenAddress, address _escrowContractAddress, address payable _feeRecipient) public {
+    constructor(address _userContractAddress, address _houseTokenAddress, /*address _escrowContractAddress, */address payable _feeRecipient) public {
         setUserContract(_userContractAddress);
         setHouseToken(_houseTokenAddress);
-        setEscrowContract(_escrowContractAddress);
+        // setEscrowContract(_escrowContractAddress);
         feeRecipient = _feeRecipient;
     }
 
@@ -85,9 +88,9 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
         _tsaishenUsers = TsaishenUsers(_userContractAddress);
     }
 
-    function setEscrowContract(address _escrowContractAddress) internal onlyOwner {
-        _tsaishenEscrow = TsaishenEscrow(_escrowContractAddress);
-    }
+    // function setEscrowContract(address _escrowContractAddress) internal onlyOwner {
+    //     _tsaishenEscrow = TsaishenEscrow(_escrowContractAddress);
+    // }
 
     // @notice get latest ETH/USD price from Chainlink
     function getEthPrice() public pure returns (int256, uint256) {
@@ -146,6 +149,7 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
         require(offerDetails[_tokenId].active == false, "House already listed");
         // comment this out for local testing
         require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved");
+        require(_mState == MarketState.Inactive, "House is activelly being sold");
 
         // get income amount from houseToken
         ( , uint256 _income, ) = _houseToken.getHouse(_tokenId);
@@ -164,22 +168,30 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
         offerDetails[_tokenId] = _offer; //add offer to the mapping
         offers.push(_offer); //add to the offers array
 
+        // create Active State
+        _mState == MarketState.Active;
+
         emit MarketTransaction("House listed for sale", msg.sender, _tokenId);
     }
 
     function removeOffer(uint256 _tokenId) public {
         Offer storage offer = offerDetails[_tokenId]; //first access the offer
         require(offer.seller == msg.sender, "Not an owner"); //ensure owner only can do this
+        require(_mState == MarketState.Active, "Not activelly selling"); //check it's in active state
 
         delete offers[offer.index]; //first delete the index within the array
         delete offerDetails[_tokenId]; //then remove the id from the mapping
+
+        // change state to inactive so it can be sold again
+        _mState == MarketState.Inactive;
 
         emit MarketTransaction("Offer removed", msg.sender, _tokenId);
     }
 
     function buyHouse (uint256 _tokenId) public payable nonReentrant{
         Offer storage offer = offerDetails[_tokenId];      
-        require(offer.active == true, "House not for sale"); 
+        require(offer.active == true, "House not for sale");
+        require(_mState == MarketState.Active, "Sale is not active");
 
         // get ETHUSD conversion
         (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
@@ -207,6 +219,7 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
 
         // set the id to inactive
         offers[offer.index].active = false;
+        _mState == MarketState.Inactive;
 
         // remove from mapping BEFORE transfer takes place to ensure there is no double sale
         delete offerDetails[_tokenId];
@@ -224,37 +237,38 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
 
-    // function buyHouseWithEscrow (uint256 _tokenId) public payable nonReentrant{
-    //     Offer storage offer = offerDetails[_tokenId];      
-    //     require(offer.active == true, "House not for sale"); 
+    function buyHouseWithEscrow (uint256 _tokenId) public payable nonReentrant{
+        Offer storage offer = offerDetails[_tokenId];      
+        require(offer.active == true, "House not for sale"); 
+        require(_mState == MarketState.Active, "Sale is not active");
 
-    //     (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
-    //     uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
-    //     uint256 houseTransactionFee = housePriceInETH.mul(txFee).div(100);
-    //     require(msg.value > housePriceInETH, "Price not matching");
-    //     require(updatedAt >= now - 1 hours, "Data too old");
+        (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
+        uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
+        // uint256 houseTransactionFee = housePriceInETH.mul(txFee).div(100);
+        require(msg.value > housePriceInETH, "Price not matching");
+        require(updatedAt >= now - 1 hours, "Data too old");
 
-    //     // transfer funds to Escrow
-    //     _tsaishenEscrow.enterEscrow(offer.seller, msg.sender, housePriceInETH);
+        //transfer funds into escrow
+        // deposit(offer.seller, msg.sender).transfer(housePriceInETH);
 
-    //     //token to escrow - NOT QUITE SURE HOW TO DO THIS!
-    //     _tsaishenEscrow.enterEscrow(msg.sender, offer.seller, _tokenId);
+        offers[offer.index].active = false;
+        _mState == MarketState.Escrow;
 
-    //     offers[offer.index].active = false;
+        delete offerDetails[_tokenId];
 
-    //     delete offerDetails[_tokenId];
+        // refund user if sent more than the price
+        if (msg.value > housePriceInETH){
+            msg.sender.transfer(msg.value.sub(housePriceInETH));
+        }
 
-    //     // refund user if sent more than the price
-    //     if (msg.value > housePriceInETH){
-    //         msg.sender.transfer(msg.value.sub(housePriceInETH));
-    //     }
+        // add/update user
+        _tsaishenUsers.addUser(msg.sender);
+        // can't use these with escrow as it leaves this contract!
+        // THIS must be done in escrow
+        // _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
+        // _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
 
-    //     // add/update user info
-    //     _tsaishenUsers.addUser(msg.sender);
-    //     _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
-    //     _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
-
-    //     emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
-    // }
+        emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
+    }
 
 }

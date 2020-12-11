@@ -16,7 +16,7 @@ module.exports = async function(deployer, network, accounts) {
     once second one is deployed, third is fired off taking relevant contract(s) address(es)
     + feeRecipient (for local testing purposes I have account 1 -- CHANGE THIS for Test/MainNet)
     */
-   await deployer.deploy(TsaishenEscrow, accounts[1]);
+   await deployer.deploy(TsaishenEscrow, TsaishenUsers.address, accounts[1]);
    await deployer.deploy(Marketplace, TsaishenUsers.address, HouseToken.address, TsaishenEscrow.address, accounts[1]);
 
 

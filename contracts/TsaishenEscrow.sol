@@ -5,7 +5,6 @@ pragma solidity ^0.6.10;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-// import "@openzeppelin/contracts/payment/escrow/RefundEscrow.sol";
 import "./Marketplace.sol";
 
 /** 
@@ -29,37 +28,40 @@ contract TsaishenEscrow is Ownable{
     enum State { Active, Refunding, Closed }
     State private _state;
 
-    uint256 txFee = 2; //2% transaction fee  
-    address payable internal feeRecipient;
-    address marketplace;
+    // uint256 txFee = 2; //2% transaction fee  
+    // address payable internal feeRecipient;
+    // address marketplace;
     address payable buyer;
     address payable seller;
 
     mapping(address => uint256) private _beneficiary;
     mapping(address => uint256) private _refundee;
 
-    modifier onlyAuthorized(){
-        require(msg.sender == owner() || msg.sender == marketplace);
-        _;
-    }
+    // modifier onlyAuthorized(){
+    //     require(msg.sender == owner() || msg.sender == marketplace);
+    //     _;
+    // }
 
     // MUST ALWAYS BE PUBLIC!
-    constructor(address payable _feeRecipient) public {
-        // _marketplace = Marketplace(_escrowAgent);
-        feeRecipient = _feeRecipient;
+    constructor(/*address payable _feeRecipient*/) public {
+        // feeRecipient = _feeRecipient;
         _state = State.Active;
     }
 
-    function setMarketplaceAddress(address _marketplace) public onlyOwner{
-        marketplace = _marketplace;
-    }
+    // function setUserContract(address _userContractAddress) internal onlyOwner {
+    //     _tsaishenUsers = TsaishenUsers(_userContractAddress);
+    // }
 
-    function setBuyerAddress(address _buyer) public onlyOwner{
-        buyer = payable (_buyer);
-    }
+    // function setMarketplaceAddress(address _marketplace) public onlyOwner{
+    //     marketplace = _marketplace;
+    // }
+
+    // function setBuyerAddress(address _buyer) public onlyOwner{
+    //     buyer = payable (_buyer);
+    // }
 
     // deposit funds to be held for the beneficiary (seller)
-    function deposit(address seller, address buyer) public payable onlyAuthorized {
+    function deposit(address seller, address buyer) public payable {
         require(seller != address(0), "Beneficiary cannot be zero address.");
         require(_state == State.Active, "Can only deposit while active");
         uint256 amount = msg.value;
@@ -78,7 +80,7 @@ contract TsaishenEscrow is Ownable{
         
     }
 
-    function enableRefunds() public onlyAuthorized {
+    function enableRefunds() public onlyOwner {
         require(_state == State.Active, "Can only enable refunds while active");
         _state = State.Refunding;
         
@@ -95,14 +97,14 @@ contract TsaishenEscrow is Ownable{
 
     // function to confirm that deed was indeed transfered
     function confirmDelivery() public {
-        require(msg.sender == buyer || onlyAuthorized, "Not authorized.");
+        require(msg.sender == buyer, "Not authorized.");
         close();
     }
 
     // closes the escrow, which closes the refunds - this should use timelock functionality
     // PROBLEM: can only close if active but not in refund
     // perhaps a way to close both in refund and active BUT to verify first that funds are there??
-    function close() public onlyAuthorized {
+    function close() public onlyOwner {
         require(_state == State.Active, "RefundEscrow: can only close while active");
         _state = State.Closed;
 
@@ -118,14 +120,21 @@ contract TsaishenEscrow is Ownable{
     function beneficiaryWithdraw(address payable seller) public {
         require(_state == State.Closed, "Escrow not closed.");
         uint256 proceeds = _beneficiary[seller];
-        uint256 transactionFee = proceeds.mul(txFee).div(100);
-        uint256 paymentToSeller = proceeds.sub(transactionFee);
+        // uint256 transactionFee = proceeds.mul(txFee).div(100);
+        // uint256 paymentToSeller = proceeds.sub(transactionFee);
         _beneficiary[seller] = 0;
         _refundee[buyer] = 0;
-        feeRecipient.transfer(transactionFee);
-        seller.transfer(paymentToSeller);
+        // feeRecipient.transfer(transactionFee);
+        // seller.transfer(paymentToSeller);
+        seller.transfer(proceeds);
 
-        emit Withdrawn(seller, paymentToSeller);
+        // QUESTION: HOW do we access seller's tokenId???
+        // this takes the buyer and adds specific house to them
+        // _tsaishenUsers.addHouseToUser(_refundee[buyer], _tokenId);
+        // this takes seller and removes house from them
+        // _tsaishenUsers.deleteHouseFromUser(_beneficiary[seller], _tokenId);
+
+        emit Withdrawn(seller, proceeds/*paymentToSeller*/);
     }
 
     // doesn't reset seller to 0
@@ -137,7 +146,7 @@ contract TsaishenEscrow is Ownable{
         buyer.transfer(refund);
     }
 
-    function resetState() public onlyAuthorized{
+    function resetState() public onlyOwner{
         _state = State.Active;
     }
 
