@@ -17,7 +17,7 @@ beneficiary = buyer
 */
 
 contract TsaishenEscrow is Ownable{
-    // Marketplace private _marketplace;
+
     using SafeMath for uint256;
     using Address for address payable;
 
@@ -33,35 +33,33 @@ contract TsaishenEscrow is Ownable{
     address payable internal feeRecipient;
     address marketplace;
     address payable buyer;
-    // address payable seller;
+    address payable seller;
 
     mapping(address => uint256) private _beneficiary;
     mapping(address => uint256) private _refundee;
 
     modifier onlyAuthorized(){
-        require(msg.sender == owner() || msg.sender == marketplace || msg.sender == buyer);
+        require(msg.sender == owner() || msg.sender == marketplace);
         _;
     }
 
     // MUST ALWAYS BE PUBLIC!
-    constructor(/*address _escrowAgent, */address payable _feeRecipient) public {
+    constructor(address payable _feeRecipient) public {
         // _marketplace = Marketplace(_escrowAgent);
         feeRecipient = _feeRecipient;
-        // buyer = _buyer;
-        // seller = _seller;
         _state = State.Active;
     }
 
-    function setMarketplaceAddress(address _marketplace) public {
+    function setMarketplaceAddress(address _marketplace) public onlyOwner{
         marketplace = _marketplace;
     }
 
-    function setBuyerAddress(address _buyer) public {
+    function setBuyerAddress(address _buyer) public onlyOwner{
         buyer = payable (_buyer);
     }
 
     // deposit funds to be held for the beneficiary (seller)
-    function deposit(address seller, address buyer) public payable  {
+    function deposit(address seller, address buyer) public payable onlyAuthorized {
         require(seller != address(0), "Beneficiary cannot be zero address.");
         require(_state == State.Active, "Can only deposit while active");
         uint256 amount = msg.value;
@@ -80,7 +78,7 @@ contract TsaishenEscrow is Ownable{
         
     }
 
-    function enableRefunds() public  {
+    function enableRefunds() public onlyAuthorized {
         require(_state == State.Active, "Can only enable refunds while active");
         _state = State.Refunding;
         
@@ -96,14 +94,15 @@ contract TsaishenEscrow is Ownable{
     }
 
     // function to confirm that deed was indeed transfered
-    function confirmDelivery() public /*onlyAuthorized*/{
+    function confirmDelivery() public {
+        require(msg.sender == buyer || onlyAuthorized, "Not authorized.");
         close();
     }
 
     // closes the escrow, which closes the refunds - this should use timelock functionality
     // PROBLEM: can only close if active but not in refund
     // perhaps a way to close both in refund and active BUT to verify first that funds are there??
-    function close() public /*onlyAuthorized*/ {
+    function close() public onlyAuthorized {
         require(_state == State.Active, "RefundEscrow: can only close while active");
         _state = State.Closed;
 
@@ -115,24 +114,31 @@ contract TsaishenEscrow is Ownable{
         return true;
     }
 
-    function beneficiaryWithdraw(address payable seller) public payable {
+    // doesn't reset buyer to 0
+    function beneficiaryWithdraw(address payable seller) public {
         require(_state == State.Closed, "Escrow not closed.");
         uint256 proceeds = _beneficiary[seller];
         uint256 transactionFee = proceeds.mul(txFee).div(100);
         uint256 paymentToSeller = proceeds.sub(transactionFee);
         _beneficiary[seller] = 0;
+        _refundee[buyer] = 0;
         feeRecipient.transfer(transactionFee);
         seller.transfer(paymentToSeller);
 
         emit Withdrawn(seller, paymentToSeller);
     }
 
-    // this might not be working - TEST in truffle failed!
-    function issueRefund(address payable buyer) public payable {
+    // doesn't reset seller to 0
+    function issueRefund(address payable buyer) public {
         require(_state == State.Refunding, "Can only refund while refunding");         
         uint256 refund = _refundee[buyer];
         _refundee[buyer] = 0;
+        _beneficiary[seller] = 0;
         buyer.transfer(refund);
+    }
+
+    function resetState() public onlyAuthorized{
+        _state = State.Active;
     }
 
     // function enterEscrow(address payable buyer, address payable seller, uint256 sellingPrice) public payable onlyOwner {

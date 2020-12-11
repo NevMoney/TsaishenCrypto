@@ -80,7 +80,6 @@ contract TsaishenUsers is Ownable, Storage {
         return users.at(index);
     }
 
-    // CAN'T GET THIS ONE TO WORK!!!
     function getAllUsers() public view returns(bytes32[] memory _users){
         return _users = users._inner._values;
     }
