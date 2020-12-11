@@ -40,7 +40,6 @@ interface AggregatorV3Interface {
 contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
     HouseToken private _houseToken;
     TsaishenUsers private _tsaishenUsers;
-    // TsaishenEscrow private _tsaishenEscrow;
 
     using SafeMath for uint256;
 
@@ -67,14 +66,12 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
     uint housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
     uint256 txFee = 2; //2% transaction fee
     
-    address payable internal feeRecipient; 
-    // address payable internal _escrowContractAddress;
+    address payable internal feeRecipient;
 
     // MUST ALWAYS BE PUBLIC!
     constructor(address _userContractAddress, address _houseTokenAddress, /*address _escrowContractAddress, */address payable _feeRecipient) public {
         setUserContract(_userContractAddress);
         setHouseToken(_houseTokenAddress);
-        // setEscrowContract(_escrowContractAddress);
         feeRecipient = _feeRecipient;
     }
 
@@ -244,31 +241,65 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
 
         (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
         uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
-        // uint256 houseTransactionFee = housePriceInETH.mul(txFee).div(100);
+        
         require(msg.value > housePriceInETH, "Price not matching");
         require(updatedAt >= now - 1 hours, "Data too old");
 
         //transfer funds into escrow
-        // deposit(offer.seller, msg.sender).transfer(housePriceInETH);
+        deposit(offer.seller, msg.sender, housePriceInETH);
 
         offers[offer.index].active = false;
         _mState == MarketState.Escrow;
 
-        delete offerDetails[_tokenId];
+        // add/update user
+        _tsaishenUsers.addUser(msg.sender);
 
         // refund user if sent more than the price
         if (msg.value > housePriceInETH){
             msg.sender.transfer(msg.value.sub(housePriceInETH));
         }
 
-        // add/update user
-        _tsaishenUsers.addUser(msg.sender);
-        // can't use these with escrow as it leaves this contract!
-        // THIS must be done in escrow
-        // _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
-        // _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
-
         emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
+    }
+
+    // need easypost API
+    // If API shows no activity within timelock, it automatically executes -- HOW?
+    function permitRefunds(uint256 _tokenId) public onlyOwner {
+        Offer storage offer = offerDetails[_tokenId];
+        require(_mState == MarketState.Escrow, "Must be in escrow");
+        enableRefunds();
+        issueRefund(msg.sender); //IS THIS ACCURATE?? initial funds go back to buyer.
+
+        _mState = MarketState.Inactive;
+        delete offerDetails[_tokenId];
+
+        emit MarketTransaction("Escrow Refunded", msg.sender, _tokenId);
+    }
+
+    // need easypost API
+    // If time has run out after easypost API showed delivery & buyer didn't confirm this executes
+    function closeEscrow(uint256 _tokenId) public onlyOwner {
+        Offer storage offer = offerDetails[_tokenId];
+        require(_mState == MarketState.Escrow, "Must be in escrow");
+
+        // first, we have to verify mailing API, is received
+        // second, wait 3 days for buyer verification/inspection
+        // THEN close and release funds
+
+        // OR if buyer confirmed delivery, release funds
+
+        resetState();
+        close();
+        beneficiaryWithdraw(offer.seller);
+        
+        //this should be deleted after transfer
+        delete offerDetails[_tokenId];    
+
+        // HOW do I add house to buyer from here???
+        _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
+
+        emit MarketTransaction("House SOLD", msg.sender, _tokenId);
     }
 
 }

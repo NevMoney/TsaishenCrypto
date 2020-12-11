@@ -5,7 +5,6 @@ pragma solidity ^0.6.10;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-import "./Marketplace.sol";
 
 /** 
 money goes into the escrow until deed has been filled out and mailed to county.
@@ -28,45 +27,28 @@ contract TsaishenEscrow is Ownable{
     enum State { Active, Refunding, Closed }
     State private _state;
 
-    // uint256 txFee = 2; //2% transaction fee  
-    // address payable internal feeRecipient;
-    // address marketplace;
+    // might NOT need this!
     address payable buyer;
     address payable seller;
+
+    address payable internal eFeeRecipient;
 
     mapping(address => uint256) private _beneficiary;
     mapping(address => uint256) private _refundee;
 
-    // modifier onlyAuthorized(){
-    //     require(msg.sender == owner() || msg.sender == marketplace);
-    //     _;
-    // }
-
     // MUST ALWAYS BE PUBLIC!
-    constructor(/*address payable _feeRecipient*/) public {
-        // feeRecipient = _feeRecipient;
+    constructor() public {
         _state = State.Active;
+        // eFeeRecipient = _eFeeRecipient;
     }
 
-    // function setUserContract(address _userContractAddress) internal onlyOwner {
-    //     _tsaishenUsers = TsaishenUsers(_userContractAddress);
-    // }
-
-    // function setMarketplaceAddress(address _marketplace) public onlyOwner{
-    //     marketplace = _marketplace;
-    // }
-
-    // function setBuyerAddress(address _buyer) public onlyOwner{
-    //     buyer = payable (_buyer);
-    // }
-
     // deposit funds to be held for the beneficiary (seller)
-    function deposit(address seller, address buyer) public payable {
+    function deposit(address seller, address buyer, uint256 amount) internal {
         require(seller != address(0), "Beneficiary cannot be zero address.");
         require(_state == State.Active, "Can only deposit while active");
-        uint256 amount = msg.value;
         _beneficiary[seller] = _beneficiary[seller].add(amount);
         _refundee[buyer] = _refundee[buyer].add(amount);
+        startTimelock(State.Active);
 
         emit Deposited(seller, amount);
     }
@@ -76,12 +58,11 @@ contract TsaishenEscrow is Ownable{
     }
 
     function buyerDeposits(address refundee) public view returns (uint256) {
-        return _refundee[refundee];
-        
+        return _refundee[refundee];   
     }
 
-    function enableRefunds() public onlyOwner {
-        require(_state == State.Active, "Can only enable refunds while active");
+    function enableRefunds() internal onlyOwner notLocked(State.Active){
+        require(_state == State.Active, "Escrow not active");
         _state = State.Refunding;
         
         emit RefundsEnabled();
@@ -91,21 +72,23 @@ contract TsaishenEscrow is Ownable{
        return _state == State.Refunding;
     }
 
-    function state() public view returns (State) {
+    function escrowState() public view returns (State) {
         return _state;
     }
 
     // function to confirm that deed was indeed transfered
     function confirmDelivery() public {
         require(msg.sender == buyer, "Not authorized.");
+        if(_state == State.Refunding){
+            resetState();
+        }
+        cancelTimelock(State.Active);
         close();
     }
 
-    // closes the escrow, which closes the refunds - this should use timelock functionality
-    // PROBLEM: can only close if active but not in refund
-    // perhaps a way to close both in refund and active BUT to verify first that funds are there??
-    function close() public onlyOwner {
-        require(_state == State.Active, "RefundEscrow: can only close while active");
+    // closes the escrow and refunds - DOES IT NEED to be onlyOwner if internal???
+    function close() internal onlyOwner notLocked(State.Active){
+        require(_state == State.Active, "Can only close while active");
         _state = State.Closed;
 
         emit RefundsClosed();
@@ -120,25 +103,19 @@ contract TsaishenEscrow is Ownable{
     function beneficiaryWithdraw(address payable seller) public {
         require(_state == State.Closed, "Escrow not closed.");
         uint256 proceeds = _beneficiary[seller];
-        // uint256 transactionFee = proceeds.mul(txFee).div(100);
-        // uint256 paymentToSeller = proceeds.sub(transactionFee);
+        uint256 transactionFee = proceeds.mul(3).div(100);
+        uint256 paymentToSeller = proceeds.sub(transactionFee);
         _beneficiary[seller] = 0;
         _refundee[buyer] = 0;
-        // feeRecipient.transfer(transactionFee);
-        // seller.transfer(paymentToSeller);
-        seller.transfer(proceeds);
+        eFeeRecipient.transfer(transactionFee);
+        seller.transfer(paymentToSeller);
+        // seller.transfer(proceeds);
 
-        // QUESTION: HOW do we access seller's tokenId???
-        // this takes the buyer and adds specific house to them
-        // _tsaishenUsers.addHouseToUser(_refundee[buyer], _tokenId);
-        // this takes seller and removes house from them
-        // _tsaishenUsers.deleteHouseFromUser(_beneficiary[seller], _tokenId);
-
-        emit Withdrawn(seller, proceeds/*paymentToSeller*/);
+        emit Withdrawn(seller, /*proceeds*/paymentToSeller);
     }
 
     // doesn't reset seller to 0
-    function issueRefund(address payable buyer) public {
+    function issueRefund(address payable buyer) internal {
         require(_state == State.Refunding, "Can only refund while refunding");         
         uint256 refund = _refundee[buyer];
         _refundee[buyer] = 0;
@@ -146,50 +123,30 @@ contract TsaishenEscrow is Ownable{
         buyer.transfer(refund);
     }
 
-    function resetState() public onlyOwner{
+    function resetState() internal onlyOwner{
         _state = State.Active;
     }
 
-    // function enterEscrow(address payable buyer, address payable seller, uint256 sellingPrice) public payable onlyOwner {
-    //     State = State.Active;
-    //     _beneficiary = seller;
-    //     deposit(buyer);
-    //     startTimelock(State.Active);
-    // }
- 
-    // function permitBuyerRefund() public notLocked(State.Active) {
-    //     enableRefunds();
-    //     withdrawalAllowed(true);
-    // }
-
-    // function payout() public {
-    //     uint256 houseTransactionFee = msg.value.mul(txFee).div(100);
-    //     feeRecipient.transfer(houseTransactionFee);
-    //     uint256 fundsToSeller = msg.value.sub(houseTransactionFee);
-    //     close();
-    //     beneficiaryWithdraw();
-    // }
-
     // timelock will be 10 days, however for testing purposes we'll make it 1 minute
-    // uint256 private constant _TIMELOCK = 1 minutes;
-    // mapping (State => uint256) public timelock;
+    uint256 private constant _TIMELOCK = 1 minutes;
+    mapping (State => uint256) public timelock;
 
     
-    // // modifier to check if NOW is greater than when activated timelock
-    // modifier notLocked(State _st){
-    //     require(timelock[_st]!=0 && timelock[_st] <= now, "Function is timelocked");
-    //     _;
-    // }
+    // modifier to check if NOW is greater than when activated timelock
+    modifier notLocked(State _st){
+        require(timelock[_st] !=0 && timelock[_st] <= now, "Function is timelocked");
+        _;
+    }
 
-    // // timelock unlock function after the declared TIMELOCK timeline
-    // function startTimelock(State _st) public onlyOwner {
-    //     timelock[_st] = now + _TIMELOCK;
-    // }
+    // timelock unlock function after the declared TIMELOCK timeline
+    function startTimelock(State _st) public onlyOwner {
+        timelock[_st] = now + _TIMELOCK;
+    }
 
-    // // lock timelock
-    // function cancelTimelock(State _st) public onlyOwner {
-    //     timelock[_st] = 0;
-    // }
+    // lock timelock
+    function cancelTimelock(State _st) public onlyOwner {
+        timelock[_st] = 0;
+    }
         
 }
 
