@@ -40,11 +40,10 @@ interface AggregatorV3Interface {
 contract Marketplace is Ownable, Storage, ReentrancyGuard {
     HouseToken private _houseToken;
     TsaishenUsers private _tsaishenUsers;
-    // TsaishenEscrow private _tsaishenEscrow;
+    TsaishenEscrow private _tsaishenEscrow;
 
     using SafeMath for uint256;
 
-    // marketplace & lending stuff
     struct Offer {
         address payable seller;
         uint256 price;
@@ -69,10 +68,10 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
     // address payable internal _escrowContractAddress;
 
     // MUST ALWAYS BE PUBLIC!
-    constructor(address _userContractAddress, address _houseTokenAddress, /*address _escrowContractAddress,*/ address payable _feeRecipient) public {
+    constructor(address _userContractAddress, address _houseTokenAddress, address _escrowContractAddress, address payable _feeRecipient) public {
         setUserContract(_userContractAddress);
         setHouseToken(_houseTokenAddress);
-        // setEscrowContract(_escrowContractAddress);
+        setEscrowContract(_escrowContractAddress);
         feeRecipient = _feeRecipient;
     }
 
@@ -86,9 +85,9 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
         _tsaishenUsers = TsaishenUsers(_userContractAddress);
     }
 
-    // function setEscrowContract(address _escrowContractAddress) internal onlyOwner {
-    //     _tsaishenEscrow = TsaishenEscrow(_escrowContractAddress);
-    // }
+    function setEscrowContract(address _escrowContractAddress) internal onlyOwner {
+        _tsaishenEscrow = TsaishenEscrow(_escrowContractAddress);
+    }
 
     // @notice get latest ETH/USD price from Chainlink
     function getEthPrice() public pure returns (int256, uint256) {
@@ -145,6 +144,7 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard {
     function sellHouse(uint256 _price, uint256 _tokenId) public nonReentrant{
         require(_ownsHouse(msg.sender, _tokenId), "Seller not owner");
         require(offerDetails[_tokenId].active == false, "House already listed");
+        // comment this out for local testing
         require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved");
 
         // get income amount from houseToken

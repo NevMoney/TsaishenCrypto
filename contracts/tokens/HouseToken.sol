@@ -36,6 +36,8 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     uint public balance;    
     uint256 public houseCounter;
 
+    mapping(uint256 => string) ipfsHash;
+
     event Minted(address _owner, uint256 id, string tokenURI);
 
     function setUserContract(address _userContractAddress) internal onlyOwner {
@@ -78,7 +80,8 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         //change to mapping & uri
         value = houseInfo[_id].value;
         income = houseInfo[_id].income;
-        uri = tokenURI(_id);
+        uri = tokenURI(_id); 
+        //OR use uri = ipfsHash[_id];
     }
 
     function withdrawAll() public onlyOwner nonReentrant returns(uint){
@@ -89,6 +92,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         return toTransfer;
     }
 
+    // NEED TO GET THIS FIXED!
     function _autoWithdraw() internal {
         if(balance >= 2 ether)
             balance = balance.sub(1 ether);
