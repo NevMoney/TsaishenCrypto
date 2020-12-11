@@ -4,12 +4,15 @@ pragma solidity 0.6.10;
 
 import "@openzeppelin/contracts/presets/ERC721PresetMinterPauserAutoId.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../Storage.sol";
 import "../TsaishenUsers.sol";
 
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard, Storage {
     TsaishenUsers private _tsaishenUsers;
+
+    using SafeMath for uint256;
 
     mapping (uint256 => address) public houseIndexToApproved;
 
@@ -18,6 +21,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
 
     address public _contractOwner;
     bool public _initialized;
+    address payable internal _creator;
 
     // MUST ALWAYS BE PUBLIC!
     constructor(address _userContractAddress) public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
@@ -31,6 +35,8 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
 
     uint public balance;    
     uint256 public houseCounter;
+
+    mapping(uint256 => string) ipfsHash;
 
     event Minted(address _owner, uint256 id, string tokenURI);
 
@@ -64,28 +70,41 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         _tokenIdTracker.increment();
         
         // add user if new
-        // TsaishenUsers.addUser(msg.sender);
+        _tsaishenUsers.addUser(msg.sender);
+        _tsaishenUsers.addHouseToUser(msg.sender, _tokenIdTracker.current());
 
         return _tokenIdTracker.current();
     }
 
     function getHouse(uint256 _id) public view returns(uint256 value, uint256 income, string memory uri) {
-        //change to mapping & uri
         value = houseInfo[_id].value;
         income = houseInfo[_id].income;
-        uri = tokenURI(_id);
+        uri = tokenURI(_id); 
+        //OR use uri = ipfsHash[_id];
     }
 
-    function withdrawAll() public onlyOwner returns(uint){
+    function withdrawAll() public onlyOwner nonReentrant returns(uint){
         uint toTransfer = balance;
         balance = 0;
+        // sendValue(msg.sender, toTransfer);
         msg.sender.transfer(toTransfer);
         return toTransfer;
     }
+
+    // NEED TO GET THIS FIXED!
+    function _autoWithdraw() internal {
+        if(balance >= 2 ether)
+            balance = balance.sub(1 ether);
+            _creator.transfer(1 ether);
+    }
     
-    // this checks if they own the house BUT I need to export this function into Users Contract
+    function sendEth() public payable nonReentrant{
+        _autoWithdraw();
+    }
+    
+    // this checks if they own the house
     function ownsHouse(address _address) public view returns(bool){
-        if(balanceOf(_address) >= 1) return true;
+        if(balanceOf(_address) > 0) return true;
         return false;
     }
 
