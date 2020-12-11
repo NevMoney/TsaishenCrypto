@@ -77,7 +77,6 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     }
 
     function getHouse(uint256 _id) public view returns(uint256 value, uint256 income, string memory uri) {
-        //change to mapping & uri
         value = houseInfo[_id].value;
         income = houseInfo[_id].income;
         uri = tokenURI(_id); 
@@ -103,7 +102,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         _autoWithdraw();
     }
     
-    // this checks if they own the house BUT I need to export this function into Users Contract
+    // this checks if they own the house
     function ownsHouse(address _address) public view returns(bool){
         if(balanceOf(_address) > 0) return true;
         return false;
