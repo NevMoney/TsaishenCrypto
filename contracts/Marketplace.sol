@@ -205,14 +205,16 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
         // get ETHUSD conversion
         (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
         // DAIUSD conversion
-        (int256 currentDaiPrice, uint256 updatedAt) = (getDaiPrice());
+        (int256 currentDaiPrice, uint256 daiUpdatedAt) = (getDaiPrice());
         // USDCUSD conversion
-        (int256 currentUsdcPrice, uint256 updatedAt) = (getUsdcPrice());
+        (int256 currentUsdcPrice, uint256 usdcUpdatedAt) = (getUsdcPrice());
 
         // check if the user sent enough crypto according to the price of the housePrice
         uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
         uint256 housePriceInDAI = offer.price.mul(housePrice).mul(1 ether).div(uint(currentDaiPrice));
         uint256 housePriceInUSDC = offer.price.mul(housePrice).mul(1 ether).div(uint(currentUsdcPrice));
+
+        //for ERC20 token use transferFrom function
 
         // make transaction fee house specific
         // HOW DO I MAKE THIS WORK for other tokens and dependant on what user chooses?
@@ -265,10 +267,10 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
         require(updatedAt >= now - 1 hours, "Data too old");
 
         //transfer funds into escrow
-        deposit(offer.seller, msg.sender, housePriceInETH);
+        deposit(offer.seller, msg.sender, housePriceInETH, _tokenId);
 
         offers[offer.index].active = false;
-        _mState == MarketState.Escrow;
+        _mState = MarketState.Escrow; //modifying for all. don't need it --> use escrow contract for this
 
         // add/update user
         _tsaishenUsers.addUser(msg.sender);

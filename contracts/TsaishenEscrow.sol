@@ -25,38 +25,59 @@ contract TsaishenEscrow is Ownable{
     event RefundsEnabled();
 
     enum State { Active, Refunding, Closed }
-    State private _state;
 
-    // might NOT need this!
-    address payable buyer;
-    address payable seller;
+    // // might NOT need this!
+    // address payable buyer;
+    // address payable seller;
+
+    struct Escrow {
+        address beneficiary;
+        address refundee;
+        State state;
+        uint256 amount;
+        uint256 timelock;
+    }
 
     address payable internal eFeeRecipient;
 
-    mapping(address => uint256) private _beneficiary;
-    mapping(address => uint256) private _refundee;
+    mapping(uint256 => Escrow) escrowById;
 
-    // MUST ALWAYS BE PUBLIC!
-    constructor() public {
-        _state = State.Active;
-        // eFeeRecipient = _eFeeRecipient;
+     // timelock will be 10 days for seller to prepare and mail deed
+    uint256 private constant _TIMELOCK = 10 days;
+    
+    // modifier to check if NOW is greater than when activated timelock
+    modifier notLocked(State _st){
+        require(timelock[_st] !=0 && timelock[_st] <= now, "Function is timelocked");
+        _;
     }
 
+    // timelock unlock function after the declared TIMELOCK timeline
+    function startTimelock(State _st) public onlyOwner {
+        timelock[_st] = now + _TIMELOCK;
+    }
+
+    // lock timelock
+    function cancelTimelock(State _st) public onlyOwner {
+        timelock[_st] = 0;
+    }
+        
     // deposit funds to be held for the beneficiary (seller)
-    function deposit(address seller, address buyer, uint256 amount) internal {
+    function deposit(address seller, address buyer, uint256 amount, uint256 tokenId) internal {
         require(seller != address(0), "Beneficiary cannot be zero address.");
-        require(_state == State.Active, "Can only deposit while active");
-        _beneficiary[seller] = _beneficiary[seller].add(amount);
-        _refundee[buyer] = _refundee[buyer].add(amount);
-        startTimelock(State.Active);
+        Escrow memory escrow = Escrow(seller, buyer, State.Active, amount, now + _TIMELOCK);
+        escrowById[tokenId] = escrow;
+        // _beneficiary[seller] = _beneficiary[seller].add(amount);
+        // _refundee[buyer] = _refundee[buyer].add(amount);
+        // startTimelock(State.Active);
 
         emit Deposited(seller, amount);
     }
 
-    function sellerDeposits(address recipient) public view returns (uint256) {  
-        return _beneficiary[recipient];
+    function sellerDeposits(uint256 tokenId) public view returns (address, uint256) {  
+        return (escrowById[tokenId].seller, escrowById[tokenId].amount);
     }
 
+    // rework all functions to be found by tokenId
     function buyerDeposits(address refundee) public view returns (uint256) {
         return _refundee[refundee];   
     }
@@ -77,8 +98,8 @@ contract TsaishenEscrow is Ownable{
     }
 
     // function to confirm that deed was indeed transfered
-    function confirmDelivery() public {
-        require(msg.sender == buyer, "Not authorized.");
+    function confirmDelivery() public onlyOwner {
+        // require(msg.sender == buyer, "Not authorized.");
         if(_state == State.Refunding){
             resetState();
         }
@@ -100,7 +121,7 @@ contract TsaishenEscrow is Ownable{
     }
 
     // doesn't reset buyer to 0
-    function beneficiaryWithdraw(address payable seller) public {
+    function beneficiaryWithdraw(address payable seller, uint256 tokenId) public {
         require(_state == State.Closed, "Escrow not closed.");
         uint256 proceeds = _beneficiary[seller];
         uint256 transactionFee = proceeds.mul(3).div(100);
@@ -127,27 +148,6 @@ contract TsaishenEscrow is Ownable{
         _state = State.Active;
     }
 
-    // timelock will be 10 days for seller to prepare and mail deed
-    uint256 private constant _TIMELOCK = 10 days;
-    mapping (State => uint256) public timelock;
-
-    
-    // modifier to check if NOW is greater than when activated timelock
-    modifier notLocked(State _st){
-        require(timelock[_st] !=0 && timelock[_st] <= now, "Function is timelocked");
-        _;
-    }
-
-    // timelock unlock function after the declared TIMELOCK timeline
-    function startTimelock(State _st) public onlyOwner {
-        timelock[_st] = now + _TIMELOCK;
-    }
-
-    // lock timelock
-    function cancelTimelock(State _st) public onlyOwner {
-        timelock[_st] = 0;
-    }
-        
 }
 
    

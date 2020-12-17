@@ -83,19 +83,15 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         //OR use uri = ipfsHash[_id];
     }
 
-    function withdrawAll() public onlyOwner nonReentrant returns(uint){
-        uint toTransfer = balance;
-        balance = 0;
-        // sendValue(msg.sender, toTransfer);
-        msg.sender.transfer(toTransfer);
-        return toTransfer;
+    function withdrawAll() public onlyOwner {
+        msg.sender.transfer(address(this).balance);
     }
 
     // NEED TO GET THIS FIXED!
     function _autoWithdraw() internal {
-        if(balance >= 2 ether)
-            balance = balance.sub(1 ether);
-            _creator.transfer(1 ether);
+        if(address(this).balance >= 2 ether) {
+            _creator.transfer(address(this).balance);
+        }    
     }
     
     function sendEth() public payable nonReentrant{
