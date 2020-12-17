@@ -47,7 +47,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     // generate house on blockchain: value, ID, owner address
     function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
         // require identification of the user KYC/AML before execution
-        balance += msg.value;
+        balance.add(msg.value);
 
         houseCounter++;
 
@@ -80,22 +80,18 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         value = houseInfo[_id].value;
         income = houseInfo[_id].income;
         uri = tokenURI(_id); 
-        //OR use uri = ipfsHash[_id];
+        //USE THIS INSTEAD WHEN PART DONE 
+        // uri = ipfsHash[_id];
     }
 
     function withdrawAll() public onlyOwner {
         msg.sender.transfer(address(this).balance);
     }
 
-    // NEED TO GET THIS FIXED!
     function _autoWithdraw() internal {
-        if(address(this).balance >= 2 ether) {
+        if(address(this).balance >= 10 ether) {
             _creator.transfer(address(this).balance);
         }    
-    }
-    
-    function sendEth() public payable nonReentrant{
-        _autoWithdraw();
     }
     
     // this checks if they own the house
