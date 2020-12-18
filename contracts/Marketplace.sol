@@ -197,20 +197,63 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("Offer removed", msg.sender, _tokenId);
     }
 
-    function buyHouse (uint256 _tokenId) public payable nonReentrant{
+    function buyHouseWithETH (uint256 _tokenId) public payable nonReentrant{
         Offer storage offer = offerDetails[_tokenId];      
         require(offer.active == true, "House not for sale");
         require(_mState == MarketState.Active, "Sale is not active");
 
         // get ETHUSD conversion
         (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
+
+        // make transaction fee house specific
+        uint256 houseTransactionFee = housePriceInETH.mul(txFee).div(100);
+
+        // convert offer price from USD to ETH and ensure enough funds are sent by buyer
+        require(msg.value > housePriceInETH, "Price not matching");
+
+        //price data should be fresher than 1 hour
+        require(updatedAt >= now - 1 hours, "Data too old");
+
+        // transfer fee to feeRecipient
+        feeRecipient.transfer(houseTransactionFee);
+
+        // transfer proceeds to seller - txFee
+         offer.seller.transfer(housePriceInETH.sub(houseTransactionFee));
+
+        //finalize by transfering token ownership
+        _houseToken.safeTransferFrom(offer.seller, msg.sender, _tokenId);
+
+        // set the id to inactive
+        offers[offer.index].active = false;
+        _mState == MarketState.Inactive;
+
+        // remove from mapping BEFORE transfer takes place to ensure there is no double sale
+        delete offerDetails[_tokenId];
+
+        // refund user if sent more than the price
+        if (msg.value > housePriceInETH){
+            msg.sender.transfer(msg.value - housePriceInETH);
+        }
+
+        // add/update user info
+        _tsaishenUsers.addUser(msg.sender);
+        _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
+
+        emit MarketTransaction("House purchased", msg.sender, _tokenId);
+    }
+
+    function buyHouseWithERC20 (uint256 _tokenId) public payable nonReentrant{
+        Offer storage offer = offerDetails[_tokenId];      
+        require(offer.active == true, "House not for sale");
+        require(_mState == MarketState.Active, "Sale is not active");
+
         // DAIUSD conversion
         (int256 currentDaiPrice, uint256 daiUpdatedAt) = (getDaiPrice());
         // USDCUSD conversion
         (int256 currentUsdcPrice, uint256 usdcUpdatedAt) = (getUsdcPrice());
 
         // check if the user sent enough crypto according to the price of the housePrice
-        uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
         uint256 housePriceInDAI = offer.price.mul(housePrice).mul(1 ether).div(uint(currentDaiPrice));
         uint256 housePriceInUSDC = offer.price.mul(housePrice).mul(1 ether).div(uint(currentUsdcPrice));
 
