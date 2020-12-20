@@ -277,7 +277,7 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
 
-    function buyHouseWithUSDC (uint256 _tokenId) public payable nonReentrant{
+    function buyWithUSDC (uint256 _tokenId) public payable nonReentrant{
         Offer storage offer = offerDetails[_tokenId];      
         require(offer.active == true, "House not for sale");
 
@@ -305,65 +305,60 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
 
-    // function ethEscrowBuy (uint256 _tokenId) public payable nonReentrant{
-    //     Offer storage offer = offerDetails[_tokenId];      
-    //     require(offer.active == true, "House not for sale"); 
+    function escrowBuyEth (uint256 _tokenId) public payable nonReentrant{
+        Offer storage offer = offerDetails[_tokenId];      
+        require(offer.active == true, "House not for sale"); 
 
-    //     (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
-    //     uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
+        (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
+        uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
         
-    //     require(msg.value > housePriceInETH, "Price not matching");
-    //     require(updatedAt >= now - 1 hours, "Data too old");
+        require(msg.value > housePriceInETH, "Price not matching");
+        require(updatedAt >= now - 1 hours, "Data too old");
 
-    //     //transfer funds into escrow
-    //     deposit(offer.seller, msg.sender, housePriceInETH, _tokenId);
+        //transfer funds into escrow
+        deposit(offer.seller, msg.sender, housePriceInETH, _tokenId);
 
-    //     offers[offer.index].active = false;
+        offers[offer.index].active = false;
 
-    //     // add/update user
-    //     _tsaishenUsers.addUser(msg.sender);
+        // add/update user
+        _tsaishenUsers.addUser(msg.sender);
 
-    //     // refund user if sent more than the price
-    //     if (msg.value > housePriceInETH){
-    //         msg.sender.transfer(msg.value.sub(housePriceInETH));
-    //     }
+        // refund user if sent more than the price
+        if (msg.value > housePriceInETH){
+            msg.sender.transfer(msg.value.sub(housePriceInETH));
+        }
 
-    //     emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
-    // }
+        emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
+    }
 
-    // // need easypost API
-    // function permitRefunds(uint256 _tokenId) public onlyOwner nonReentrant{
-    //     Offer storage offer = offerDetails[_tokenId];
-    //     enableRefunds();
-    //     issueRefund(msg.sender); //IS THIS ACCURATE?? initial funds go back to buyer.
+    function permitRefunds(uint256 _tokenId) public onlyOwner {
+        Offer storage offer = offerDetails[_tokenId];
+        enableRefunds(_tokenId);
+        issueRefund(escrowById[_tokenId].buyer, _tokenId);
 
-    //     delete offerDetails[_tokenId];
+        offers[offer.index].active = true;
 
-    //     emit MarketTransaction("Escrow Refunded", msg.sender, _tokenId);
-    // }
+        emit MarketTransaction("Escrow Refunded", escrowById[_tokenId].buyer, _tokenId);
+    }
 
-    // // If time has run out after easypost API showed delivery & buyer didn't confirm this executes
-    // function closeEscrow(uint256 _tokenId) public onlyOwner nonReentrant{
-    //     Offer storage offer = offerDetails[_tokenId];
-
-    //     // first, we have to verify mailing API, is received
-    //     // second, wait 3 days for buyer verification/inspection
-    //     // THEN close and release funds
-
-    //     // OR if buyer confirmed delivery, release funds
-
-    //     resetState();
-    //     close();
-    //     beneficiaryWithdraw(offer.seller);
+    // Time has run out or buyer uploads deed to IPFS execute
+    function closeEscrow(uint256 _tokenId) public onlyOwner {
+        Offer storage offer = offerDetails[_tokenId];
+        require(escrowById[_tokenId].amount > 0, "Escrow already closed, refunded, or nonexistent.");
         
-    //     //this should be deleted after transfer
-    //     delete offerDetails[_tokenId];    
+        resetState(_tokenId);
+        close(_tokenId);
+        
+        beneficiaryWithdraw(offer.seller, _tokenId);
 
-    //     // HOW do I add house to buyer from here???
-    //     _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
-    //     _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
+        //remove token from the mapping
+        delete offerDetails[_tokenId];    
 
-    //     emit MarketTransaction("House SOLD", msg.sender, _tokenId);
-    // }
+        // finalize transaction with users
+        _tsaishenUsers.addHouseToUser(escrowById[_tokenId].buyer, _tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
+
+        emit MarketTransaction("House SOLD", offer.seller, _tokenId);
+    }
 
 }

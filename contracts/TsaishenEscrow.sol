@@ -30,7 +30,8 @@ contract TsaishenEscrow is Ownable{
     // tokenId is the key to the struct within mapping
     mapping(uint256 => Escrow) escrowById;
 
-    address payable internal eFeeRecipient; //might not need this if handled in the marketplace
+    address payable internal eFeeRecipient;
+    uint256 fee = 3;
 
      // timelock will be 10 days; for testing it's 1 minute
     uint256 private constant _TIMELOCK= 1 minutes;
@@ -52,9 +53,9 @@ contract TsaishenEscrow is Ownable{
     // }
         
     // deposit funds to be held for the beneficiary (seller)
-    function deposit(address seller, address buyer, uint256 tokenId) internal {
+    function deposit(address seller, address buyer, uint256 amount, uint256 tokenId) internal {
         require(seller != address(0), "Beneficiary cannot be zero address.");
-        uint256 amount = msg.value;
+        // uint256 amount = msg.value;
         Escrow memory escrow = Escrow(payable(seller), payable(buyer), State.Active, amount, now + _TIMELOCK);
         escrowById[tokenId] = escrow;
 
@@ -95,6 +96,7 @@ contract TsaishenEscrow is Ownable{
             resetState(tokenId);
         }
         escrowById[tokenId].timelock = 0;
+        escrowById[tokenId].state = State.Closed;
         beneficiaryWithdraw(escrowById[tokenId].seller, tokenId);
     }
 
@@ -112,23 +114,20 @@ contract TsaishenEscrow is Ownable{
         return true;
     }
 
-    // doesn't reset buyer to 0
-    function beneficiaryWithdraw(address payable seller, uint256 tokenId) internal {
+    function beneficiaryWithdraw(address payable seller, uint256 tokenId) internal onlyOwner{
         require(now >= escrowById[tokenId].timelock, "Cannot withdraw when timelocked.");
         require(escrowById[tokenId].state == State.Closed, "Escrow not closed.");
-        uint256 transactionFee = escrowById[tokenId].amount.mul(3).div(100);
+        uint256 transactionFee = escrowById[tokenId].amount.mul(fee).div(100);
         uint256 paymentToSeller = escrowById[tokenId].amount.sub(transactionFee);
         escrowById[tokenId].amount = 0;
         eFeeRecipient.transfer(transactionFee);
-        // address payable seller = address(uint160(_seller));
         escrowById[tokenId].seller.transfer(paymentToSeller);
         escrowById[tokenId].buyer.transfer(tokenId);
 
         emit Withdrawn(seller, paymentToSeller);
     }
 
-    // doesn't reset seller to 0
-    function issueRefund(address payable buyer, uint256 tokenId) internal {
+    function issueRefund(address payable buyer, uint256 tokenId) internal onlyOwner{
         require(now >= escrowById[tokenId].timelock, "Cannot refund when timelocked.");
         require(escrowById[tokenId].state == State.Refunding, "Can only refund while refunding");         
         uint256 refund = escrowById[tokenId].amount;
@@ -139,8 +138,7 @@ contract TsaishenEscrow is Ownable{
         emit Withdrawn(buyer, refund);
     }
 
-    //this may need to get reworked
-    function resetState(uint256 tokenId) internal onlyOwner{
+    function resetState(uint256 tokenId) internal {
         escrowById[tokenId].state = State.Active;
     }
 
