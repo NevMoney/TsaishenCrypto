@@ -5,6 +5,7 @@ pragma solidity ^0.6.10;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./tokens/HouseToken.sol";
 import "./Storage.sol";
 import "./TsaishenUsers.sol";
@@ -62,16 +63,30 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
     AggregatorV3Interface internal priceFeedDAI = AggregatorV3Interface(0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF);
     AggregatorV3Interface internal priceFeedUSDC = AggregatorV3Interface(0xa24de01df22b63d23Ebc1882a5E3d4ec0d907bFB);
 
+    //pull DAI & USDC addresses
+    address daiAddress = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+    address usdcAddress = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
+
+    IERC20 public dai;
+    IERC20 public usdc;
+
     uint256 housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
     uint256 txFee = 2; //2% transaction fee
     
     address payable internal feeRecipient;
 
     // MUST ALWAYS BE PUBLIC!
-    constructor(address _userContractAddress, address _houseTokenAddress, address payable _feeRecipient) public {
+    constructor(
+        address _userContractAddress, 
+        address _houseTokenAddress, 
+        address payable _feeRecipient, 
+        IERC20 _dai, 
+        IERC20 _usdc) public {
         setUserContract(_userContractAddress);
         setHouseToken(_houseTokenAddress);
         feeRecipient = _feeRecipient;
+        dai = _dai;
+        usdc = _usdc;
     }
 
     event MarketTransaction (string, address, uint);
@@ -233,58 +248,62 @@ contract Marketplace is Ownable, Storage, ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
 
-    // function buyHouseWithERC20 (uint256 _tokenId) public payable nonReentrant{
-    //     Offer storage offer = offerDetails[_tokenId];      
-    //     require(offer.active == true, "House not for sale");
+    // function to allow users to purchase with DAI
+    function buyWithDAI (uint256 _tokenId) public payable nonReentrant{
+        Offer storage offer = offerDetails[_tokenId];      
+        require(offer.active == true, "House not for sale");
 
-    //     // DAIUSD conversion
-    //     (int256 currentDaiPrice, uint256 daiUpdatedAt) = (getDaiPrice());
-    //     // USDCUSD conversion
-    //     (int256 currentUsdcPrice, uint256 usdcUpdatedAt) = (getUsdcPrice());
+        (int256 currentDaiPrice, uint256 daiUpdatedAt) = (getDaiPrice());
+        uint256 housePriceInDAI = offer.price.mul(housePrice).mul(1 ether).div(uint(currentDaiPrice));
 
-    //     // check if the user sent enough crypto according to the price of the housePrice
-    //     uint256 housePriceInDAI = offer.price.mul(housePrice).mul(1 ether).div(uint(currentDaiPrice));
-    //     uint256 housePriceInUSDC = offer.price.mul(housePrice).mul(1 ether).div(uint(currentUsdcPrice));
+        require(daiUpdatedAt >= now - 1 hours, "Data too old");
+        require(dai.approve(address(this), housePriceInDAI), "DAI: approve");
+        require(dai.transferFrom(msg.sender, address(this), housePriceInDAI), "Price not matching");
+        
+        dai.transferFrom(msg.sender, address(this), housePriceInDAI);
+        uint256 houseTransactionFee = housePriceInDAI.mul(txFee).div(100);
 
-    //     //for ERC20 token use transferFrom function
+        feeRecipient.transfer(houseTransactionFee);
+        offer.seller.transfer(housePriceInDAI.sub(houseTransactionFee));
 
-    //     // make transaction fee house specific
-    //     // HOW DO I MAKE THIS WORK for other tokens and dependant on what user chooses?
-    //     uint256 houseTransactionFee = housePriceInDAI.mul(txFee).div(100);
+        _houseToken.safeTransferFrom(offer.seller, msg.sender, _tokenId);
+        offers[offer.index].active = false;
+        delete offerDetails[_tokenId];
 
-    //     // convert offer price from USD to ETH and ensure enough funds are sent by buyer
-    //     require(msg.value > housePriceInETH, "Price not matching");
+        _tsaishenUsers.addUser(msg.sender);
+        _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
 
-    //     //price data should be fresher than 1 hour
-    //     require(updatedAt >= now - 1 hours, "Data too old");
+        emit MarketTransaction("House purchased", msg.sender, _tokenId);
+    }
 
-    //     // transfer fee to feeRecipient
-    //     feeRecipient.transfer(houseTransactionFee);
+    function buyHouseWithUSDC (uint256 _tokenId) public payable nonReentrant{
+        Offer storage offer = offerDetails[_tokenId];      
+        require(offer.active == true, "House not for sale");
 
-    //     // transfer proceeds to seller - txFee
-    //      offer.seller.transfer(housePriceInETH.sub(houseTransactionFee));
+        (int256 currentUsdcPrice, uint256 usdcUpdatedAt) = (getUsdcPrice());
+        uint256 housePriceInUSDC = offer.price.mul(housePrice).mul(1 ether).div(uint(currentUsdcPrice));
 
-    //     //finalize by transfering token ownership
-    //     _houseToken.safeTransferFrom(offer.seller, msg.sender, _tokenId);
+        require(usdcUpdatedAt >= now - 1 hours, "Data too old");
+        require(dai.approve(address(this), housePriceInUSDC), "USDC: approve");
+        require(usdc.transferFrom(msg.sender, address(this), housePriceInUSDC), "Price not matching");
+        
+        usdc.transferFrom(msg.sender, address(this), housePriceInUSDC);
+        uint256 houseTransactionFee = housePriceInUSDC.mul(txFee).div(100);
 
-    //     // set the id to inactive
-    //     offers[offer.index].active = false;
+        feeRecipient.transfer(houseTransactionFee);
+        offer.seller.transfer(housePriceInUSDC.sub(houseTransactionFee));
 
-    //     // remove from mapping BEFORE transfer takes place to ensure there is no double sale
-    //     delete offerDetails[_tokenId];
+        _houseToken.safeTransferFrom(offer.seller, msg.sender, _tokenId);
+        offers[offer.index].active = false;
+        delete offerDetails[_tokenId];
 
-    //     // refund user if sent more than the price
-    //     if (msg.value > housePriceInETH){
-    //         msg.sender.transfer(msg.value - housePriceInETH);
-    //     }
+        _tsaishenUsers.addUser(msg.sender);
+        _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
 
-    //     // add/update user info
-    //     _tsaishenUsers.addUser(msg.sender);
-    //     _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
-    //     _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
-
-    //     emit MarketTransaction("House purchased", msg.sender, _tokenId);
-    // }
+        emit MarketTransaction("House purchased", msg.sender, _tokenId);
+    }
 
     // function ethEscrowBuy (uint256 _tokenId) public payable nonReentrant{
     //     Offer storage offer = offerDetails[_tokenId];      
