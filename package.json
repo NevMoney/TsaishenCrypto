@@ -10,8 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "flat": "truffle-flattener contracts/tokens/TsaishenToken.sol > flats/TsaishenToken.sol",
     "flat": "truffle-flattener contracts/tokens/HouseToken.sol > flats/HouseToken.sol",
-    "flat": "truffle-flattener contracts/Marketplace.sol > flats/Marketplace.sol",
-    "flat": "truffle-flattener contracts/TsaishenEscrow.sol > flats/TsaishenEscrow.sol"
+    "flat": "truffle-flattener contracts/Marketplace.sol > flats/Marketplace.sol"
   },
   "repository": {
     "type": "git",
