@@ -375,7 +375,7 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("Escrow Refunded", escrowById[_tokenId].buyer, _tokenId);
     }
 
-    // Time has run out or buyer uploads deed to IPFS execute
+    // This releases funds to seller and transfers token to buyer
     function closeEscrow(uint256 _tokenId) public onlyOwner {
         Offer storage offer = offerDetails[_tokenId];
         require(escrowById[_tokenId].amount > 0, "ERR20");
