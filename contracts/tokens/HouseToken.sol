@@ -8,11 +8,13 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../Storage.sol";
 import "../TsaishenUsers.sol";
+import "../StringsConcats.sol";
 
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard, Storage {
     TsaishenUsers private _tsaishenUsers;
 
     using SafeMath for uint256;
+    using StringsConcats for string;
 
     mapping (uint256 => address) public houseIndexToApproved;
 
@@ -77,18 +79,32 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         return _tokenIdTracker.current();
     }
 
+    function houseHashURI(uint256 _tokenId) public view returns(string memory){
+        return ipfsHash[_tokenId];
+    }
+
+    function houseTokenURI(uint256 _tokenId) internal view returns(string memory){
+        return StringsConcats.strConcat(
+            houseHashURI(_tokenId),
+            StringsConcats.uint2str(_tokenId)
+        );
+    }
+
     function getHouse(uint256 _id) public view returns(uint256 value, uint256 income, string memory uri) {
         value = houseInfo[_id].value;
         income = houseInfo[_id].income;
-        uri = tokenURI(_id); 
-        //USE THIS INSTEAD WHEN PART DONE 
-        // uri = ipfsHash[_id];
+        uri = houseTokenURI(_id);
+        /* 
+        The idea is to concatonate "ipfsHash[_id]" + "(tokenURI(_id))" as the uri, thus having both the hash 
+        of the uploaded document and the tokenId when minted as the URI of the token.
+        */
     }
 
     function withdrawAll() public onlyOwner {
         msg.sender.transfer(address(this).balance);
     }
 
+    //NOT WORKING!
     function _autoWithdraw() internal {
         if(address(this).balance >= 10 ether) {
             _creator.transfer(address(this).balance);
