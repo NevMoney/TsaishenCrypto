@@ -24,10 +24,10 @@ $(document).ready(async () => {
   });
 
 // Navigation
-$("#marketLink").click(() => {
+$("#marketLink").on("click", function () {
     $("#upload-container").hide();
     $("#deed-container").hide();
-    $("#home-container").hide();
+    $("#homePage").hide();
     $("#upload-what").hide();
     $("#portfolio-container").hide();
 
@@ -39,10 +39,10 @@ $("#marketLink").click(() => {
     $("#market-container").show();
 });
   
-$("#portfolioLink").click(() => {
+$("#portfolioLink").on("click", function () {
     $("#upload-container").hide();
     $("#market-container").hide();
-    $("#home-container").hide();
+    $("#homePage").hide();
     $("#deed-container").hide();
     $("#upload-what").hide();
 
@@ -54,10 +54,10 @@ $("#portfolioLink").click(() => {
     $("#portfolio-container").show();
 });
 
-$("#blockLink").click(() => {
+$("#blockLink").on("click", function () {
     $("#market-container").hide();
     $("#deed-container").hide();
-    $("#home-container").hide();
+    $("#homePage").hide();
     $("#upload-container").hide();
     $("#portfolio-container").hide();
 
@@ -69,7 +69,7 @@ $("#blockLink").click(() => {
     $("#upload-what").show();
 });
 
-$("#homeLink").click(() => {
+$("#homeLink").on("click", function () {
     $("#market-container").hide();
     $("#deed-container").hide();
     $("#upload-container").hide();
@@ -82,23 +82,23 @@ $("#homeLink").click(() => {
     
 
     $("#homeLink").addClass("active");
-    $("#home-container").show(); 
+    $("#homePage").show(); 
 });
 
-$("#uploadLinkBtn").click(() => {
+$("#uploadLinkBtn").on("click", function () {
     $("#market-container").hide();
     $("#deed-container").hide();
-    $("#home-container").hide();
+    $("#homePage").hide();
     $("#upload-what").hide();
     $("#portfolio-container").hide();
 
     $("#upload-container").show();    
 });
 
-$("#deedLinkBtn").click(() => {
+$("#deedLinkBtn").on("click", function () {
     $("#market-container").hide();
     $("#upload-container").hide();
-    $("#home-container").hide();
+    $("#homePage").hide();
     $("#upload-what").hide();
     $("#portfolio-container").hide();
     
