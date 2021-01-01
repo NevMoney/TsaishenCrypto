@@ -133,3 +133,4 @@ $("#pricingBtn").on("click", function () {
 
     $("#learnMore").show();
 });
+
