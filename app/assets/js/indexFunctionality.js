@@ -5,6 +5,7 @@ $(document).ready(async () => {
     $("#upload-container").hide();
     $("#upload-what").hide();
     $("#portfolio-container").hide();
+    $("#learnMore").hide();
   
     // this allows the website to use the metamask account
     const accounts = await ethereum.enable();
@@ -24,12 +25,13 @@ $(document).ready(async () => {
   });
 
 // Navigation
-$("#marketLink").on("click", function () {
+$(".marketLink").on("click", function () {
     $("#upload-container").hide();
     $("#deed-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
     $("#portfolio-container").hide();
+    $("#learnMore").hide();
 
     $("#blockLink").removeClass("active");
     $("#portfolioLink").removeClass("active");
@@ -45,6 +47,7 @@ $("#portfolioLink").on("click", function () {
     $("#homePage").hide();
     $("#deed-container").hide();
     $("#upload-what").hide();
+    $("#learnMore").hide();
 
     $("#blockLink").removeClass("active");
     $("#marketLink").removeClass("active");
@@ -54,12 +57,13 @@ $("#portfolioLink").on("click", function () {
     $("#portfolio-container").show();
 });
 
-$("#blockLink").on("click", function () {
+$(".blockLink").on("click", function () {
     $("#market-container").hide();
     $("#deed-container").hide();
     $("#homePage").hide();
     $("#upload-container").hide();
     $("#portfolio-container").hide();
+    $("#learnMore").hide();
 
     $("#marketLink").removeClass("active");
     $("#portfolioLink").removeClass("active");
@@ -75,6 +79,7 @@ $("#homeLink").on("click", function () {
     $("#upload-container").hide();
     $("#upload-what").hide();
     $("#portfolio-container").hide();
+    $("#learnMore").hide();
 
     $("#blockLink").removeClass("active");
     $("#marketLink").removeClass("active");
@@ -85,22 +90,46 @@ $("#homeLink").on("click", function () {
     $("#homePage").show(); 
 });
 
-$("#uploadLinkBtn").on("click", function () {
+$(".uploadLinkBtn").on("click", function () {
     $("#market-container").hide();
     $("#deed-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
     $("#portfolio-container").hide();
+    $("#learnMore").hide();
 
     $("#upload-container").show();    
 });
 
-$("#deedLinkBtn").on("click", function () {
+$(".deedLinkBtn").on("click", function () {
     $("#market-container").hide();
     $("#upload-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
     $("#portfolio-container").hide();
+    $("#learnMore").hide();
     
     $("#deed-container").show();
+});
+
+$(".learnMoreBtn").on("click", function () {
+    $("#market-container").hide();
+    $("#upload-container").hide();
+    $("#homePage").hide();
+    $("#upload-what").hide();
+    $("#portfolio-container").hide();
+    $("#deed-container").hide();
+
+    $("#learnMore").show();
+});
+
+$("#pricingBtn").on("click", function () {
+    $("#market-container").hide();
+    $("#upload-container").hide();
+    $("#homePage").hide();
+    $("#upload-what").hide();
+    $("#portfolio-container").hide();
+    $("#deed-container").hide();
+
+    $("#learnMore").show();
 });

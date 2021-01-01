@@ -51,8 +51,8 @@
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav mr-auto">
           <a class="nav-link active" href="index.html" id="homeLink">Home</a>
-          <a class="nav-link" href="#" id="blockLink">Upload</a>
-          <a class="nav-link" href="#" id="marketLink">Marketplace</a>
+          <a class="nav-link blockLink" href="#" id="blockLink">Upload</a>
+          <a class="nav-link marketLink" href="#" id="marketLink">Marketplace</a>
           <a class="nav-link" href="#" id="portfolioLink">Portfolio</a>
         </div>
 
@@ -90,10 +90,10 @@
                 </p>
   
                 <!-- Button -->
-                <a href="#!" class="btn btn-primary mr-1 lift">
+                <a href="#!" class="uploadLinkBtn btn btn-primary mr-1 lift">
                   Get started <i class="fe fe-arrow-right ml-3"></i>
                 </a>
-                <a href="#!" class="btn btn-primary-soft lift">
+                <a href="#!" id="learnMoreBtn" class="btn btn-primary-soft lift learnMoreBtn">
                   Learn more
                 </a>
   
@@ -304,7 +304,7 @@
                   </div>
                 </div> <!-- / .row -->
   
-                <!-- Headin -->
+                <!-- Heading -->
                 <h3 class="font-weight-bold">
                   Create your account
                 </h3>
@@ -713,7 +713,7 @@
                     </p>
   
                     <!-- Link -->
-                    <a href="#!" class="font-size-sm font-weight-bold text-decoration-none">
+                    <a href="#!" class="uploadLinkBtn font-size-sm font-weight-bold text-decoration-none">
                       Upload your home <i class="fe fe-arrow-right ml-3"></i>
                     </a>
                     
@@ -744,7 +744,7 @@
                     </p>
   
                     <!-- Link -->
-                    <a href="#!" class="font-size-sm font-weight-bold text-decoration-none">
+                    <a href="#!" class="uploadLinkBtn font-size-sm font-weight-bold text-decoration-none">
                       List your property <i class="fe fe-arrow-right ml-3"></i>
                     </a>
                     
@@ -775,7 +775,7 @@
                     </p>
   
                     <!-- Link -->
-                    <a href="#!" class="font-size-sm font-weight-bold text-decoration-none">
+                    <a href="#!" class="uploadLinkBtn font-size-sm font-weight-bold text-decoration-none">
                       Sell that house <i class="fe fe-arrow-right ml-3"></i>
                     </a>
                     
@@ -808,11 +808,11 @@
               <div class="col-12 col-md-auto">
                     
                 <!-- Button -->
-                <a href="#!" class="btn btn-primary-soft mr-1 lift">
+                <a href="#!" class="btn btn-primary-soft mr-1 lift learnMoreBtn">
                   Learn more
                 </a>
                 
-                <a href="#!" class="btn btn-primary lift">
+                <a href="#!" class="uploadLinkBtn btn btn-primary lift">
                   Get started
                 </a>
   
@@ -824,18 +824,18 @@
 
     <!-- Upload -->
     <div id="upload-what" class="m-5">
-        <h1 class="text-center">Time to upload your documents</h1>
-        <p>If you are brand new, you are likely wondering where to start. 
+        <h1 class="display-2 font-weight-bold text-center">Time to upload your documents</h1>
+        <p class="font-size-lg text-center mb-6 mb-md-8">If you are brand new, you are likely wondering where to start. 
             It's quite simple:</p>
-        <ol>
+        <ol class="font-size-lg mb-6 mb-md-8">
             <li>If you don't have your house tokenized, click the blue button (the left one).</li>
             <li>If you already have your house on the blockchain and you just wish to transfer deed,
                 then click the green button (the right one).
             </li>
         </ol>
         <div class="text-center">
-            <button type="button" id="uploadLinkBtn" class="btn btn-primary">Upload House To Blockchain</button>
-            <button type="button" id="deedLinkBtn" class="btn btn-success">Complete House Transfer</button>
+            <button type="button" class="uploadLinkBtn btn btn-primary">Upload To Blockchain</button>
+            <button type="button" class="deedLinkBtn btn btn-success">Complete Transfer</button>
         </div>
     </div>
 
@@ -844,60 +844,61 @@
       <!--first part, KYC/AML-->
       <div id="fileUpload">
         <div id="userPropertyInput" class="col-md-7 col-lg-8">
-          <h4 class="mb-3">1. Fill out property specifics</h4>
-          <p>You must own this property or have authorization by the owners to upload and/or list it 
+          <h4 class="mb-3 display-4 font-weight-bold">1. Fill out property specifics</h4>
+          <p class="font-size-lg mb-2 mb-md-4">You must own this property or have authorization by the owners to upload and/or list it 
             on their behalf. Remember, better information you put in, easier it is to validate and sell it.</p>
           <form id="uploadForm" class="needs-validation" novalidate="">
             <div class="row g-3">
               <div class="col-12">
                 <label for="address" class="form-label">Address</label>
                 <input type="text" class="form-control" id="address" placeholder="123 Main St, Anytown, NY 12345 USA" required="">
-                <div class="invalid-feedback">
+                <div class="font-size-lg mb-2 mb-md-4">
                   Please enter property address or legal description.
                 </div>
               </div> 
 
               <div class="col-md-2"><br>
-                <label for="bedrooms" class="form-label">Bedrooms</label>
+                <label for="bedrooms" class="form-label font-size-lg mb-2 mb-md-4">Bedrooms</label>
                 <input type="text" class="form-control" id="bedrooms" placeholder="3" >
               </div>
               <div class="col-md-2"><br>
-                <label for="bathrooms" class="form-label">Bathrooms</label>
+                <label for="bathrooms" class="form-label font-size-lg mb-2 mb-md-4">Bathrooms</label>
                 <input type="text" class="form-control" id="bathrooms" placeholder="2" >
               </div>
               <div class="col-md-2"><br>
-                <label for="yearBuilt" class="form-label">Year Built</label>
+                <label for="yearBuilt" class="form-label font-size-lg mb-2 mb-md-4">Year Built</label>
                 <input type="text" class="form-control" id="yearBuilt" placeholder="2005" >
               </div>
               <div class="col-md-2"><br>
-                <label for="houseSize" class="form-label">House Size</label>
+                <label for="houseSize" class="form-label font-size-lg mb-2 mb-md-4">House Size</label>
                 <input type="text" class="form-control" id="houseSize" placeholder="1500 sqft" >
               </div>
               <div class="col-md-2"><br>
-                <label for="lotSize" class="form-label">Lot Size</label>
+                <label for="lotSize" class="form-label font-size-lg mb-2 mb-md-4">Lot Size</label>
                 <input type="text" class="form-control" id="lotSize" placeholder="0.25 acres" >
               </div>
               <div class="col-md-2"><br>
-                <label for="parcel" class="form-label">Parcel Number</label>
+                <label for="parcel" class="form-label font-size-lg mb-2 mb-md-4">Parcel Number</label>
                 <input type="text" class="form-control" id="parcelNumber" placeholder="APN or PIN" >
               </div>
-
             </div>
+
             <br>
+
             <div>
-              <h6 class="mb-3">Property Type</h6>
-              <p><span class="text-muted">What type of property is this? A land, single family house, condo, multi-family property, etc.
+              <h6 class="mb-3 font-size-lg mb-2 mb-md-4">Property Type</h6>
+              <p><span class="text-muted font-size-lg mb-2 mb-md-4">What type of property is this? A land, single family house, condo, multi-family property, etc.
                 If this is a multi-family property, please ensure you under number of units. 
               </span></p>
               <input type="text" class="form-control" id="propertyType" placeholder="single family OR multi family 3 units OR land" >
               <br>
-              <label for="url" class="form-label">Insert public domain URL of your property (site like Zillow, Realtor, etc.)</label>
+              <label for="url" class="form-label font-size-lg mb-2 mb-md-4">Insert public domain URL of your property (site like Zillow, Realtor, etc.)</label>
               <input type="url" class="form-control" id="zillow" placeholder="https://zillow.com/my-house-123-main-st/" required="">
               <br>
-              <label for="video" class="form-label">Do you have a video tour of your place? Share the YouTube, Vimeo or other hosting service link.</label>
+              <label for="video" class="form-label font-size-lg mb-2 mb-md-4">Do you have a video tour of your place? Share the YouTube, Vimeo or other hosting service link.</label>
               <input type="url" class="form-control" id="video" placeholder="https://youtu.be/123myHouse456Video" required="">
               <br>
-              <label for="description" class="form-label">Give a brief 1-3 sentence description of the place.</label>
+              <label for="description" class="form-label font-size-lg mb-2 mb-md-4">Give a brief 1-3 sentence description of the place.</label>
               <textarea id="description" class="form-control" type="text" rows="3" cols="5" maxlength="300" autocapitalize="on"
                 placeholder="This house has a fully-fenced large back yard, fully-updated kitchen with granite countertops and a view of the lake."></textarea>
               </div> 
@@ -905,12 +906,12 @@
 
             <div class="form-check">
               <input type="checkbox" class="form-check-input" id="certification">
-              <label class="form-check-label" for="certification" aria-required="true">I certify that I own this property or have an authorization by the owner.</label>
+              <label class="form-check-label font-size-lg mb-2 mb-md-4" for="certification" aria-required="true">I certify that I own this property or have an authorization by the owner.</label>
             </div>
 
             <hr class="my-4">
-            <h4 class="mb-3">2. Upload property information</h4>
-            <p>Please upload a clear, high-quality, recent image of your property. Or, if you have a document containing a few 
+            <h4 class="mb-3 display-4 font-weight-bold">2. Upload property information</h4>
+            <p class="font-size-lg mb-2 mb-md-4">Please upload a clear, high-quality, recent image of your property. Or, if you have a document containing a few 
               photos, a floorplan, or additional property information (similar to what your land registry offers), 
               this is where you add it. 
               <i>Please note: this will be public, so no passwords, private keys, or anything else you'd like to keep private.
@@ -925,8 +926,9 @@
       <div id="fileName" style="display: none">
         <h5></h5>
         <button id="upload" type="button" class="btn btn-dark" value="SUBMIT">Upload</button>
-        <div id="ipfsResult" class="mt-4"></div>
+        <div id="ipfsResult" class="mt-4 font-size-lg mb-2 mb-md-4"></div>
       </div>
+      <div class="border-bottom-xl border-gray-300"></div>
 
     </div>
 
@@ -982,10 +984,17 @@
       </div>
 
     <!-- Marketplace -->
-    <div id="market-container" class="m-5">
+    <div id="market-container" class="m-10">
         <div class="marketplace-top">
-            <h4>Welcome to Tsaishen Marketplace</h4>
-            <p>Here you can find properties available for sale.</p>
+          <h1 class="display-2 font-weight-bold text-center">
+            Tsaishen Marketplace
+          </h1><br>
+            <p class="font-size-lg mb-2 mb-md-4 text-center">
+              Perfect spot to buy, sell, or trade your property.
+            </p>
+            <p class="font-size-lg text-muted mb-4 mb-md-8 text-center">
+              COMMING SOON: asset-based lending and borrowing.
+            </p>
         </div>
         <br>
         <div id="marketplace-bottom">
@@ -997,8 +1006,12 @@
     <!-- Portfolio -->
     <div id="portfolio-container" class="m-5">
         <div class="portfolio-top">
-            <h4>Your Assets</h4>
-            <p>Here are all of your properties.</p>
+            <h4 class="display-2 font-weight-bold text-center">Your Asset Portfolio</h4>
+            <p class="font-size-lg mb-2 mb-md-4 text-center">All of your properties in one place.</p>
+            <p class="font-size-lg text-muted mb-4 mb-md-8 text-center">
+              COMMING SOON: track your portfolio performance (property appreciations, 
+              loan ROIs, etc.).
+            </p>
         </div>
         <br>
         <div class="portfolio-bottom">
@@ -1010,73 +1023,1324 @@
     <!-- Modal -->
     <div class="modal" id="myModal" tabindex="-1"></div>
 
-    <!-- Footer: NEED TO ADD medium, terms, policy -->
-    <div class="footer">
-      <div class="container">
-          <div class="row">
-              <div class="col-md-4 col-xs-12">
-                  <div class="first">
-                      <h4>Tsaishen</h4>
-                      <ul>
-                        <li><a href="#">Upload Your House</a></li>
-                        <li><a href="#">Property Marketplace</a></li>
-                        <li><a href="#">Escrow</a></li>
-                    </ul>
-                  </div>
-              </div>
+    <!-- Learn -->
+    <div id="learnMore">
+      <!-- WELCOME
+      ================================================== -->
+      <section class="pt-8 pt-md-11 pb-10 pb-md-15 bg-primary">
 
-              <div class="col-md-4 col-xs-12">
-                  <div class="second">
-                      <h4>Crypto</h4>
-                      <ul>
-                          <li><a href="#">About</a></li>
-                          <li><a href="#">Join The Evolution</a></li>
-                          <li><a href="#">Pricing</a></li>
-                      </ul>
-                  </div>
-              </div>
+        <!-- Shape -->
+        <div class="shape shape-blur-3 svg-shim text-white">
+          <svg viewbox="0 0 1738 487" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1420.92s713.43 457.505 0 485.868C707.502 514.231 0 0 0 0z" fill="url(#paint0_linear)"/><defs><lineargradient id="paint0_linear" x1="0" y1="0" x2="1049.98" y2="912.68" gradientunits="userSpaceOnUse"><stop stop-color="currentColor" stop-opacity=".075"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></lineargradient></defs></svg>
+        </div>
 
-              <div class="col-md-4 col-xs-12">
-                  <div class="third">
-                      <h4>House</h4>
-                      <ul>
-                          <li><a href="#">Resources</a></li>
-                          <li><a href="#">How To Guide</a></li>
-                          <li><a href="#">Tsaishen Token <i style="color: coral;">coming soon</i></a></li>
-                      </ul>
-                  </div>
-              </div>
-          </div>
+        <!-- Content -->
+        <div id="pricing" class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 text-center">
+              
+              <!-- Heading -->
+              <h1 class="display-3 text-white">
+                Simple, no surprise pricing.
+              </h1>
+
+              <!-- Text -->
+              <p class="lead text-white-80 mb-6 mb-md-8">
+                Tsaishen has low, easy to understand, and transparent pricing structure. To upload onto the blockchain you pay
+                one small fee, regardless of the value of your property. When you decide to sell, you pay a small transfer fee,
+                with a 100% no risk no fee policy. If the transaction fails to complete, you pay no fees to Tsaishen.
+              </p>
+
+              <!-- Form
+              <form class="d-flex align-items-center justify-content-center mb-7 mb-md-9">
+                    
+                 Label 
+                <span class="text-white-80">
+                  10+ Properties
+                </span>
+                
+                 Switch 
+                <div class="custom-control custom-switch custom-switch-dark mx-3">
+                  <input type="checkbox" class="custom-control-input" id="billingSwitch" data-toggle="price" data-target=".price">
+                  <label class="custom-control-label" for="billingSwitch"></label>
+                </div>
+                
+                 Label 
+                <span class="text-white-80">
+                  1-10 Properties
+                </span>
+
+              </form> -->
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+
+      </section>
+
+      <!-- SHAPE
+      ================================================== -->
+      <div class="position-relative">
+        <div class="shape shape-bottom shape-fluid-x svg-shim text-light">
+          <svg viewbox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 48h2880V0h-720C1442.5 52 720 0 720 0H0v48z" fill="currentColor"/></svg>
+        </div>
       </div>
-      <div class="container">
-          <div class="row">
-              <div class="col-12">
-                  <div class="line"></div>
-                  <div class="second2">
-                      <a href="https://twitter.com/meetnev" target="_blank" rel="noopener noreferrer"> <i class="fab fa-twitter margin"></i></a>
-                      <a href="https://www.linkedin.com/in/nevkraguljevic/" target="_blank" rel="noopener noreferrer"> <i class="fab fa-linkedin margin"></i></a>
-                      <a href="https://www.instagram.com/nevmoney/" target="_blank" rel="noopener noreferrer"> <i class="fab fa-instagram margin"></i></a>
-                      <a href="#" target="_blank" rel="noopener noreferrer"> <i class="fab fa-medium-m margin"></i></a>
+
+      <!-- PRICING
+      ================================================== -->
+      <section class="mt-n8 mt-md-n14">
+        <div class="container">
+          <div class="form-row">
+            <div class="col-12 col-md-4">
+
+              <!-- Upload Card -->
+              <div class="card shadow-lg mb-6 mb-md-0">
+                <div class="card-body">
+
+                  <!-- Preheading -->
+                  <div class="text-center mb-3">
+                    <span class="badge badge-pill badge-primary-soft">
+                      <span class="h6 text-uppercase">Upload</span>
+                    </span>
+                  </div>
+
+                  <!-- Price -->
+                  <div class="d-flex justify-content-center">
+                    <span class="h2 mb-0 mt-2">&#10731;</span>
+                    
+                    <span class="price display-2 mb-0" data-annual="1" data-monthly="1">1</span>
+                    <span class="house h2 align-self-end mb-1"> /&#127968;</span>
+                  </div>
+
+                  <!-- Text -->
+                  <p class="text-center text-muted mb-5">
+                    Flat Fee
+                  </p>
+
+                  <!-- List -->
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
                     </div>
+
+                    <!-- Text -->
+                    <p>
+                      On blockchain in minutes
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p class="mb-5">
+                      Use on any web3 platform
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p class="mb-5">
+                      Encrypt your biggest asset
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p class="mb-5">
+                      Hodl in your crypto wallet
+                    </p>
+                    
+                  </div>
+
+                  <!-- Button -->
+                  <a href="#!" class="btn btn-block btn-primary-soft">
+                    Start for only 1 ETH <i class="fe fe-arrow-right ml-3"></i>
+                  </a>
+                  
+                </div>
               </div>
+
+            </div>
+            <div class="col-12 col-md-4">
+              
+              <!-- Marketplace Card -->
+              <div class="card shadow-lg mb-6 mb-md-0">
+                <div class="card-body">
+
+                  <!-- Preheading -->
+                  <div class="text-center mb-3">
+                    <span class="badge badge-pill badge-primary-soft">
+                      <span class="h6 text-uppercase">Marketplace</span>
+                    </span>
+                  </div>
+
+                  <!-- Price -->
+                  <div class="d-flex justify-content-center">
+                    
+                    <span class="price display-2 mb-0" data-annual="2" data-monthly="2">2</span>
+                    <span class="h2 align-self-end mb-1">%</span>
+                  </div>
+
+                  <!-- Text -->
+                  <p class="text-center text-muted mb-5">
+                    Flat Fee
+                  </p>
+
+                  <!-- List -->
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p>
+                      No minimum transactions
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p>
+                      Fast and secure
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p>
+                      Sell to anyone, worldwide
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p>
+                      One-click transactions
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p class="mb-5">
+                      Immediate payout
+                    </p>
+                    
+                  </div>
+
+                  <!-- Button -->
+                  <a href="#!" class="btn btn-block btn-primary">
+                    Sell your house <i class="fe fe-arrow-right ml-3"></i>
+                  </a>
+                  
+                </div>
+              </div>
+
+            </div>
+            <div class="col-12 col-md-4">
+              
+              <!-- Escrow Card -->
+              <div class="card shadow-lg mb-md-0">
+                <div class="card-body">
+
+                  <!-- Preheading -->
+                  <div class="text-center mb-3">
+                    <span class="badge badge-pill badge-primary-soft">
+                      <span class="h6 text-uppercase">Smart Escrow Sale</span>
+                    </span>
+                  </div>
+
+                  <!-- Price -->
+                  <div class="d-flex justify-content-center">
+                    
+                    <span class="price display-2 mb-0" data-annual="3" data-monthly="3">3</span>
+                    <span class="h2 align-self-end mb-1">%</span>
+                  </div>
+
+                  <!-- Text -->
+                  <p class="text-center text-muted mb-5">
+                    Flat Fee
+                  </p>
+
+                  <!-- List -->
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p>
+                      No minimum transactions
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p>
+                      Fast and secure
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p>
+                      Sell to anyone, worldwide
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p>
+                      One-click transactions
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p>
+                      Algorythmic escrow protection
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p class="mb-5">
+                      ZERO fee on failed transactions 
+                    </p>
+                    
+                  </div>
+                  <div class="d-flex">
+                    
+                    <!-- Badge -->
+                    <div class="badge badge-rounded-circle badge-success-soft mt-1 mr-4">
+                      <i class="fe fe-check"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <p class="mb-5">
+                      Immutable process 
+                    </p>
+                    
+                  </div>
+
+                  <!-- Button -->
+                  <a href="#!" class="btn btn-block btn-primary-soft">
+                    Upload and Sell NOW<i class="fe fe-arrow-right ml-3"></i>
+                  </a>
+                  
+                </div>
+              </div>
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- ENTERPRISE
+      ================================================== -->
+      <section class="py-8 py-md-11">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 text-center">
+              
+              <!-- Badge -->
+              <span class="badge badge-pill badge-primary-desat-soft mb-3">
+                <span class="h6 text-uppercase">Enterprise</span>
+              </span>
+
+              <!-- Heading -->
+              <h2 id="enterpriseCard" >
+                Are you an investor, flipper, developer, real estate agent or simply have <span class="font-weight-bold text-primary-desat">more than 10 properties</span>?
+              </h2>
+
+              <!-- Text -->
+              <p class="font-size-lg text-muted mb-7 mb-md-9">
+                Contact us today for discounted deals and special offers.
+              </p>
+
+            </div>
+          </div> <!-- / .row -->
+          <!-- Card -->
+          <div class="card card-border border-primary shadow-light-lg" data-jarallax-element="-40">
+            <div class="card-body">
+              <div class="row justify-content-center">
+                <div class="col-12 col-xl-11">
+              
+                  <!-- Image -->
+                  <div class="text-center">
+                    <img src="Landkit-1.2.1/dist/assets/img/illustrations/illustration-2.png" alt="..." class="img-fluid mb-3" style="width: 200px;">
+                  </div>
+
+                  <!-- Heading -->
+                  <h2 class="font-weight-bold text-center mb-1">
+                    Let's Talk
+                  </h2>
+
+                  <!-- Text -->
+                  <p class="font-size-lg text-center text-muted mb-6 mb-md-8">
+                    Discover how working with Tsaishen can help your business.
+                  </p>
+
+                  <!-- Form -->
+                  <form>
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+
+                        <!-- First name -->
+                        <div class="form-label-group">
+                          <input type="text" class="form-control form-control-flush" id="registrationPersonName" placeholder="First name">
+                          <label for="registrationPersonName">Your name</label>
+                        </div>
+
+                      </div>
+                      <div class="col-12 col-md-6">
+
+                        <!-- Last name -->
+                        <div class="form-label-group">
+                          <input type="text" class="form-control form-control-flush" id="registrationBusinessName" placeholder="Last name">
+                          <label for="registrationBusinessName">Business name</label>
+                        </div>
+
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+
+                        <!-- Email -->
+                        <div class="form-label-group">
+                          <input type="email" class="form-control form-control-flush" id="registrationEmail" placeholder="Email">
+                          <label for="registrationEmail">Email</label>
+                        </div>
+
+                      </div>
+                      <div class="col-12 col-md-6">
+
+                        <!-- Phone -->
+                        <div class="form-label-group">
+                          <input type="tel" class="form-control form-control-flush" id="registrationPhone" placeholder="Phone">
+                          <label for="registrationPhone">Phone</label>
+                        </div>
+
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        
+                        <!-- Submit -->
+                        <button class="btn btn-block btn-primary mt-3 lift" id="enterpriseButton">
+                          Let's Talk
+                        </button>
+
+                      </div>
+                    </div>
+                  </form>
+                
+                </div>
+              </div> <!-- / .row -->
+            </div>
           </div>
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- SHAPE
+      ================================================== -->
+      <div class="position-relative">
+        <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
+          <svg viewbox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 48h2880V0h-720C1442.5 52 720 0 720 0H0v48z" fill="currentColor"/></svg>
         </div>
-        <div class="py-3 text-center">
-          Copyright 2020 -
-          <script>
-            document.write(new Date().getFullYear())
-          </script> Tsaishen. All Rights Reserved.
+      </div>
+
+      <!-- FAQ
+      ================================================== -->
+      <section class="py-8 py-md-11 bg-white border-bottom">
+        <div id="faq" class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-md-8 text-center">
+              
+              <!-- Badge -->
+              <span class="badge badge-pill badge-primary-desat-soft mb-3">
+                <span class="h6 text-uppercase">FAQ</span>
+              </span>
+
+              <!-- Heading -->
+              <h2>
+                Frequently Asked Questions.
+              </h2>
+
+              <!-- Text -->
+              <p class="font-size-lg text-muted mb-7 mb-md-9">
+                Let us help answer the most common questions you might have.
+              </p>
+
+            </div>
+          </div> <!-- / .row -->
+          <div class="row">
+            <div class="col-12 col-md-6 text-primary">
+              
+              <!-- Heading -->
+              <h3>
+                Can I use Tsaishen Crypto House for my clients?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-8">
+                Absolutely. Using Tsaishen is for both personal use as well as for clients. You just have to
+                have authorization from the rightful owner to upload. If you have more than 10 properties you'd
+                like to list, please <a class="link" href="#enterpriseCard" data-toggle="smooth-scroll" data-offset="0">
+                contact us </a>for special deals. 
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                How does it all work?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-8">
+                Great question. It is so much easier (and faster) to explain this in action, so we invite you to 
+                <a class="link" href="#webinarContainer" data-toggle="smooth-scroll" data-offset="0">join a webinar</a>
+                where we can explain everything in detail. 
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                Why do I have to pay to tokenize my property?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-8">
+                We decided to charge a small fee to prevent bad actors and scams into the space. Because we are 
+                operating on a decentralized network, anyone can tokenize property, so by charing a small fee we 
+                prevent the probability of that happening. This gives better security to the entire ecosystem.
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                Why is decentralization important?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-8">
+                With a centralized network it is easy to shut it down. If a government where you live does not 
+                like the project or the server provider goes down, everything disappears. Using publicly available 
+                network that is decentralized, even if one server goes down or one government shuts down the project, 
+                it still exists on thousands of different computers, thus making it impossible to remove.
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                Why is blockchain important?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-8">
+                Blockchain uses cryptography to encrypt the data and thusby secure it. All of the information (data) 
+                is distilled into a cryptographic hash, which is a function that takes all data and turns it into a 
+                fixed-size alphanumeric string. Whenever the data changes, the hash string changes, so you know if 
+                someone has altered any information. When a new block is created it uses the hash from the previous 
+                block and appends new information. With this process, it is impossible to change any information without 
+                everyone knowing that things have changed. This makes blockchain the absolute safest database on the planet.
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                Why should I use Tsaishen to sell/buy real estate?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-3">
+                While of course you can use traditional methods to sell or buy real estate, using Tsaishen and blockchain 
+                technology your transactions happen in a fraction of the time and for fraction of the cost. Traditional 
+                methods for selling a home can take anywhere from 10-30 days (the fast process) and up to 2-3 months 
+                (sometimes longer). Cost wise you are looking at fees of 5-15% per transaction on the value of your home. 
+              </p>
+              <p class="text-gray-700 mb-6 mb-md-8">Using Tsaishen, you can sell or transfer your property in a matter of a few minutes and with a flat fee of 
+                only 2% (for transferring to untrusted parties you don't know, we recommend Escrow at only 1% more). Basically 
+                you save yourself a ton of time and money. Additionally, your property is available online for everyone around 
+                the world, making your audience that much bigger with a potential greater chance of sale.
+              </p>  
+
+              <!-- Heading -->
+              <h3>
+                What wallets do you support?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-8">
+                Currently we support <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer" style="color: gray;">
+                  MetaMask<i class="fas fa-external-link-alt"></i></a> browser extension. You can get it for free and interact with 
+                  many web3 platforms (including Tsaishen).
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                How much can a buyer save using Tsaishen?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-3">
+                Buying a property is a lengthy and expensive process, but it doesn't have to be. With Tsaishen you can 
+                purchase a property in a matter of minutes (or a few short days using Smart Escrow) with one click of a 
+                button and save a ton of money in fees and marked-up prices.
+              </p>
+              <p class="text-gray-700 mb-6 mb-md-3">Sellers know that they will have to pay many fees when they sell their 
+                properties, so they increase the price to account for those costs. You, as the buyer, pay for for it, in 
+                the form of higher price. In addition to those higher prices, you also have to pay for many closing fees, 
+                ranging from title and escrow (about 5% of the transaction cost) to inspections, appraisals, applications, 
+                and a few others (often associated with financing).
+              </p>
+              <p class="text-gray-700 mb-6 mb-md-8">With Tsaishen you have an option to interact with the seller directly, 
+                greatly reducing the costs and likely getting a much better price, as seller does not have to pay high fees 
+                on their end. Then you can opt to buy with Smart Escrow, basically taking no risk if they don't transfer the 
+                deed over to you, as you pay ZERO fees if the transaction doesn't go through.
+              </p> 
+
+              <!-- Heading -->
+              <h3>
+                How does Tsaishen help Agents?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-8">
+                As an agent you have many clients and they want their property sold fast, as do you. We believe that agents 
+                can provide a lot of good service and guidance, especially to new buyers, and your knowledge of the specific 
+                market is paramount to success. Using Tsaishen you can streamline your properties and make sales faster. 
+                Instead of having to pay for advertisements to buyers and sellers around the world, you can do it easily here 
+                on one platform. Of course, you can advertise your listings on other platforms, but once you upload the house 
+                onto the blockchain, <b>posting it on Tsaishen Marketplace is free</b> and you gain access to buyers around 
+                the world. So why wouldn't you leverage Tsaishen and expand your market? It's simple, fast, easy and secure.
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                How Wholesalers can use Tsaishen?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-3">
+                You work hard to find great deals, right! Then you work even harder to find investors who are willing to take 
+                those deals at a slight mark-up. And everyone in the wholesaler's network wants to get the deal done fast. 
+              </p>
+              <p class="text-gray-700 mb-6 mb-md-8">
+                You need a buyer fast so that you can assign the contract to them and can make your cut. The seller wants the 
+                funding to be done fast, as when they do they'll recommend you to everyone they know. Finally, the investor / buyer 
+                wants deal done quickly and pay less in fees. Tsaishen gives you all that: fast, cheap, secure. All you got to do 
+                is upload the property and share the link. Let's make the sale happen!
+              </p>
+              
+            </div>
+            <div class="col-12 col-md-6 text-primary">
+              
+              <!-- Heading -->
+              <h3>
+                Why should I upload my house to blockchain?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-8">
+                If you want a peace of mind knowing that your property ownership is secure and that you have the 
+                absolute proof of it, tokenizing real estate is the way to go. Asside from having your property 
+                information on the safest network in the world, you also have a way to easily, quickly and safely 
+                transfer your property ownership onto anyone: parent to a child, between spouses, adding additional 
+                owners, or selling it to anyone in the world.
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                Is tokenizing real estate dangerous?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-8">
+                Absolutely not. As explained earlier blockchain is the safest database on the planet. And while your 
+                local land-registry has information about your property and your ownership, these centers can be hacked, 
+                papers can burn or disinegrate, get lost and your ability to prove ownership can become increasingly 
+                difficult. It is very easy for the bad actors to forge documents held in these centers creating a HUGE RISK 
+                to you and your biggest asset. Tokenizing real estate is probably the safest thing you can do for yourself 
+                and your wealth.
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                What do you mean by "tokenize real estate"?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-8">
+                When we say "tokenize real estate" we use is synonimously with uploading it onto the blockchain. When you 
+                upload your property with Tsaishen, you receive a token which represents your property in the blockchain. It's 
+                sort of like a key to your specific house on the block and unlike the regular key you likely have for your 
+                house, this one cannot be duplicated, cannot be changed, and cannot unlock any other place but your own. Token 
+                on the blockchain represents all the data you provide about your property and you can store it in you digital 
+                wallet. 
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                Can I transfer or sell my token?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-8">
+                Absolutely, that is the beauty of Tsaishen and real estate tokenization. Once you upload your property onto 
+                the blockchain you have technically tokenized it. Now that you have a token which represents your property 
+                you can easily list the property for sale or simply transfer the ownership to anyone in the world, all in 
+                less than 30 minutes, form anywhere you can find internet or cell service.
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                How much could I save using Tsaishen?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-3">
+                Your personal savings will depend on the value of your property and the ongoing market price. 
+                Tsaishen users can expect to save aproximately 57-70% in fees alone, not to mention much faster process. 
+              </p>
+              <p class="text-gray-700 mb-6 mb-md-3">Let's assume that your property is valued at $100,000. Using traditional marketplace you, as a seller, 
+                would incur aproximately 6-7% for agent fees alone. Then there are tile and escrow fees and perhaps 
+                some other closing costs, roughly 3-5% in addition to the agents. That means that when your property 
+                sells for $100,000, you only get paid $88-91,000. 
+              </p>
+              <p class="text-gray-700 mb-6 mb-md-3">Today, the average price of a home in USA is aproximately $335,000 and average person typically goes 
+                through 3 homes in their lifetime. Assuming that prices never change and you only get charged 10% in fees 
+                every time you sell your property, you are looking at $100,500 expense (10% cost * $335,000 house price * 
+                3 homes). 
+              </p>
+              <p class="text-gray-700 mb-6 mb-md-8">Using Tsaishen you would pay $700 to upload your property onto the blockchain and using the Smart Escrow 
+                at 3% fee, you are looking at a <b><u>saving of $69,650</u></b> (or 69%).
+              </p>
+              
+              <!-- Heading -->
+              <h3>
+                What currencies can I use?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-3">
+                You can list your property in US dollars and can currently make transactions with either Ethereum or USDC 
+                (a stable cryptocurrency that is pegged 1-to-1 with with the USD). Many people have quite a bit of ETH and would 
+                like a solid option what to do with their wealth (perhaps buying a home or a peace of land).</p>
+              <p class="text-gray-700 mb-6 mb-md-8">
+                Others (both buyers and sellers) are concerned about volatility of ETH and would like to use something that follows 
+                US dollar, in which case you can use USDC, that way you don't have to worry about the currency fluctuation. 
+                We are constantly working to improve and expand our offerings, so be on the lookout for more buy / sell options 
+                <span style="color: coral;">comming soon</span>.
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                How does Tsaishen help Flippers?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-8">
+                As a flipper you churn over many properties and the longer you hold the place, the lower your ROI. Additionally, 
+                you work very hard to find great deals, upgrade them and then sell them at profit. Every day you hold the place 
+                you lose money. Every time you list for sale through traditional methods your profits get eaten by the fees. 
+                Listing with Tsaishen you gain access to global marketplace and you reduce your fees drastically. It's simple 
+                math: do you want to keep more of your money? If the answer is yes, then using blockchain and Tsaishen just 
+                makes sense.
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                Why Tsaishen for Developers and Syndicators?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-3">
+                Most developers and syndicators have a network of investors and having that network grow bigger is always a 
+                good thing. Listing properties on blockchain gives you an ability to access investors who are happy to put 
+                in some money towards your project, and everyone benefits. You find the deal, Tsaishen network helps you 
+                get funding. It's a win-win situation.
+              </p>
+              <p class="text-gray-700 mb-6 mb-md-8">
+                Early crypto investors are sitting on millions of dollars worth of crypto and for taxation reasons (as well as
+                appreciation benefits) they are not eager to sell. However, finding a way to intelligently invest their proceeds 
+                into proven stable markets, such as real estate, simply makes sense. They make passive income on their crypto, 
+                you get funding for your next deal. <i>Crowdfunding service is <span style="color: coral;">coming soon.</span></i>
+              </p>
+
+              <!-- Heading -->
+              <h3>
+                Have more questions?
+              </h3>
+
+              <!-- Text -->
+              <p class="text-gray-700 mb-6 mb-md-8">
+                We suggest <a class="link" href="#webinarContainer" data-toggle="smooth-scroll" data-offset="0">
+                  watching a webinar</a>. If at the end you still have questions, you'll have an opportunity to ask. 
+              </p>
+
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- TESTIMONIALS
+      ================================================== -->
+      <section data-jarallax data-speed=".8" class="py-15 overlay overlay-black overlay-60 jarallax" style="background-image: url(landkit-1.2.1/dist/assets/img/covers/cover-1.jpg);">
+        <div class="container">
+          <div class="row">
+            <div class="col-12 col-md-7">
+              
+              <!-- Blockquote -->
+              <blockquote class="blockquote mb-0">
+
+                <!-- Text -->
+                <p class="h2 text-white">
+                  "Uploading my property to blockchain, I never felt so at ease, knowing that
+                  I can access the proof of ownership whenever I want to and that no one can ever
+                  change the records. Transfering of ownership was so easy, ridiculously fast, 
+                  and unbelievably cheap. I will never do real estate any other way."
+                </p>
+
+                <!-- Footer -->
+                <footer class="blockquote-footer text-white-50 mb-0">
+                  Tsaishen4Life User
+                </footer>
+
+              </blockquote>
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- SHAPE
+      ================================================== -->
+      <div class="position-relative">
+        <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
+          <svg viewbox="0 0 2880 56" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M720 28H0v28h2880V28h-720S1874 0 1440 0 720 28 720 28z" fill="currentColor"/></svg>
         </div>
-        <hr>
-        <div class="row" id="privacyTerms">
-          <div class="col-6" id="privacy">
-            <a href="#" target="_blank" rel="noopener noreferrer">Privacy Policy </a> 
-          </div>
-          <div class="col-6" id="terms">
-            <a href="#" target="_blank" rel="noopener noreferrer">Terms</a> 
-          </div>
+      </div>
+
+      <!-- CASE STUDIES
+      ================================================== -->
+      <section class="pt-10">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 text-center">
+              
+              <!-- Badge -->
+              <span class="badge badge-pill badge-success-soft mb-3">
+                <span class="h6 text-uppercase">Case Studies</span>
+              </span>
+
+              <!-- Heading -->
+              <h2 class="font-weight-bold">
+                Used by <span class="text-success" data-toggle="typed" data-options='{"strings": ["home owners", "real estate investors", "house flippers", "property developers", "wholesalers", "real estate agents"]}'></span>
+              </h2>
+
+              <!-- Text -->
+              <p class="font-size-lg text-gray-700 mb-9">
+                Many people are using Tsaishen Crypto House to preserve their proof of ownership
+                and easily transfer their property onto others, from sales to gifts and everything
+                in between.
+              </p>
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- CASE STUDIES (CAROUSEL)
+      ================================================== -->
+      <section>
+        <div class="container">
+          <div class="row">
+            <div class="col-12">
+              
+              <!-- Flickity -->
+              <div class="flickity-viewport-visible pt-2 pb-9" data-flickity='{"cellAlign": "left", "imagesLoaded": true, "pageDots": false, "prevNextButtons": false, "contain": true}'>
+                <div class="col-12 col-md-5 col-lg-4">
+                  
+                  <!-- Card -->
+                  <div class="card card-border shadow-light-lg lift lift-lg" style="border-top-color: #FF5A5F;">
+                    <div class="card-body text-center">
+
+                      <!-- Person -->
+                      <div class="img-fluid mb-5 w-50 svg-shim mx-auto" style="color: #FF5A5F;">
+                        
+                      </div>
+
+                      <!-- Text -->
+                      <p class="text-gray-700 mb-5">
+                        Use Tsaishen to secure house information and proove ownership. 
+                      </p>
+
+                      <!-- Link 
+                      <a href="#!" style="color: #FF5A5F;">Read more</a>-->
+                      
+                    </div>
+                  </div>
+
+                </div>
+                <div class="col-12 col-md-5 col-lg-4">
+                  
+                  <!-- Card -->
+                  <div class="card card-border shadow-light-lg lift lift-lg" style="border-top-color: #B81D24;">
+                    <div class="card-body text-center">
+
+                      <!-- Icon -->
+                      <div class="img-fluid mb-5 w-50 svg-shim mx-auto" style="color: #B81D24;">
+                      
+                      </div>
+
+                      <!-- Text -->
+                      <p class="text-gray-700 mb-5">
+                        Use Tsaishen to buy properties at a deep discount, without using banks.
+                      </p>
+
+                      <!-- Link 
+                      <a href="#!" style="color: #B81D24;">Read more</a>-->
+                      
+                    </div>
+                  </div>
+
+                </div>
+                <div class="col-12 col-md-5 col-lg-4">
+                  
+                  <!-- Card -->
+                  <div class="card card-border shadow-light-lg lift lift-lg" style="border-top-color: #30e9f0;">
+                    <div class="card-body text-center">
+
+                      <!-- Icon -->
+                      <div class="img-fluid mb-5 w-50 svg-shim mx-auto" style="color: #30e9f0;">
+                      
+                      </div>
+
+
+                      <!-- Text -->
+                      <p class="text-gray-700 mb-5">
+                        Use Tsaishen to get funding for next syndication deal, sourcing funds globally.
+                      </p>
+
+                      <!-- Link 
+                      <a href="#!" style="color: #0081C9;">Read more</a>-->
+                      
+                    </div>
+                  </div>
+
+                </div>
+                <div class="col-12 col-md-5 col-lg-4">
+                  
+                  <!-- Card -->
+                  <div class="card card-border shadow-light-lg lift lift-lg" style="border-top-color: #6772E5;">
+                    <div class="card-body text-center">
+
+                      <!-- Icon -->
+                      <div class="img-fluid mb-5 w-50 svg-shim mx-auto" style="color: #6772E5;">
+                      
+                      </div>
+
+
+                      <!-- Text -->
+                      <p class="text-gray-700 mb-5">
+                        Use Tsaishen to sell more homes for the clients, to buyers around the world.
+                      </p>
+
+                      <!-- Link 
+                      <a href="#!" style="color: #6772E5;">Read more</a>-->
+                      
+                    </div>
+                  </div>
+
+                </div>
+                <div class="col-12 col-md-5 col-lg-4">
+                  
+                  <!-- Card -->
+                  <div class="card card-border shadow-light-lg lift lift-lg" style="border-top-color: #f8fc1b;">
+                    <div class="card-body text-center">
+
+                      <!-- Icon -->
+                      <div class="img-fluid mb-5 w-50 svg-shim mx-auto" style="color: #f8fc1b;">
+                      
+                      </div>
+
+
+                      <!-- Text -->
+                      <p class="text-gray-700 mb-5">
+                        Use Tsaishen to share financial projections with investors.
+                      </p>
+
+                      <!-- Link 
+                      <a href="#!" style="color: #CB2027;">Read more</a> -->
+                      
+                    </div>
+                  </div>
+
+                </div>
+                <div class="col-12 col-md-5 col-lg-4">
+                  
+                  <!-- Card -->
+                  <div class="card card-border shadow-light-lg lift lift-lg" style="border-top-color: #3fac3f;">
+                    <div class="card-body text-center">
+
+                      <!-- Icon -->
+                      <div class="img-fluid mb-5 w-50 svg-shim mx-auto" style="color: #3fac3f;">
+                      
+                      </div>
+
+                      <!-- Text -->
+                      <p class="text-gray-700 mb-5">
+                        Use Tsaishen to flip properties faster, saving over 57% in revenue per flip.
+                      </p>
+
+                      <!-- Link 
+                      <a href="#!" style="color: #DA5988;">Read more</a>-->
+                      
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- WEBINAR
+      ================================================== -->
+      <section class="py-11">
+        <div id="webinarContainer" class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8">
+              
+              <!-- Card -->
+              <div class="card card-border border-primary shadow-light-lg" data-jarallax-element="-40">
+                <div class="card-body">
+                  <div class="row justify-content-center">
+                    <div class="col-12 col-xl-11">
+                  
+                      <!-- Image -->
+                      <div class="text-center">
+                        <img src="Landkit-1.2.1/dist/assets/img/illustrations/illustration-1.png" alt="..." class="img-fluid mb-3" style="width: 200px;">
+                      </div>
+
+                      <!-- Heading -->
+                      <h2 class="font-weight-bold text-center mb-1">
+                        Watch a webinar
+                      </h2>
+
+                      <!-- Text -->
+                      <p class="font-size-lg text-center text-muted mb-6 mb-md-8">
+                        Learn more about how Tsaishen can help you.
+                      </p>
+
+                      <!-- Form -->
+                      <form>
+                        <div class="row">
+                          <div class="col-12 col-md-6">
+
+                            <!-- First name -->
+                            <div class="form-label-group">
+                              <input type="text" class="form-control form-control-flush" id="registrationFirstName" placeholder="First name">
+                              <label for="registrationFirstName">First name</label>
+                            </div>
+
+                          </div>
+                          <div class="col-12 col-md-6">
+
+                            <!-- Last name -->
+                            <div class="form-label-group">
+                              <input type="text" class="form-control form-control-flush" id="registrationLastName" placeholder="Last name">
+                              <label for="registrationLastName">Last name</label>
+                            </div>
+
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-12 col-md-6">
+
+                            <!-- Email -->
+                            <div class="form-label-group">
+                              <input type="email" class="form-control form-control-flush" id="registrationEmail" placeholder="Email">
+                              <label for="registrationEmail">Email</label>
+                            </div>
+
+                          </div>
+                          <div class="col-12 col-md-6">
+
+                            <!-- Password -->
+                            <div class="form-label-group">
+                              <input type="tel" class="form-control form-control-flush" id="registrationPhone" placeholder="Phone">
+                              <label for="registrationPhone">Phone</label>
+                            </div>
+
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-12">
+                            
+                            <!-- Submit -->
+                            <button class="btn btn-block btn-primary mt-3 lift">
+                              Join Webinar
+                            </button>
+
+                          </div>
+                        </div>
+                      </form>
+                    
+                    </div>
+                  </div> <!-- / .row -->
+                </div>
+              </div>
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- CURVE
+      ================================================== -->
+      <div class="position-relative mt-n16">
+        <div class="shape shape-bottom shape-fluid-x svg-shim text-dark">
+          <svg viewbox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 48h2880V0h-720C1442.5 52 720 0 720 0H0v48z" fill="currentColor"/></svg>
         </div>
+      </div>
+      <section class="pt-16 bg-dark"></section>
     </div>
+
+    <!-- Footer: NEED TO ADD social links, terms, policy -->
+    <footer class="py-8 py-md-8 bg-white">
+      <div class="container footer-brand">
+        <div class="row">
+          <div class="col-12 col-md-4 col-lg-3">
+        
+            <!-- Brand -->
+            <img src="./assets/img/Tsaishen.svg" alt="Tsaishen Logo" class="footer-brand img-fluid">
+
+            <!-- Text -->
+            <p class="text-gray-700 mb-2">
+              A better way to real estate.
+            </p>
+
+            <!-- Social -->
+            <ul class="list-unstyled list-inline list-social mb-6 mb-md-0">
+              <li class="list-inline-item list-social-item mr-3">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-telegram-plane margin"></i></a>
+              </li>
+              <li class="list-inline-item list-social-item mr-3">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-discord"></i></a>
+              </li>
+              <li class="list-inline-item list-social-item mr-3">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-twitter"></i></a>
+              </li>
+              <!-- 
+              <li class="list-inline-item list-social-item">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-github"></i></a>
+              </li> 
+              <li class="list-inline-item list-social-item">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-ethereum"></i></a>
+              </li>
+              -->
+              <li class="list-inline-item list-social-item">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-facebook"></i></a>
+              </li>
+            </ul>
+
+          </div>
+          <div class="col-6 col-md-4 col-lg-3">
+        
+            <!-- Heading -->
+            <h6 class="font-weight-bold text-uppercase text-gray-700">
+              Tsaishen
+            </h6>
+
+            <!-- List -->
+            <ul class="list-unstyled text-muted mb-6 mb-md-8 mb-lg-0">
+              <li class="mb-3">
+                <a href="#!" class="text-reset blockLink">
+                  Crypto House
+                </a>
+              </li>
+              <li class="mb-3">
+                <a href="https://tsaishen.co/" target="_blank" rel="noopener noreferrer" class="text-reset">
+                  Discounted Properties <i class="fas fa-external-link-alt"></i>
+                </a>
+              </li>
+              <li class="mb-3">
+                <a href="#!" class="text-reset marketLink">
+                  Marketplace
+                </a>
+              </li>
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Escrow
+                </a>
+              </li>
+            </ul>
+
+          </div>
+
+          <div class="col-6 col-md-4 col-lg-3">
+        
+            <!-- Heading -->
+            <h6 class="font-weight-bold text-uppercase text-gray-700">
+              Community
+            </h6>
+
+            <!-- List -->
+            <ul class="list-unstyled text-muted mb-0">
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Tsaishen Token <small style="color: rgb(253, 121, 44);"><i>Coming Soon</i></small>
+                </a>
+              </li>
+              <!--
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Join Tsaishen
+                </a>
+              </li> 
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Investors
+                </a>
+              </li> -->
+              <li>
+                <a id="pricingBtn" href="#pricing" class="text-reset" data-toggle="smooth-scroll" data-offset="0">
+                  Pricing
+                </a>
+              </li>
+            </ul>
+
+          </div>
+
+          <div class="col-6 col-md-4 col-lg-3">
+        
+            <!-- Heading -->
+            <h6 class="font-weight-bold text-uppercase text-gray-700">
+              Info
+            </h6>
+
+            <!-- List -->
+            <ul class="list-unstyled text-muted mb-6 mb-md-8 mb-lg-0">
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  About
+                </a>
+              </li>
+              <!--
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  How To Guide
+                </a>
+              </li> -->
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Resource Center <small style="color: rgb(253, 121, 44);"><i>Coming Soon</i></small>
+                </a>
+              </li>
+              <li>
+                <a href="https://1dealaway.com/" target="_blank" rel="noopener noreferrer" class="text-reset">
+                  Investor Education <i class="fas fa-external-link-alt"></i>
+                </a>
+              </li>
+            </ul>
+
+          </div>
+          
+        </div> <!-- / .row -->
+        <div class="footer-bottom text-center">
+          <div class="row" id="privacyTerms">
+            <div class="col-6 text-right text-gray-500">
+              Copyright 2020 -
+              <script>
+                document.write(new Date().getFullYear())
+              </script> Tsaishen. All rights reserved
+            </div>
+            <div class="col-2 text-gray-500" id="privacy">
+              <a href="#" target="_blank" rel="noopener noreferrer"> <p>Privacy Policy</p></a>
+            </div>
+            <div class="col-1 text-gray-500" id="terms">
+              <a href="#" target="_blank" rel="noopener noreferrer"> <p>Terms</p></a> 
+            </div>
+          </div>
+        </div>  
+      </div> <!-- / .container -->
+    </footer>
 
     <!-- External scripts -->
     <script
