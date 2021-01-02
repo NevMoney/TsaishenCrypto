@@ -6,6 +6,7 @@ $(document).ready(async () => {
     $("#upload-what").hide();
     $("#portfolio-container").hide();
     $("#learnMore").hide();
+    $("#aboutPage").hide();
   
     // this allows the website to use the metamask account
     const accounts = await ethereum.enable();
@@ -32,6 +33,7 @@ $(".marketLink").on("click", function () {
     $("#upload-what").hide();
     $("#portfolio-container").hide();
     $("#learnMore").hide();
+    $("#aboutPage").hide();
 
     $("#blockLink").removeClass("active");
     $("#portfolioLink").removeClass("active");
@@ -48,6 +50,7 @@ $("#portfolioLink").on("click", function () {
     $("#deed-container").hide();
     $("#upload-what").hide();
     $("#learnMore").hide();
+    $("#aboutPage").hide();
 
     $("#blockLink").removeClass("active");
     $("#marketLink").removeClass("active");
@@ -64,6 +67,7 @@ $(".blockLink").on("click", function () {
     $("#upload-container").hide();
     $("#portfolio-container").hide();
     $("#learnMore").hide();
+    $("#aboutPage").hide();
 
     $("#marketLink").removeClass("active");
     $("#portfolioLink").removeClass("active");
@@ -80,6 +84,7 @@ $("#homeLink").on("click", function () {
     $("#upload-what").hide();
     $("#portfolio-container").hide();
     $("#learnMore").hide();
+    $("#aboutPage").hide();
 
     $("#blockLink").removeClass("active");
     $("#marketLink").removeClass("active");
@@ -97,6 +102,7 @@ $(".uploadLinkBtn").on("click", function () {
     $("#upload-what").hide();
     $("#portfolio-container").hide();
     $("#learnMore").hide();
+    $("#aboutPage").hide();
 
     $("#upload-container").show();    
 });
@@ -108,6 +114,7 @@ $(".deedLinkBtn").on("click", function () {
     $("#upload-what").hide();
     $("#portfolio-container").hide();
     $("#learnMore").hide();
+    $("#aboutPage").hide();
     
     $("#deed-container").show();
 });
@@ -119,6 +126,7 @@ $(".learnMoreBtn").on("click", function () {
     $("#upload-what").hide();
     $("#portfolio-container").hide();
     $("#deed-container").hide();
+    $("#aboutPage").hide();
 
     $("#learnMore").show();
 });
@@ -130,7 +138,19 @@ $("#pricingBtn").on("click", function () {
     $("#upload-what").hide();
     $("#portfolio-container").hide();
     $("#deed-container").hide();
+    $("#aboutPage").hide();
 
     $("#learnMore").show();
 });
 
+$("#aboutLink").on("click", function () {
+    $("#market-container").hide();
+    $("#upload-container").hide();
+    $("#homePage").hide();
+    $("#upload-what").hide();
+    $("#portfolio-container").hide();
+    $("#deed-container").hide();
+    $("#learnMore").hide();
+
+    $("#aboutPage").show();    
+});
