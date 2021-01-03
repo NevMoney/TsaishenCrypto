@@ -177,3 +177,18 @@ $(".escrowLink").on("click", function () {
 
     $("#escrowPage").show();
 });
+
+// code to make the hamburger menu close when item selected
+$(function () {
+    var navBar = $("#navbarCollapse");
+    navBar.on("click", "a", null, function () {
+        navBar.collapse("hide");
+    });
+});
+
+// code to close hamburger menu by clicking outside of it
+$(document).click(function(e) {
+    if (!$(e.target).is('a')) {
+        $('.collapse').collapse('hide');        
+    }
+});
