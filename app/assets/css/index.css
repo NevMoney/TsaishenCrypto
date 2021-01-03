@@ -49,4 +49,9 @@
 ol {
   margin-left: 5%;
 }
+
+#info:hover {
+  cursor:pointer;
+  
+}
  
