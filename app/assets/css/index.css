@@ -54,4 +54,18 @@ ol {
   cursor:pointer;
   
 }
- 
+
+#upload-container {
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
+#deed-container {
+  margin-left: 75px;
+  margin-right: 50px;
+  margin-top: 50px;
+}
+
+#upload-what {
+  margin-top: 50px;
+}

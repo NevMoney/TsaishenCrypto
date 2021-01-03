@@ -7,6 +7,7 @@ $(document).ready(async () => {
     $("#portfolio-container").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
+    $("#escrowPage").hide();
   
     // this allows the website to use the metamask account
     const accounts = await ethereum.enable();
@@ -34,6 +35,7 @@ $(".marketLink").on("click", function () {
     $("#portfolio-container").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
+    $("#escrowPage").hide();
 
     $("#blockLink").removeClass("active");
     $("#portfolioLink").removeClass("active");
@@ -51,6 +53,7 @@ $("#portfolioLink").on("click", function () {
     $("#upload-what").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
+    $("#escrowPage").hide();
 
     $("#blockLink").removeClass("active");
     $("#marketLink").removeClass("active");
@@ -68,6 +71,7 @@ $(".blockLink").on("click", function () {
     $("#portfolio-container").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
+    $("#escrowPage").hide();
 
     $("#marketLink").removeClass("active");
     $("#portfolioLink").removeClass("active");
@@ -85,6 +89,7 @@ $("#homeLink").on("click", function () {
     $("#portfolio-container").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
+    $("#escrowPage").hide();
 
     $("#blockLink").removeClass("active");
     $("#marketLink").removeClass("active");
@@ -103,6 +108,7 @@ $(".uploadLinkBtn").on("click", function () {
     $("#portfolio-container").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
+    $("#escrowPage").hide();
 
     $("#upload-container").show();    
 });
@@ -115,6 +121,7 @@ $(".deedLinkBtn").on("click", function () {
     $("#portfolio-container").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
+    $("#escrowPage").hide();
     
     $("#deed-container").show();
 });
@@ -127,6 +134,7 @@ $(".learnMoreBtn").on("click", function () {
     $("#portfolio-container").hide();
     $("#deed-container").hide();
     $("#aboutPage").hide();
+    $("#escrowPage").hide();
 
     $("#learnMore").show();
 });
@@ -139,6 +147,7 @@ $("#pricingBtn").on("click", function () {
     $("#portfolio-container").hide();
     $("#deed-container").hide();
     $("#aboutPage").hide();
+    $("#escrowPage").hide();
 
     $("#learnMore").show();
 });
@@ -151,10 +160,20 @@ $("#aboutLink").on("click", function () {
     $("#portfolio-container").hide();
     $("#deed-container").hide();
     $("#learnMore").hide();
+    $("#escrowPage").hide();
 
     $("#aboutPage").show();    
 });
 
-// $("#joinTsaishenButton").on("click", function () {
-//     $("#jobModal").modal("show");
-// });
+$(".escrowLink").on("click", function () {
+   $("#market-container").hide();
+    $("#upload-container").hide();
+    $("#homePage").hide();
+    $("#upload-what").hide();
+    $("#portfolio-container").hide();
+    $("#deed-container").hide();
+    $("#learnMore").hide();
+    $("#aboutPage").hide();
+
+    $("#escrowPage").show();
+});
