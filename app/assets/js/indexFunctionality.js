@@ -192,3 +192,12 @@ $(document).click(function(e) {
         $('.collapse').collapse('hide');        
     }
 });
+
+// code to close jobModal and open Thank you!
+$("#mc-embedded-subscribe").on("click", function () {
+    $("#jobModal").modal("toggle");
+});
+
+$("#watchWebinarBtn").on("click", function () {
+    window.open("webinarPage.html");
+});

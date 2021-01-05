@@ -2209,10 +2209,10 @@
 
                       <!-- Form -->
                       <form>
+                        <!-- Use LATER 
+                          action="mailto:tsaishenco@gmail.com" enctype="text/plain" 
                         <div class="row">
                           <div class="col-12 col-md-6">
-
-                            <!-- First name -->
                             <div class="form-label-group">
                               <input type="text" class="form-control form-control-flush" id="registrationFirstName" placeholder="First name">
                               <label for="registrationFirstName">First name</label>
@@ -2220,8 +2220,6 @@
 
                           </div>
                           <div class="col-12 col-md-6">
-
-                            <!-- Last name -->
                             <div class="form-label-group">
                               <input type="text" class="form-control form-control-flush" id="registrationLastName" placeholder="Last name">
                               <label for="registrationLastName">Last name</label>
@@ -2231,8 +2229,6 @@
                         </div>
                         <div class="row">
                           <div class="col-12 col-md-6">
-
-                            <!-- Email -->
                             <div class="form-label-group">
                               <input type="email" class="form-control form-control-flush" id="webinarRegistrationEmail" placeholder="Email">
                               <label for="registrationEmail">Email</label>
@@ -2240,25 +2236,24 @@
 
                           </div>
                           <div class="col-12 col-md-6">
-
-                            <!-- Password -->
                             <div class="form-label-group">
                               <input type="tel" class="form-control form-control-flush" id="webinarRegistrationPhone" placeholder="Phone">
                               <label for="registrationPhone">Phone</label>
                             </div>
 
                           </div>
-                        </div>
-                        <div class="row">
+                        </div> -->
+                        <div class="row"> 
+                          
                           <div class="col-12">
-                            
-                            <!-- Submit -->
-                            <button class="btn btn-block btn-primary mt-3 lift">
-                              Join Webinar
+                            <button class="btn btn-block btn-primary mt-3 lift" id="watchWebinarBtn">
+                              Yes, Watch NOW >>
                             </button>
-
+                            
                           </div>
+
                         </div>
+
                       </form>
                     
                     </div>
@@ -2659,7 +2654,7 @@
                         <div class="response" id="mce-success-response" style="display:none"></div>
                       </div>    <!-- do not remove this or risk form bot signups -->
                       <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_e58bf0227edf4ee36730e3bd0_75bed90fda" tabindex="-1" value=""></div>
-                      <div class="clear"><input type="submit" value="Submit" name="subscribe" id="mc-embedded-subscribe" class="btn btn-block btn-primary mt-3 lift mb-md-8"></div>
+                      <div class="clear"><input type="submit" value="Submit" name="subscribe" id="mc-embedded-subscribe" class="btn btn-block btn-primary mt-3 lift mb-md-8" data-toggle=""></div>
                       <div class="content__gdprLegal">
                         <p class="text-muted font-size-xs">We use Mailchimp as our marketing platform. By clicking below, you 
                           acknowledge that your information will be transferred to Mailchimp for processing. 
@@ -2677,6 +2672,41 @@
           </div>
         </div>
       </div>
+
+    <!-- Thank You Modal -->
+    <div class="modal fade" id="jobModal" tabindex="-1" role="dialog" aria-labelledby="joinTsaishen" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+
+            <!-- Close -->
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+
+            <!-- Image -->
+            <div class="text-center">
+              <img src="Landkit-1.2.1/dist/assets/img/illustrations/illustration-9.png" alt="..." class="img-fluid mb-3" style="width: 200px;">
+            </div>
+
+            <!-- Heading -->
+            <h2 class="font-weight-bold text-center mb-1" id="modalExampleTitle">
+              Thank you!
+            </h2>
+
+            <!-- Text -->
+            <p class="font-size-lg text-center text-muted mb-6 mb-md-8">
+              Message received. We'll be in touch.
+            </p>
+
+            <button class="btn btn-block btn-primary mt-3 lift">
+              OK
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Escrow Page -->
     <div id="escrowPage" class="py-8 py-md-11">
