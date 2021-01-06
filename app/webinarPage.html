@@ -214,6 +214,7 @@
       <section class="py-8 py-md-11 border-bottom">
         <div class="container align-items-center justify-content-center">
             <div class="row justify-content-center">
+              <!--one option-->
                 <div class="" data-aos="fade-up" data-aos-delay="50">
     
                     <iframe>VIDEO HERE</iframe>
@@ -222,7 +223,96 @@
             </div> <!-- / .row -->
         </div> <!-- / .container -->
       </section>
-    
+      
+        <!--option 2-->
+        <div class="cover">
+          <video autoplay loop mute poster="path/to/image.jpg">
+              <source src="path/to/video.mp4" type="video/mp4" />
+              <source src="path/to/video.webm" type="video/webm" />
+              <source src="path/to/video.ogv" type="video/ogg" />
+              <img src="path/to/image.jpg" alt="" />
+          </video>
+        </div>
+        <!-- CSS
+            .cover {
+              bottom: 0;
+              left: 0;
+              overflow: hidden;
+              position: absolute;
+              right: 0;
+              top: 0;
+              z-index: 1;
+            }
+
+            .cover img, .cover video {
+              display: block;
+              height: auto;
+              left: auto;
+              max-width: none;
+              min-height: 100%;
+              min-width: 100%;
+              right: auto;
+              position: absolute;
+              top: 0;
+              width: auto;
+              z-index: 1;
+            }
+
+            @supports (transform: translateX(-50%)) {
+
+              .cover img, .cover video {
+                  left: 50%;
+                  top: 50%;
+                  transform: translateX(-50%) translateY(-50%);
+              }
+
+            }
+
+            @media screen and (min-aspect-ratio: 16/9){/* Make this the same aspect ratio as your video */
+
+              .cover img, .cover video {
+                  max-width: 100vw;
+                  min-width: 100vw;
+                  width: 100vw;
+              }
+
+            }
+
+            @media screen and (max-aspect-ratio: 16/9){/* Make this the same aspect ratio as your video */
+
+              .cover img, .cover video {
+                  height: 100vh;
+                  max-height: 100vh;
+                  min-height: 100vh;
+              }
+
+            }
+          
+          -->
+
+        <!--option 3-->
+        <div class="container"><video class="videoPlayer">Code goes here</video></div>
+          <!-- CSS
+            .container {
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              padding:0;
+              margin:0;
+              left: 0px;
+              top: 0px;
+              z-index: -1000;
+              overflow:hidden;
+            }
+
+            .videoPlayer {
+              min-height: 100%;
+              //min-width:100%; - if fit to width
+              position:absolute;
+              bottom:0;
+              left:0;
+            }
+          -->  
 
 
     <!-- External scripts -->

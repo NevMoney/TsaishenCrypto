@@ -193,11 +193,31 @@ $(document).click(function(e) {
     }
 });
 
-// code to close jobModal and open Thank you!
-$("#mc-embedded-subscribe").on("click", function () {
-    $("#jobModal").modal("toggle");
-});
-
 $("#watchWebinarBtn").on("click", function () {
     window.open("webinarPage.html");
+});
+
+// verify required form email is valid
+$("#mce-EMAIL").on("input", function () {
+    var input = $(this);
+    var re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    var is_email = re.test(input.val());
+    if (is_email) {
+        input.removeClass("invalid").addClass("valid");
+    }
+    else {
+        input.removeClass("valid").addClass("invalid");
+    }
+});
+
+// code to close jobModal and open Thank you!
+$("#mc-embedded-subscribe").on("click", function (e) {
+    var element = $("#mce-EMAIL");
+    var valid = element.hasClass("valid");
+    if (!valid) {
+        $("#mce-error-response").show();
+    }
+    else {
+        $("#jobModal").modal("toggle");
+    }
 });

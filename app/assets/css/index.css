@@ -70,3 +70,10 @@ ol {
   margin-top: 50px;
 }
 
+input.invalid, textarea.invalid{
+	border: 2px solid rgb(250, 0, 0);
+}
+
+input.valid, textarea.valid{
+	border: 2px solid rgb(0, 214, 0);
+}
