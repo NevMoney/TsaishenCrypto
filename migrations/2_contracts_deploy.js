@@ -4,21 +4,21 @@ const HouseToken = artifacts.require("HouseToken");
 const Marketplace = artifacts.require("Marketplace");
 const TsaishenEscrow = artifacts.require("TsaishenEscrow");
 
-module.exports = async function(deployer, network, accounts) {
+module.exports = async function (deployer, network, accounts) {
     console.log("network used", network);
     console.log("account used", accounts);
 
     // DEPLOY CONTRACTS
     await deployer.deploy(TsaishenUsers);
-    // once first one is deployed, second one goes taking first address
-    await deployer.deploy(HouseToken, TsaishenUsers.address);
+    // once first one is deployed, second one goes taking first address + creator account
+    await deployer.deploy(HouseToken, TsaishenUsers.address, accounts[1]);
     /* 
     once second one is deployed, third is fired off taking relevant contract(s) address(es)
     + feeRecipient (for local testing purposes I have account 1 -- CHANGE THIS for Test/MainNet)
     */
-//    await deployer.deploy(TsaishenEscrow, TsaishenUsers.address, accounts[1]); --> ESCROW is part of marketplace
-   await deployer.deploy(Marketplace, TsaishenUsers.address, HouseToken.address, accounts[1]);
-
+    //    await deployer.deploy(TsaishenEscrow, TsaishenUsers.address, accounts[1]); --> ESCROW is part of marketplace
+    await deployer.deploy(Marketplace, TsaishenUsers.address, HouseToken.address, accounts[1]);
+}
 /*
     // Basic Tests
     const tsaishenUsersInstance = await TsaishenUsers.deployed();

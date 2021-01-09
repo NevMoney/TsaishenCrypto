@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.10;
+pragma solidity 0.6.10;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
@@ -79,14 +79,15 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
     constructor(
         address _userContractAddress, 
         address _houseTokenAddress, 
-        address payable _feeRecipient, 
+        address payable _feeRecipient
         // IERC20 _dai, 
-        IERC20 _usdc) public {
+        // IERC20 _usdc
+        ) public {
         _tsaishenUsers = TsaishenUsers(_userContractAddress);
         _houseToken = HouseToken(_houseTokenAddress);
         feeRecipient = _feeRecipient;
         // dai = _dai;
-        usdc = _usdc;
+        // usdc = _usdc;
     }
 
     event MarketTransaction (string, address, uint);

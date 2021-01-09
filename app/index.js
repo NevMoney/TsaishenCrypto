@@ -4,9 +4,11 @@
 var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
-// var houseTokenAddress = "";
-// var tsaishenUsersAddress = "0x...";
-// var marketplaceAddress = "0x...";
+
+var tsaishenUsersAddress = "0x7F25b0104c864118B2f5B12c390756DF4F9d8b0F";
+var houseTokenAddress = "0x4330ca56Ee9a7675EFcAaD82932B4cd15A6d7976";
+var marketplaceAddress = "0xc333468B5b6dEb333cd9d6E66655E454A813eAf9";
+const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
 const ethereumButton = document.querySelector('.enableEthereumButton');
 const showAccount = document.querySelector('.showAccount');
@@ -47,7 +49,11 @@ $(document).ready(async () => {
   // User will be the first item in the accounts array
   user = web3.utils.toChecksumAddress(accounts[0]);
 
-  usersInstance = await new web3.eth.Contract(abi, contractAddress, {from: user})
+  usersInstance = await new web3.eth.Contract(abi.TsaishenUsers, tsaishenUsersAddress, { from: user });
+  houseTokenInstance = await new web3.eth.Contract(abi.HouseToken, houseTokenAddress, { from: creatorAddress });
+  marketplaceInstance = await new web3.eth.Contract(abi.Marketplace, marketplaceAddress, { from: address[1] });
 
-  console.log(usersInstance);
+  console.log("users ", usersInstance);
+  console.log("house ", houseTokenInstance);
+  console.log("marketplace ", marketplaceInstance);
 });

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: ORACLIZE
 
-pragma solidity ^0.6.10;
+pragma solidity 0.6.10;
 
 library StringsConcats {
   // via https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol
