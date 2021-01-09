@@ -203,3 +203,7 @@ $("#mc-embedded-subscribe").on("click", function (e) {
         $("#jobModal").modal("toggle");
     }
 });
+
+$("#metamaskDownloadBtn").on("click", function () {
+    window.open("https://metamask.io/");
+});

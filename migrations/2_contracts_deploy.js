@@ -16,10 +16,10 @@ module.exports = async function(deployer, network, accounts) {
     once second one is deployed, third is fired off taking relevant contract(s) address(es)
     + feeRecipient (for local testing purposes I have account 1 -- CHANGE THIS for Test/MainNet)
     */
-   await deployer.deploy(TsaishenEscrow, TsaishenUsers.address, accounts[1]);
-   await deployer.deploy(Marketplace, TsaishenUsers.address, HouseToken.address, TsaishenEscrow.address, accounts[1]);
+//    await deployer.deploy(TsaishenEscrow, TsaishenUsers.address, accounts[1]); --> ESCROW is part of marketplace
+   await deployer.deploy(Marketplace, TsaishenUsers.address, HouseToken.address, accounts[1]);
 
-
+/*
     // Basic Tests
     const tsaishenUsersInstance = await TsaishenUsers.deployed();
     const houseTokenInstance = await HouseToken.deployed();
@@ -32,12 +32,12 @@ module.exports = async function(deployer, network, accounts) {
     await tsaishenEscrowInstance.setBuyerAddress(accounts[3]);
 
     console.log("creating house");
-    /*
-    because it's a payable function we have to use .methods before calling function
-    then .send() when using web3, like so:
-    await houseTokenInstance.methods.createHouse(1000, 10).send(1 ether);
-    in truffle you don't have to doo all that, but can/should specify from which account
-    */ 
+    
+    // because it's a payable function we have to use .methods before calling function
+    // then .send() when using web3, like so:
+    // await houseTokenInstance.methods.createHouse(1000, 10).send(1 ether);
+    // in truffle you don't have to doo all that, but can/should specify from which account
+    
     await houseTokenInstance.createHouse(1000, 10, {from: accounts[2], value:web3.utils.toWei("1")});
 
     // this is one way to access info, but the latter is better because we're accessing object
@@ -111,3 +111,4 @@ module.exports = async function(deployer, network, accounts) {
     const balanceOf2 = await houseTokenInstance.balanceOf(accounts[1]);
     console.log("check balances", balanceOf, balanceOf2);
 };
+*/
