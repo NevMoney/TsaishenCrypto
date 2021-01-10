@@ -73,6 +73,29 @@ $(document).ready(async () => {
       + owner + ", houseId: " + houseId + ", house on blockchain url: " + houseUri)
   })
     .on("error", console.error);
+  
+  marketplaceInstance.events.MarketTransaction().on("data", (event) => {
+    var eventType = event.returnValues["TxType"].toString();
+    var tokenId = event.returnValues["tokenId"];
+    if (eventType == "House listed") {
+      alert("Congrats! You have listed the following property for sale: " + tokenId);
+    }
+    if (eventType == "Offer removed") {
+      alert("The following property has been removed from the market: " + tokenId);
+    }
+    if (eventType == "House purchased") {
+      alert("Congrats on your purchase. You have acquired the following property: " + tokenId);
+    }
+    if (eventType == "House in Escrow") {
+      alert("Congratulations! You are in escrow for " + tokenId);
+    }
+    if (eventType == "Escrow Refunded") {
+      alert("Sale wasn't successful. Escrow has been refunded for " + tokenId); //CONSIDER putting this in a DIV for the house
+    }
+    if (eventType == "House SOLD") {
+      alert("Congratulations! Escrow has successfully closed and the following property is sold: " + tokenId); 
+    }
+  });
 });
 
 var value = $("#marketValue").val();
