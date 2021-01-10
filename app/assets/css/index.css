@@ -1,0 +1,87 @@
+.inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+  }
+  
+  .inputfile + label {
+    font-size: 1.3em;
+    font-weight: 700;
+    width: 200px;
+    height: 50px;
+    padding: 8px;
+    color: white;
+    background-color: #767783;
+    display: inline-block;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .inputfile:focus + label,
+  .inputfile + label:hover {
+    background-color: b;
+  }
+  
+  .inputfile + label {
+    cursor: pointer; /* "hand" cursor */
+  }
+  
+  .inputfile:focus + label {
+    outline: 1px dotted #000;
+    outline: -webkit-focus-ring-color auto 5px;
+  }
+  
+  * {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+
+.footer a:hover {
+  color:#66c83d;
+  text-decoration: none;
+}
+
+ol {
+  margin-left: 5%;
+}
+
+#info:hover {
+  cursor:pointer;
+  
+}
+
+#upload-container {
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
+.deedContainer {
+  margin-left: 75px;
+  margin-right: 50px;
+  margin-top: 50px;
+}
+
+#upload-what {
+  margin-top: 50px;
+}
+
+input.invalid, textarea.invalid{
+	border: 2px solid rgb(250, 0, 0);
+}
+
+input.valid, textarea.valid{
+	border: 2px solid rgb(0, 214, 0);
+}
+
+.visible{
+  display: none;
+}
+
+.input-group-addon {
+  padding-top: 20px;
+}

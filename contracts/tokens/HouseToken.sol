@@ -8,11 +8,13 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../Storage.sol";
 import "../TsaishenUsers.sol";
+import "../StringsConcats.sol";
 
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard, Storage {
     TsaishenUsers private _tsaishenUsers;
 
     using SafeMath for uint256;
+    using StringsConcats for string;
 
     mapping (uint256 => address) public houseIndexToApproved;
 
@@ -24,8 +26,9 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     address payable internal _creator;
 
     // MUST ALWAYS BE PUBLIC!
-    constructor(address _userContractAddress) public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
+    constructor(address _userContractAddress, address payable creator) public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
         setUserContract(_userContractAddress);
+        _creator = creator;
     }
 
     modifier costs (uint cost){
@@ -47,7 +50,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     // generate house on blockchain: value, ID, owner address
     function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
         // require identification of the user KYC/AML before execution
-        balance += msg.value;
+        balance.add(msg.value);
 
         houseCounter++;
 
@@ -76,30 +79,32 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         return _tokenIdTracker.current();
     }
 
+    function houseHashURI(uint256 _tokenId) public view returns(string memory){
+        return ipfsHash[_tokenId];
+    }
+
+    function houseTokenURI(uint256 _tokenId) internal view returns(string memory){
+        return StringsConcats.strConcat(
+            houseHashURI(_tokenId),
+            StringsConcats.uint2str(_tokenId)
+        );
+    }
+
     function getHouse(uint256 _id) public view returns(uint256 value, uint256 income, string memory uri) {
         value = houseInfo[_id].value;
         income = houseInfo[_id].income;
-        uri = tokenURI(_id); 
-        //OR use uri = ipfsHash[_id];
+        uri = houseTokenURI(_id);
     }
 
-    function withdrawAll() public onlyOwner nonReentrant returns(uint){
-        uint toTransfer = balance;
-        balance = 0;
-        // sendValue(msg.sender, toTransfer);
-        msg.sender.transfer(toTransfer);
-        return toTransfer;
+    function withdrawAll() public onlyOwner {
+        msg.sender.transfer(address(this).balance);
     }
 
-    // NEED TO GET THIS FIXED!
+    //NOT WORKING!
     function _autoWithdraw() internal {
-        if(balance >= 2 ether)
-            balance = balance.sub(1 ether);
-            _creator.transfer(1 ether);
-    }
-    
-    function sendEth() public payable nonReentrant{
-        _autoWithdraw();
+        if(address(this).balance >= 10 ether) {
+            _creator.transfer(address(this).balance);
+        }    
     }
     
     // this checks if they own the house

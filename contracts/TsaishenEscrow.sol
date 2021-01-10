@@ -1,18 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.10;
+pragma solidity 0.6.10;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-
-/** 
-money goes into the escrow until deed has been filled out and mailed to county.
-When completed or time runs out the money is released from Escrow
-We will use oracle to verify deed transfer with easypost (through Chainlink). 
-
-beneficiary = buyer
-*/
 
 contract TsaishenEscrow is Ownable{
 
@@ -25,129 +17,130 @@ contract TsaishenEscrow is Ownable{
     event RefundsEnabled();
 
     enum State { Active, Refunding, Closed }
-    State private _state;
 
-    // might NOT need this!
-    address payable buyer;
-    address payable seller;
-
-    address payable internal eFeeRecipient;
-
-    mapping(address => uint256) private _beneficiary;
-    mapping(address => uint256) private _refundee;
-
-    // MUST ALWAYS BE PUBLIC!
-    constructor() public {
-        _state = State.Active;
-        // eFeeRecipient = _eFeeRecipient;
+    // create a struct to hold all information about escrow
+    struct Escrow {
+        address payable seller; //this is beneficiary
+        address payable buyer; //this is refundee
+        State state;
+        uint256 amount;
+        uint256 timelock;
     }
 
+    // tokenId is the key to the struct within mapping
+    mapping(uint256 => Escrow) escrowById;
+
+    address payable internal eFeeRecipient;
+    uint256 fee = 3;
+
+     // timelock will be 10 days; for testing it's 1 minute
+    uint256 private constant _TIMELOCK= 1 minutes;
+    
+    // // modifier to check if NOW is greater than when activated timelock
+    // modifier notLocked(State _st){
+    //     require(timelock[_st] !=0 && timelock[_st] <= now, "Function is timelocked");
+    //     _;
+    // }
+
+    // // timelock unlock function after the declared TIMELOCK timeline
+    // function startTimelock(State _st) public onlyOwner {
+    //     timelock[_st] = now + _TIMELOCK;
+    // }
+
+    // // lock timelock
+    // function cancelTimelock(State _st) public onlyOwner {
+    //     timelock[_st] = 0;
+    // }
+        
     // deposit funds to be held for the beneficiary (seller)
-    function deposit(address seller, address buyer, uint256 amount) internal {
-        require(seller != address(0), "Beneficiary cannot be zero address.");
-        require(_state == State.Active, "Can only deposit while active");
-        _beneficiary[seller] = _beneficiary[seller].add(amount);
-        _refundee[buyer] = _refundee[buyer].add(amount);
-        startTimelock(State.Active);
+    function deposit(address seller, address buyer, uint256 amount, uint256 tokenId) internal {
+        require(seller != address(0), "ERR01");
+        // uint256 amount = msg.value;
+        Escrow memory escrow = Escrow(payable(seller), payable(buyer), State.Active, amount, now + _TIMELOCK);
+        escrowById[tokenId] = escrow;
 
         emit Deposited(seller, amount);
     }
 
-    function sellerDeposits(address recipient) public view returns (uint256) {  
-        return _beneficiary[recipient];
+    function escrowInfo(uint256 tokenId) public view returns(address seller, address buyer, State state, uint256 amount, uint256 timelock){
+        return (escrowById[tokenId].seller, escrowById[tokenId].buyer, escrowById[tokenId].state, escrowById[tokenId].amount, escrowById[tokenId].timelock);
     }
 
-    function buyerDeposits(address refundee) public view returns (uint256) {
-        return _refundee[refundee];   
+    function sellerDeposits(uint256 tokenId) public view returns (address, uint256) {  
+        return (escrowById[tokenId].seller, escrowById[tokenId].amount);
     }
 
-    function enableRefunds() internal onlyOwner notLocked(State.Active){
-        require(_state == State.Active, "Escrow not active");
-        _state = State.Refunding;
+    function buyerDeposits(uint256 tokenId) public view returns (address, uint256) {
+        return (escrowById[tokenId].buyer, escrowById[tokenId].amount);   
+    }
+
+    function enableRefunds(uint256 tokenId) internal onlyOwner {
+        require(now >= _TIMELOCK, "ERR05");
+        require(escrowById[tokenId].state == State.Active, "ERR20");
+        escrowById[tokenId].state = State.Refunding;
         
         emit RefundsEnabled();
     }
 
-    function refundAllowed() public view returns (bool) {
-       return _state == State.Refunding;
+    function refundAllowed(uint256 tokenId) public view returns (bool) {
+       return escrowById[tokenId].state == State.Refunding;
     }
 
-    function escrowState() public view returns (State) {
-        return _state;
+    function escrowState(uint256 tokenId) public view returns (State) {
+        return escrowById[tokenId].state;
     }
 
-    // function to confirm that deed was indeed transfered
-    function confirmDelivery() public {
-        require(msg.sender == buyer, "Not authorized.");
-        if(_state == State.Refunding){
-            resetState();
+    function confirmDelivery(uint256 tokenId) public {
+        require(msg.sender == escrowById[tokenId].buyer, "ERR11");
+        if(escrowById[tokenId].state == State.Refunding){
+            resetState(tokenId);
         }
-        cancelTimelock(State.Active);
-        close();
+        escrowById[tokenId].timelock = 0;
+        escrowById[tokenId].state = State.Closed;
+        beneficiaryWithdraw(escrowById[tokenId].seller, tokenId);
     }
 
-    // closes the escrow and refunds - DOES IT NEED to be onlyOwner if internal???
-    function close() internal onlyOwner notLocked(State.Active){
-        require(_state == State.Active, "Can only close while active");
-        _state = State.Closed;
+    function close(uint256 tokenId) internal onlyOwner {
+        require(escrowById[tokenId].state == State.Active, "ERR20");
+        escrowById[tokenId].state = State.Closed;
+        escrowById[tokenId].timelock = 30 seconds; //give buyer 3 days to confirm
 
         emit RefundsClosed();
     }
 
-    function withdrawalAllowed() public view returns (bool){
-        if(_state != State.Closed) return false;
+    function withdrawalAllowed(uint256 tokenId) public view returns (bool){
+        if(escrowById[tokenId].state != State.Closed) return false;
         return true;
     }
 
-    // doesn't reset buyer to 0
-    function beneficiaryWithdraw(address payable seller) public {
-        require(_state == State.Closed, "Escrow not closed.");
-        uint256 proceeds = _beneficiary[seller];
-        uint256 transactionFee = proceeds.mul(3).div(100);
-        uint256 paymentToSeller = proceeds.sub(transactionFee);
-        _beneficiary[seller] = 0;
-        _refundee[buyer] = 0;
+    function beneficiaryWithdraw(address payable seller, uint256 tokenId) internal onlyOwner{
+        require(now >= escrowById[tokenId].timelock, "ERR05");
+        require(escrowById[tokenId].state == State.Closed, "ERR20");
+        uint256 transactionFee = escrowById[tokenId].amount.mul(fee).div(100);
+        uint256 paymentToSeller = escrowById[tokenId].amount.sub(transactionFee);
+        escrowById[tokenId].amount = 0;
         eFeeRecipient.transfer(transactionFee);
-        seller.transfer(paymentToSeller);
-        // seller.transfer(proceeds);
+        escrowById[tokenId].seller.transfer(paymentToSeller);
+        escrowById[tokenId].buyer.transfer(tokenId);
 
-        emit Withdrawn(seller, /*proceeds*/paymentToSeller);
+        emit Withdrawn(seller, paymentToSeller);
     }
 
-    // doesn't reset seller to 0
-    function issueRefund(address payable buyer) internal {
-        require(_state == State.Refunding, "Can only refund while refunding");         
-        uint256 refund = _refundee[buyer];
-        _refundee[buyer] = 0;
-        _beneficiary[seller] = 0;
-        buyer.transfer(refund);
+    function issueRefund(address payable buyer, uint256 tokenId) internal onlyOwner{
+        require(now >= escrowById[tokenId].timelock, "ERR05");
+        require(escrowById[tokenId].state == State.Refunding, "ERR20");         
+        uint256 refund = escrowById[tokenId].amount;
+        escrowById[tokenId].amount = 0;
+        escrowById[tokenId].buyer.transfer(refund);
+        escrowById[tokenId].seller.transfer(tokenId);
+
+        emit Withdrawn(buyer, refund);
     }
 
-    function resetState() internal onlyOwner{
-        _state = State.Active;
+    function resetState(uint256 tokenId) internal {
+        escrowById[tokenId].state = State.Active;
     }
 
-    // timelock will be 10 days, however for testing purposes we'll make it 1 minute
-    uint256 private constant _TIMELOCK = 1 minutes;
-    mapping (State => uint256) public timelock;
-
-    
-    // modifier to check if NOW is greater than when activated timelock
-    modifier notLocked(State _st){
-        require(timelock[_st] !=0 && timelock[_st] <= now, "Function is timelocked");
-        _;
-    }
-
-    // timelock unlock function after the declared TIMELOCK timeline
-    function startTimelock(State _st) public onlyOwner {
-        timelock[_st] = now + _TIMELOCK;
-    }
-
-    // lock timelock
-    function cancelTimelock(State _st) public onlyOwner {
-        timelock[_st] = 0;
-    }
-        
 }
 
    
