@@ -254,4 +254,38 @@ function validateCheckbox(){
         return true;
     }
     return false;
-    };
+}
+
+var saleId;
+var salePrice;
+    
+function selectHouseForSale(id) {
+    saleId = id;
+}
+
+$("#sellBtn").on("click", function () {
+    sellHouse(saleId).then(() => {
+        $("#sellHouseModal").modal("hide");
+    });
+});
+
+function selectHouseToBuyWEth(id) {
+    saleId = id;
+    checkOffer(saleId).then((offer) => {
+        salePrice = offer.price;
+        buyHomeInETH(saleId, salePrice);
+    });
+}
+
+function selectHouseToBuyWUsdc(id) {
+    saleId = id;
+    checkOffer(saleId).then((offer) => {
+        salePrice = offer.price;
+        buyHomeInUDSC(saleId, salePrice);
+    });
+}
+
+function cancelSale(id) {
+    saleId = id;
+    removeOffer(id);
+}
