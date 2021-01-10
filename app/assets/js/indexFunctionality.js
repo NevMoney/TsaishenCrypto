@@ -247,3 +247,11 @@ function goToInventory() {
 
     getInventory();
 }
+
+//NOT WORKING!!!
+function validateCheckbox(){
+    if($("#certification").checked){
+        return true;
+    }
+    return false;
+    };

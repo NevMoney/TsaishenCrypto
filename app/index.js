@@ -2,7 +2,6 @@
 //import BigNumber from './bignumber.min.js';
 //const BigNumber = require('bignumber.js');
 
-// NOT WORKING!!!
 // import { createRequire } from "module"
 // const require = createRequire(import.meta.url);
 // const BigNumber = require("bignumber.js");
@@ -78,6 +77,7 @@ $(document).ready(async () => {
 
 var value = $("#marketValue").val();
 var income = $("#currentIncome").val();
+// let cost = new BigNumber(1);
 
 /*
 **************************************
@@ -85,8 +85,10 @@ Have to pass the payable function - can't figure it out
 **************************************
 */ 
 async function uploadHouse(value, income) {
-  let oneEther = 1 * 10 ** 18; //NOT WORKING
-  let cost = new BigNumber(oneEther); //NOT WORKING
+  // let oneEther = 1 * 10 ** 18; //NOT WORKING
+  // let cost = new BigNumber(oneEther); //NOT WORKING
+
+  // ERROR: pass number as strings or BigNumber objects
   var amount = web3.utils.toWei(cost, "ether");
   await houseTokenInstance.methods.createHouse(value, income).send({value: amount}, function (txHash) {
     try {
@@ -118,7 +120,7 @@ async function checkOffer(id) {
   let x;
 
   try {
-    x = await marketplaceInstance.methods.getOffier(id).call();
+    x = await marketplaceInstance.methods.getOffer(id).call();
     var price = x.price;
     var seller = x.seller;
     var onSale = x.active;
@@ -185,13 +187,15 @@ async function removeOffer() {
 async function buyHomeInETH (id, price) {
   await checkOffer(id);
   var amount = web3.utils.toWei(price, "ether");
+  var ethBuy = await marketplaceInstance.methods.buyHouseWithETH(id).send({ value: amount });
+  var escrowBuy = await marketplaceInstance.methods.buyHouseWithEscrowEth(id).send({ value: amount });
 
   try {
     if ($("#buyWithETH").on("click", function () {
-      await marketplaceInstance.methods.buyHouseWithETH(id).send({ value: amount });
+      ethBuy;
     }));
     else if ($("#buyWithETHEscrow").on("click", function () {
-      await marketplaceInstance.methods.buyHouseWithEscrowEth(id).send({ value: amount });
+      escrowBuy;
     }));
   }
   catch (err) {
@@ -202,13 +206,15 @@ async function buyHomeInETH (id, price) {
 async function buyHomeInUDSC() {
   await checkOffer(id);
   var amount = web3.utils.toWei(price, "USDC");
+  var buy = await marketplaceInstance.methods.buyWithUSDC(id).send({ value: amount });
+  var escrowBuy = await marketplaceInstance.methods.escrowBuyUsdc(id).send({ value: amount });
 
   try {
     if ($("#buyWithUSDC").on("click", function () {
-      await marketplaceInstance.methods.buyWithUSDC(id).send({ value: amount });
+      buy;
     }));
     else if ($("#buyWithUSDCEscrow").on("click", function () {
-      await marketplaceInstance.methods.escrowBuyUsdc(id).send({ value: amount });
+      escrowBuy;
     }));
   }
   catch (err) {
