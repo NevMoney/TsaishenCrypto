@@ -79,7 +79,11 @@ $(document).ready(async () => {
 var value = $("#marketValue").val();
 var income = $("#currentIncome").val();
 
-// Have to pass the payable function - can't figure it out
+/*
+**************************************
+Have to pass the payable function - can't figure it out
+**************************************
+*/ 
 async function uploadHouse(value, income) {
   let oneEther = 1 * 10 ** 18; //NOT WORKING
   let cost = new BigNumber(oneEther); //NOT WORKING
@@ -119,7 +123,7 @@ async function checkOffer(id) {
     var seller = x.seller;
     var onSale = x.active;
 
-    price = web.utils.fromWei(price, "ether");
+    price = web.utils.fromWei(price);
     var offer = { seller: seller, price: price, onSale: onSale };
     return offer;
   }
@@ -157,7 +161,7 @@ async function sellHouse(id) {
   if (offer.onSale) return alert("House is already listed for sale.");
 
   var price = $("#housePrice").val();
-  var amount = web3.utils.toWei(price, "ether"); //may need to change this for USDC
+  var amount = web3.utils.toWei(price);
   const isApproved = await houseTokenInstance.methods.isApprovedForAll(user, marketplaceAddress).call();
   try {
     if (!isApproved) {
@@ -173,3 +177,41 @@ async function sellHouse(id) {
   }
 }
 
+async function removeOffer() {
+  await marketplaceInstance.methods.removeOffer(id).send();
+  goToInventory();
+}
+
+async function buyHomeInETH (id, price) {
+  await checkOffer(id);
+  var amount = web3.utils.toWei(price, "ether");
+
+  try {
+    if ($("#buyWithETH").on("click", function () {
+      await marketplaceInstance.methods.buyHouseWithETH(id).send({ value: amount });
+    }));
+    else if ($("#buyWithETHEscrow").on("click", function () {
+      await marketplaceInstance.methods.buyHouseWithEscrowEth(id).send({ value: amount });
+    }));
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+async function buyHomeInUDSC() {
+  await checkOffer(id);
+  var amount = web3.utils.toWei(price, "USDC");
+
+  try {
+    if ($("#buyWithUSDC").on("click", function () {
+      await marketplaceInstance.methods.buyWithUSDC(id).send({ value: amount });
+    }));
+    else if ($("#buyWithUSDCEscrow").on("click", function () {
+      await marketplaceInstance.methods.escrowBuyUsdc(id).send({ value: amount });
+    }));
+  }
+  catch (err) {
+    console.log(err);
+  }
+}

@@ -9,7 +9,10 @@ function houseBox(id, isMarketplace, price, owner) {
                         <div class="house" onclick="selectHouse(${id})">
                             <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
                         
-                            <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price}</button>
+                            <button class="btn btn-warning light-b-shadow" id="buyWithETH${id}" onclick="selectHouseToBuy(${id})">Buy ETH ${price}</button>
+                            <button class="btn btn-warning light-b-shadow" id="buyWithETHEscrow${id}" onclick="selectHouseToBuy(${id})">Escrow Buy ETH ${price}</button>
+                            <button class="btn btn-warning light-b-shadow" id="buyWithUSDC${id}" onclick="selectHouseToBuy(${id})">Buy USDC ${price}</button>
+                            <button class="btn btn-warning light-b-shadow" id="buyWithUSDCEscrow${id}" onclick="selectHouseToBuy(${id})">Escrow Buy USDC ${price}</button>
                             <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
                     </div >
                     </div>`
