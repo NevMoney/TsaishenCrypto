@@ -1001,7 +1001,34 @@
                 <input type="text" class="form-control" id="parcelNumber" placeholder="APN or PIN" >
               </div>
             </div>
-
+            <div class="row g-2">
+              <div class="col-md-2"><br>
+                <label for="parcel" class="form-label font-size-lg mb-2 mb-md-4">Current Market Value</label>
+                <div class="input-group">
+                  <span class="input-group-addon font-size-lg"><i class="fas fa-dollar-sign"></i> </span>
+                  <input type="number" class="form-control" id="marketValue" placeholder="$150,000" >
+                </div>
+              </div>
+              <div class="col-md-2"><br>
+                <label for="parcel" class="form-label font-size-lg mb-2 mb-md-4">Income Producing Property?</label>
+                <div class="col-md-1 vh-10 d-flex justify-content-left align-items-center">
+                  <div class="col-sm-5">
+                    <div class="custom-control custom-switch custom-switch-light">
+                      <input type="checkbox" class="custom-control-input" id="customSwitch">
+                      <label class="custom-control-label text-dark" for="customSwitch">Yes</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-2 visible" id="income"><br>
+                <label for="parcel" class="form-label font-size-lg mb-2 mb-md-4">Current Income</label>
+                <div class="input-group">
+                  <span class="input-group-addon font-size-lg"><i class="fas fa-dollar-sign"></i> </span>
+                  <input type="number" step="1" min="0" class="form-control currency" id="currentIncome" placeholder="$1,500" >
+                  <span class="input-group-addon font-size-lg">&nbsp; per month </span>
+                </div>    
+              </div>
+            </div>
             <br>
 
             <div>
@@ -1046,6 +1073,8 @@
         <h5></h5>
         <button id="upload" type="button" class="btn btn-dark" value="SUBMIT">Upload</button>
         <div id="ipfsResult" class="mt-4 font-size-lg mb-2 mb-md-4"></div>
+        <!-- alert that house upload is successful -->
+        <div class="alert alert-info" id="houseUploadedMsg" role="alert"></div>
       </div>
       <div class="border-bottom-xl border-gray-300"></div>
 

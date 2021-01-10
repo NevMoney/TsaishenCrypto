@@ -92,6 +92,7 @@ $(".uploadLinkBtn").on("click", function () {
     $("#aboutPage").hide();
     $("#escrowPage").hide();
 
+
     $("#upload-container").show();    
 });
 
@@ -206,4 +207,11 @@ $("#mc-embedded-subscribe").on("click", function (e) {
 
 $("#metamaskDownloadBtn").on("click", function () {
     window.open("https://metamask.io/");
+});
+
+// swtich code
+const chk = document.getElementById('customSwitch');
+
+chk.addEventListener('change', () => {
+    $("#income").toggle("visible");
 });

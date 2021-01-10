@@ -77,3 +77,11 @@ input.invalid, textarea.invalid{
 input.valid, textarea.valid{
 	border: 2px solid rgb(0, 214, 0);
 }
+
+.visible{
+  display: none;
+}
+
+.input-group-addon {
+  padding-top: 20px;
+}

@@ -56,4 +56,10 @@ $(document).ready(async () => {
   console.log("users ", usersInstance);
   console.log("house ", houseTokenInstance);
   console.log("marketplace ", marketplaceInstance);
+
+  // we'll put events here for notifications
 });
+
+function uploadHouse() {
+  var value = 
+}
