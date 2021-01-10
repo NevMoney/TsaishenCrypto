@@ -91,7 +91,7 @@ $(".uploadLinkBtn").on("click", function () {
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
-
+    $("#houseUploadedMsg").hide();
 
     $("#upload-container").show();    
 });
@@ -209,9 +209,18 @@ $("#metamaskDownloadBtn").on("click", function () {
     window.open("https://metamask.io/");
 });
 
-// swtich code
+// switch toggle on/off code
 const chk = document.getElementById('customSwitch');
 
 chk.addEventListener('change', () => {
     $("#income").toggle("visible");
+});
+
+$("#upload").on("click", function () {
+    uploadHouse();
+});
+
+// FOR TESTING ONLY DELETE
+$("#testing").on("click", function () {
+    uploadHouse();
 });

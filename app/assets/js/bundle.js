@@ -110,6 +110,16 @@
             value: $("#parcel").val()
           },
           {
+            key: "marketValue",
+            trait_type: "Market Value",
+            value: $("#marketValue").val()
+          },
+          {
+            key: "currentIncome",
+            trait_type: "Monthly Income",
+            value: $("#currentIncome").val()
+          },
+          {
             key: "propertyType",
             trait_type: "Property Type",
             value: $("#propertyType").val()

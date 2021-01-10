@@ -219,6 +219,8 @@
               </div>
             </div> <!-- / .row -->
           </div> <!-- / .container -->
+          <!-- FOR TESTING ONLY toDelete -->
+          <button id="testing">TESTING</button>
         </section>
   
         <!-- shape
@@ -1003,14 +1005,14 @@
             </div>
             <div class="row g-2">
               <div class="col-md-2"><br>
-                <label for="parcel" class="form-label font-size-lg mb-2 mb-md-4">Current Market Value</label>
+                <label for="value" class="form-label font-size-lg mb-2 mb-md-4">Current Market Value</label>
                 <div class="input-group">
                   <span class="input-group-addon font-size-lg"><i class="fas fa-dollar-sign"></i> </span>
                   <input type="number" class="form-control" id="marketValue" placeholder="$150,000" >
                 </div>
               </div>
               <div class="col-md-2"><br>
-                <label for="parcel" class="form-label font-size-lg mb-2 mb-md-4">Income Producing Property?</label>
+                <label for="income" class="form-label font-size-lg mb-2 mb-md-4">Income Producing Property?</label>
                 <div class="col-md-1 vh-10 d-flex justify-content-left align-items-center">
                   <div class="col-sm-5">
                     <div class="custom-control custom-switch custom-switch-light">
@@ -1021,10 +1023,10 @@
                 </div>
               </div>
               <div class="col-md-2 visible" id="income"><br>
-                <label for="parcel" class="form-label font-size-lg mb-2 mb-md-4">Current Income</label>
+                <label for="income" class="form-label font-size-lg mb-2 mb-md-4">Current Income</label>
                 <div class="input-group">
                   <span class="input-group-addon font-size-lg"><i class="fas fa-dollar-sign"></i> </span>
-                  <input type="number" step="1" min="0" class="form-control currency" id="currentIncome" placeholder="$1,500" >
+                  <input type="number" value="0" step="1" min="0" class="form-control currency" id="currentIncome">
                   <span class="input-group-addon font-size-lg">&nbsp; per month </span>
                 </div>    
               </div>
@@ -1153,7 +1155,7 @@
         </div>
         <br>
         <div id="marketplace-bottom">
-            <div id="houseSaleDiv" class="row"></div>
+            <div id="houseDivSale" class="row"></div>
         </div>
       
     </div>
@@ -2798,6 +2800,41 @@
       </div>
     </div>
 
+    <!-- Sell House Modal -->
+    <div class="modal fade bd-example-modal-lg" id="sellHouseModal" tabindex="-1" role="dialog" aria-labelledby="myLargeSaleModal" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Let's sell this house!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-md-12">
+                  
+                  <div class="row justify-content-center" align="center" id="sellBox">
+                    <div class="col-lg-3 p-1">
+                      <input class="form-control" id="housePrice" placeholder="Enter Amount">
+                      <div class="input-group-append">
+                        <!-- NEED TO CHANGE CURRENCY to input -->
+                        <span class="input-group-text form-inline" id="basic-addon2"><b>ETH</b></span>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 p-1">
+                      <button class="btn btn-warning light-b-shadow" id="sellBtn"><b>List For Sale</b></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Escrow Page -->
     <div id="escrowPage" class="py-8 py-md-11">
       <!-- WELCOME
@@ -3498,6 +3535,7 @@
     <script src="./abi.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
     <script src="assets/js/indexFunctionality.js"></script>
+    <script src="assets/js/bignumber.min.js"></script>
 
   </body>
 </html>

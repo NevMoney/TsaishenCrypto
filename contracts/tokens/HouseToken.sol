@@ -94,10 +94,6 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         value = houseInfo[_id].value;
         income = houseInfo[_id].income;
         uri = houseTokenURI(_id);
-        /* 
-        The idea is to concatonate "ipfsHash[_id]" + "(tokenURI(_id))" as the uri, thus having both the hash 
-        of the uploaded document and the tokenId when minted as the URI of the token.
-        */
     }
 
     function withdrawAll() public onlyOwner {

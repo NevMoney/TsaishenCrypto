@@ -1,5 +1,12 @@
-// running non-refresh is preventing connect blockchain button
-// ethereum.autoRefreshOnNetworkChange = false;
+//CAN"T MAKE IT WORK!!
+//import BigNumber from './bignumber.min.js';
+//const BigNumber = require('bignumber.js');
+
+// NOT WORKING!!!
+// import { createRequire } from "module"
+// const require = createRequire(import.meta.url);
+// const BigNumber = require("bignumber.js");
+
 
 var houseTokenInstance;
 var marketplaceInstance;
@@ -58,8 +65,47 @@ $(document).ready(async () => {
   console.log("marketplace ", marketplaceInstance);
 
   // we'll put events here for notifications
+  houseTokenInstance.events.Minted().on("data", function (event) {
+    let owner = event.returnValues.owner;
+    let houseId = event.returnValues.tokenId;
+    let houseUri = event.returnValues.houseTokenURI;
+    $("#houseUploadedMsg").css("display", "block");
+    $("#houseUploadedMsg").text("Congrats! You have just uploaded your house onto the blockchain. Give it a few minutes and then check Portfolio. Owner: "
+      + owner + ", houseId: " + houseId + ", house on blockchain url: " + houseUri)
+  })
+    .on("error", console.error);
 });
 
-function uploadHouse() {
-  var value = 
+var value = $("#marketValue").val();
+var income = $("#currentIncome").val();
+
+// Have to pass the payable function - can't figure it out
+async function uploadHouse(value, income) {
+  let oneEther = 1 * 10 ** 18; //NOT WORKING
+  let cost = new BigNumber(oneEther); //NOT WORKING
+  var amount = web3.utils.toWei(cost, "ether");
+  await houseTokenInstance.methods.createHouse(value, income).send({value: amount}, function (txHash) {
+    try {
+      console.log("uploadHouse: ", txHash);
+    }
+    catch (err) {
+      console.log(err)
+    }
+  });
+}
+
+async function getUserHomes() {
+  var arrayId;
+  var house;
+
+  try {
+    arrayId = await usersInstance.methods.getUserHomes(user).call();
+    for (i = 0; i < arrayId.length; i++){
+      house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
+      appendHouse(arrayId[i], false);
+    }
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
