@@ -102,10 +102,74 @@ async function getUserHomes() {
     arrayId = await usersInstance.methods.getUserHomes(user).call();
     for (i = 0; i < arrayId.length; i++){
       house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
-      appendHouse(arrayId[i], false);
+      appendCrypotoHouse(arrayId[i], house.uri, false);
     }
   }
   catch (err) {
     console.log(err);
   }
 }
+
+async function checkOffer(id) {
+  let x;
+
+  try {
+    x = await marketplaceInstance.methods.getOffier(id).call();
+    var price = x.price;
+    var seller = x.seller;
+    var onSale = x.active;
+
+    price = web.utils.fromWei(price, "ether");
+    var offer = { seller: seller, price: price, onSale: onSale };
+    return offer;
+  }
+  catch (err) {
+    console.log(err)
+  }
+}
+
+async function getInventory() {
+  try {
+    var arrayId = await marketplaceInstance.methods.getAllTokensOnSale().call();
+    console.log("getInventory array: ", arrayId);
+    for (i = 0; i < arrayId.length; i++){
+      if (arrayId[i] != 0) {
+        const offer = await checkOffer(arrayId[i]);
+        console.log("getInventory", offer, arrayId[i]);
+
+        if (offer.onSale) appendHouse(arrayId[i], offer.price, offer.seller);
+      }
+    }
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+async function appendHouse(id, price, seller) {
+  var house = await houseTokenInstance.methods.getHouse(id).call();
+  appendCryptoHouse(house[0], id, house.uri, true, price, seller);
+}
+
+async function sellHouse(id) {
+  const offer = await checkOffer(id);
+
+  if (offer.onSale) return alert("House is already listed for sale.");
+
+  var price = $("#housePrice").val();
+  var amount = web3.utils.toWei(price, "ether"); //may need to change this for USDC
+  const isApproved = await houseTokenInstance.methods.isApprovedForAll(user, marketplaceAddress).call();
+  try {
+    if (!isApproved) {
+      await houseTokenInstance.methods.setApprovalForAll(marketplaceAddress, true).send().on("receipt", function (receipt) {
+        console.log("operator approval: ", receipt);
+      });
+    }
+    await marketplaceInstance.methods.setOffer(amount, id).send();
+    goToInventory();
+  }
+  catch (err) {
+    console.log(err)
+  }
+}
+

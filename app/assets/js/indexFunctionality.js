@@ -224,3 +224,26 @@ $("#upload").on("click", function () {
 $("#testing").on("click", function () {
     uploadHouse();
 });
+
+function goToInventory() {
+    $("#upload-container").hide();
+    $("#deed-container").hide();
+    $("#homePage").hide();
+    $("#upload-what").hide();
+    $("#portfolio-container").hide();
+    $("#learnMore").hide();
+    $("#aboutPage").hide();
+    $("#escrowPage").hide();
+
+    $("#blockLink").removeClass("active");
+    $("#portfolioLink").removeClass("active");
+    $("#homeLink").removeClass("active");
+  
+    $("#marketLink").addClass("active");
+    $("#market-container").show();
+
+    $("#houseDiv").empty();
+    $("#houseDivSale").empty();
+
+    getInventory();
+}

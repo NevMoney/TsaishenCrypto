@@ -1,4 +1,4 @@
-function appendHouse(id, isMarketplace, price, owner) {
+function appendCryptoHouse(id, isMarketplace, price, owner) {
     houseBox(id, isMarketplace, price, owner);
     renderBlockchainHouse(id);
     $("#houseImport" + id).html();
