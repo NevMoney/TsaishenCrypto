@@ -47,6 +47,8 @@ $(document).ready(async () => {
   toWei = (amount) => web3.utils.toWei(String(amount));
   fromWei = (amount) => Number(web3.utils.fromWei(amount)).toFixed(4);
 
+  getAccount();
+
   ethereum.on("accountsChanged", (_accounts) => {
     console.log("Account Changed!", accounts[0]);
     user = web3.utils.toChecksumAddress(_accounts[0]);
@@ -69,7 +71,7 @@ $(document).ready(async () => {
     let houseId = event.returnValues.tokenId;
     let houseUri = event.returnValues.houseTokenURI;
     $("#houseUploadedMsg").css("display", "block");
-    $("#houseUploadedMsg").text("Congrats! You have just uploaded your house onto the blockchain. Give it a few minutes and then check Portfolio. Owner: "
+    $("#houseUploadedMsg").text("Congrats! You have just uploaded your house onto the blockchain. Owner: "
       + owner + ", houseId: " + houseId + ", house on blockchain url: " + houseUri)
   })
     .on("error", console.error);
@@ -93,9 +95,15 @@ $(document).ready(async () => {
       alert("Sale wasn't successful. Escrow has been refunded for " + tokenId); //CONSIDER putting this in a DIV for the house
     }
     if (eventType == "House SOLD") {
-      alert("Congratulations! Escrow has successfully closed and the following property is sold: " + tokenId); 
+      alert("Congratulations! Escrow has successfully closed and the following property is sold: " + tokenId);
     }
+  })
+    .on("error", console.error);
+  
+  usersInstance.events.userAdded().on("data", (event) => {
+    alert("Welcome to Tsaishen Crypto! You are registered with account " + user);
   });
+  
 });
 
 var value = $("#marketValue").val();
@@ -244,3 +252,17 @@ async function buyHomeInUDSC() {
     console.log(err);
   }
 }
+
+// add escrow transactions functionality
+
+// async function deedConfirm(id){}
+
+// async function checkDeposit(id){}
+
+// async function escrowUpdate(id){}
+
+// async function checkRefund(id){}
+
+// async function checkPayout(id){}
+
+// async function houseEscrowInfo(id){}
