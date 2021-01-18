@@ -39,7 +39,6 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
     
     address payable internal feeRecipient;
 
-    // MUST ALWAYS BE PUBLIC!
     constructor(
         address _userContractAddress, 
         address _houseTokenAddress, 
@@ -75,6 +74,7 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
         offer.active); 
     }
 
+    //may need to rework this function to reduce gas
     function getAllTokenOnSale() public view returns(uint256[] memory listOfOffers) {
         uint256 forSaleList = offers.length;//this gives us the length of the offers array
 
