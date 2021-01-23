@@ -72,18 +72,17 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         _mint(_owner, _tokenIdTracker.current());
         _tokenIdTracker.increment();
         
-        // add/update user info
+        // add user if new
         _tsaishenUsers.addUser(msg.sender);
         _tsaishenUsers.addHouseToUser(msg.sender, _tokenIdTracker.current());
 
         return _tokenIdTracker.current();
     }
 
-    function houseHashURI(uint256 _tokenId) internal view returns(string memory){
+    function houseHashURI(uint256 _tokenId) public view returns(string memory){
         return ipfsHash[_tokenId];
     }
 
-    //actual URI of the token used in getHouse
     function houseTokenURI(uint256 _tokenId) internal view returns(string memory){
         return StringsConcats.strConcat(
             houseHashURI(_tokenId),
