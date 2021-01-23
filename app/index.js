@@ -1,12 +1,3 @@
-//CAN"T MAKE IT WORK!!
-//import BigNumber from './bignumber.min.js';
-//const BigNumber = require('bignumber.js');
-
-// import { createRequire } from "module"
-// const require = createRequire(import.meta.url);
-// const BigNumber = require("bignumber.js");
-
-
 var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
@@ -108,7 +99,6 @@ $(document).ready(async () => {
 
 var value = $("#marketValue").val();
 var income = $("#currentIncome").val();
-// let cost = new BigNumber(1);
 
 /*
 **************************************
@@ -116,12 +106,11 @@ Have to pass the payable function - can't figure it out
 **************************************
 */ 
 async function uploadHouse(value, income) {
-  var cost = new BN(1);
+  // var BN = web3.utils.BN;
+  // var cost = new BN(1);
+  // var cost = web3.utils.toBN(1).toString();
   
-  //if NOT, perhaps passing the actual amount in the amount variable:
-  // amount = web3.utils.toWei("1", "ether");
-  
-  var amount = web3.utils.toWei(cost, "ether");
+  var amount = web3.utils.toWei(1, "ether");
   await houseTokenInstance.methods.createHouse(value, income).send({value: amount}, function (txHash) {
     try {
       console.log("uploadHouse: ", txHash);

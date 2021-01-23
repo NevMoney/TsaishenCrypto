@@ -35,7 +35,7 @@ library UniversalERC20 {
         }
 
         if (isETH(token)) {
-            require(from == msg.sender && msg.value >= amount, "Wrong usage of ETH.universalTransferFrom()");
+            require(from == msg.sender && msg.value >= amount, "Wrong function usage.");
             if (to != address(this)) {
                 address(uint160(to)).transfer(amount);
             }
