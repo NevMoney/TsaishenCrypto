@@ -1,12 +1,3 @@
-//CAN"T MAKE IT WORK!!
-//import BigNumber from './bignumber.min.js';
-//const BigNumber = require('bignumber.js');
-
-// import { createRequire } from "module"
-// const require = createRequire(import.meta.url);
-// const BigNumber = require("bignumber.js");
-
-
 var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
@@ -120,7 +111,7 @@ async function uploadHouse(value, income) {
   // let cost = new BigNumber(oneEther); //NOT WORKING
 
   // ERROR: pass number as strings or BigNumber objects
-  var amount = web3.utils.toWei(cost, "ether");
+  var amount = web3.utils.toWei("1", "ether");
   await houseTokenInstance.methods.createHouse(value, income).send({value: amount}, function (txHash) {
     try {
       console.log("uploadHouse: ", txHash);
