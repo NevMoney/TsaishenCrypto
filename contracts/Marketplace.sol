@@ -100,10 +100,10 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
     }
 
     function sellHouse(uint256 _price, uint256 _tokenId) public nonReentrant {
-        require(_ownsHouse(msg.sender, _tokenId), "Not Authorized.");
-        require(offerDetails[_tokenId].active == false, "Action already completed.");
+        require(_ownsHouse(msg.sender, _tokenId), "ERR11");
+        require(offerDetails[_tokenId].active == false, "ERR20");
         // comment this out for local testing
-        require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not Approved.");
+        require(_houseToken.isApprovedForAll(msg.sender, address(this)), "ERR10");
 
         // get income amount from houseToken
         ( , uint256 _income, ) = _houseToken.getHouse(_tokenId);
@@ -127,7 +127,7 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
 
     function removeOffer(uint256 _tokenId) public {
         Offer storage offer = offerDetails[_tokenId]; //first access the offer
-        require(offer.seller == msg.sender, "Not Authorized."); //ensure owner only can do this
+        require(offer.seller == msg.sender, "ERR11"); //ensure owner only can do this
    
         delete offers[offer.index]; //first delete the index within the array
         delete offerDetails[_tokenId]; //then remove the id from the mapping
@@ -141,7 +141,7 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
         Offer storage offer = offerDetails[_tokenId];
 
         // make sure it's active  
-        require(offer.active == true, "Action already completed.");
+        require(offer.active == true, "ERR20");
         
         // get price conversion
         (int256 currentPrice, uint256 updatedAt) = (_tokenPrices.getOracleUsdPrice(address (token)));
@@ -150,7 +150,7 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
         uint256 cryptoHousePrice = offer.price.mul(housePrice).mul(1 ether).div(uint(currentPrice));
         
         // ensure oracle price data is recent
-        require(updatedAt >= now - 1 hours, "Data too old.");
+        require(updatedAt >= now - 1 hours, "ERR22");
 
         // calculate transaction fee
         uint256 houseTransactionFee = cryptoHousePrice.mul(txFee).div(100);
@@ -181,35 +181,54 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
 
-    // // purchase with any valid crypto using Escrow
-    // // does it need to be payable???
-    // // WON"T COMPILE -- "token" undeclared
-    // function escrowBuyHouse (uint256 _tokenId) public payable nonReentrant{
+    // function buyHouseWithEscrowEth (uint256 _tokenId) public payable nonReentrant{
     //     Offer storage offer = offerDetails[_tokenId];      
-    //     require(offer.active == true, "Action already completed."); 
+    //     require(offer.active == true, "ERR20"); 
 
-    //     (int256 currentPrice, uint256 updatedAt) = (_tokenPrices.getOracleUsdPrice(address (token)));
-    //     uint256 cryptoHousePrice = offer.price.mul(housePrice).mul(1 ether).div(uint(currentPrice));
+    //     (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
+    //     uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
         
-    //     require(updatedAt >= now - 1 hours, "Data too old.");
+    //     require(msg.value > housePriceInETH, "ERR21");
+    //     require(updatedAt >= now - 1 hours, "ERR22");
 
     //     //transfer funds into escrow
-    //     deposit(offer.seller, msg.sender, cryptoHousePrice, _tokenId);
+    //     deposit(offer.seller, msg.sender, housePriceInETH, _tokenId);
 
     //     offers[offer.index].active = false;
 
     //     // add/update user
     //     _tsaishenUsers.addUser(msg.sender);
 
-    //     // refund user if sent more than the price (this will only work for ETH)
-    //     if (msg.value > cryptoHousePrice){
-    //         msg.sender.transfer(msg.value.sub(cryptoHousePrice));
+    //     // refund user if sent more than the price
+    //     if (msg.value > housePriceInETH){
+    //         msg.sender.transfer(msg.value.sub(housePriceInETH));
     //     }
 
     //     emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
     // }
 
-    // function to allow for refunds - basically cancelling the sale
+    // function escrowBuyUsdc (uint256 _tokenId) public payable nonReentrant{
+    //     Offer storage offer = offerDetails[_tokenId];      
+    //     require(offer.active == true, "ERR20"); 
+
+    //     (int256 currentUsdcPrice, uint256 usdcUpdatedAt) = (getUsdcPrice());
+    //     uint256 housePriceInUSDC = offer.price.mul(housePrice).mul(1 ether).div(uint(currentUsdcPrice));
+
+    //     require(usdcUpdatedAt >= now - 1 hours, "ERR22");
+    //     require(usdc.approve(address(this), housePriceInUSDC), "ERR10");
+    //     require(usdc.transferFrom(msg.sender, address(this), housePriceInUSDC), "ERR21");
+
+    //     //transfer funds into escrow
+    //     deposit(offer.seller, msg.sender, housePriceInUSDC, _tokenId);
+
+    //     offers[offer.index].active = false;
+
+    //     // add/update user
+    //     _tsaishenUsers.addUser(msg.sender);
+
+    //     emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
+    // }
+
     function permitRefunds(uint256 _tokenId) public onlyOwner {
         Offer storage offer = offerDetails[_tokenId];
         enableRefunds(_tokenId);
@@ -223,7 +242,7 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
     // This releases funds to seller and transfers token to buyer
     function closeEscrow(uint256 _tokenId) public onlyOwner {
         Offer storage offer = offerDetails[_tokenId];
-        require(escrowById[_tokenId].amount > 0, "Action already completed.");
+        require(escrowById[_tokenId].amount > 0, "ERR20");
         
         resetState(_tokenId);
         close(_tokenId);

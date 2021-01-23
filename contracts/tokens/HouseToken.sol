@@ -97,16 +97,16 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         uri = houseTokenURI(_id);
     }
 
-    function withdrawAll() public onlyOwner nonReentrant{
+    function withdrawAll() public onlyOwner {
         msg.sender.transfer(address(this).balance);
     }
 
-    // //NOT WORKING!
-    // function _autoWithdraw() internal {
-    //     if(address(this).balance >= 10 ether) {
-    //         _creator.transfer(address(this).balance);
-    //     }    
-    // }
+    //NOT WORKING!
+    function _autoWithdraw() internal {
+        if(address(this).balance >= 10 ether) {
+            _creator.transfer(address(this).balance);
+        }    
+    }
     
     // this checks if they own the house
     function ownsHouse(address _address) public view returns(bool){

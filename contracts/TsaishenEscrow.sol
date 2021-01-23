@@ -54,8 +54,8 @@ contract TsaishenEscrow is Ownable{
         
     // deposit funds to be held for the beneficiary (seller)
     function deposit(address seller, address buyer, uint256 amount, uint256 tokenId) internal {
-        require(seller != address(0), "Address can't be zero.");
-        
+        require(seller != address(0), "ERR01");
+        // uint256 amount = msg.value;
         Escrow memory escrow = Escrow(payable(seller), payable(buyer), State.Active, amount, now + _TIMELOCK);
         escrowById[tokenId] = escrow;
 
@@ -75,8 +75,8 @@ contract TsaishenEscrow is Ownable{
     }
 
     function enableRefunds(uint256 tokenId) internal onlyOwner {
-        require(now >= _TIMELOCK, "Timelocked.");
-        require(escrowById[tokenId].state == State.Active, "Must be active.");
+        require(now >= _TIMELOCK, "ERR05");
+        require(escrowById[tokenId].state == State.Active, "ERR20");
         escrowById[tokenId].state = State.Refunding;
         
         emit RefundsEnabled();
@@ -91,7 +91,7 @@ contract TsaishenEscrow is Ownable{
     }
 
     function confirmDelivery(uint256 tokenId) public {
-        require(msg.sender == escrowById[tokenId].buyer, "Not Authorized.");
+        require(msg.sender == escrowById[tokenId].buyer, "ERR11");
         if(escrowById[tokenId].state == State.Refunding){
             resetState(tokenId);
         }
@@ -101,7 +101,7 @@ contract TsaishenEscrow is Ownable{
     }
 
     function close(uint256 tokenId) internal onlyOwner {
-        require(escrowById[tokenId].state == State.Active, "Must be active.");
+        require(escrowById[tokenId].state == State.Active, "ERR20");
         escrowById[tokenId].state = State.Closed;
         escrowById[tokenId].timelock = 30 seconds; //give buyer 3 days to confirm
 
@@ -114,8 +114,8 @@ contract TsaishenEscrow is Ownable{
     }
 
     function beneficiaryWithdraw(address payable seller, uint256 tokenId) internal onlyOwner{
-        require(now >= escrowById[tokenId].timelock, "Timelocked.");
-        require(escrowById[tokenId].state == State.Closed, "Must be closed.");
+        require(now >= escrowById[tokenId].timelock, "ERR05");
+        require(escrowById[tokenId].state == State.Closed, "ERR20");
         uint256 transactionFee = escrowById[tokenId].amount.mul(fee).div(100);
         uint256 paymentToSeller = escrowById[tokenId].amount.sub(transactionFee);
         escrowById[tokenId].amount = 0;
@@ -127,8 +127,8 @@ contract TsaishenEscrow is Ownable{
     }
 
     function issueRefund(address payable buyer, uint256 tokenId) internal onlyOwner{
-        require(now >= escrowById[tokenId].timelock, "Timelocked.");
-        require(escrowById[tokenId].state == State.Refunding, "Must be refunding.");         
+        require(now >= escrowById[tokenId].timelock, "ERR05");
+        require(escrowById[tokenId].state == State.Refunding, "ERR20");         
         uint256 refund = escrowById[tokenId].amount;
         escrowById[tokenId].amount = 0;
         escrowById[tokenId].buyer.transfer(refund);
