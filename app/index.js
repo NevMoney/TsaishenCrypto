@@ -116,11 +116,10 @@ Have to pass the payable function - can't figure it out
 **************************************
 */ 
 async function uploadHouse(value, income) {
-  var cost = new BN(1);
-  
-  //if NOT, perhaps passing the actual amount in the amount variable:
-  // amount = web3.utils.toWei("1", "ether");
-  
+  // let oneEther = 1 * 10 ** 18; //NOT WORKING
+  // let cost = new BigNumber(oneEther); //NOT WORKING
+
+  // ERROR: pass number as strings or BigNumber objects
   var amount = web3.utils.toWei(cost, "ether");
   await houseTokenInstance.methods.createHouse(value, income).send({value: amount}, function (txHash) {
     try {
