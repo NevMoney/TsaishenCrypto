@@ -97,6 +97,11 @@ $(document).ready(async () => {
   
 });
 
+async function setContractsForUsers() {
+  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress);
+  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress);
+}
+
 var value = $("#marketValue").val();
 var income = $("#currentIncome").val();
 // let cost = new BigNumber(1); using this gives ERROR: cannot access "cost" before initialization
