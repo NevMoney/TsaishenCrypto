@@ -12,14 +12,6 @@
     let ipfsFileHash;
     let ipfsDeed;
     
-    //NOT WORKING!!!
-    function validateCheckbox(){
-      if($("#certification").checked){
-        return true;
-      }
-      return false;
-    };
-    
     function hashFile(file) {
       console.log(file);
       console.log(file.name);

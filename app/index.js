@@ -1,13 +1,3 @@
-//CAN"T MAKE IT WORK!!
-//import BigNumber from './bignumber.min.js';
-//const BigNumber = require('bignumber.js');
-
-// NOT WORKING!!!
-// import { createRequire } from "module"
-// const require = createRequire(import.meta.url);
-// const BigNumber = require("bignumber.js");
-
-
 var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
@@ -48,6 +38,8 @@ $(document).ready(async () => {
   toWei = (amount) => web3.utils.toWei(String(amount));
   fromWei = (amount) => Number(web3.utils.fromWei(amount)).toFixed(4);
 
+  getAccount();
+
   ethereum.on("accountsChanged", (_accounts) => {
     console.log("Account Changed!", accounts[0]);
     user = web3.utils.toChecksumAddress(_accounts[0]);
@@ -70,14 +62,44 @@ $(document).ready(async () => {
     let houseId = event.returnValues.tokenId;
     let houseUri = event.returnValues.houseTokenURI;
     $("#houseUploadedMsg").css("display", "block");
-    $("#houseUploadedMsg").text("Congrats! You have just uploaded your house onto the blockchain. Give it a few minutes and then check Portfolio. Owner: "
+    $("#houseUploadedMsg").text("Congrats! You have just uploaded your house onto the blockchain. Owner: "
       + owner + ", houseId: " + houseId + ", house on blockchain url: " + houseUri)
   })
     .on("error", console.error);
+  
+  marketplaceInstance.events.MarketTransaction().on("data", (event) => {
+    var eventType = event.returnValues["TxType"].toString();
+    var tokenId = event.returnValues["tokenId"];
+    if (eventType == "House listed") {
+      alert("Congrats! You have listed the following property for sale: " + tokenId);
+    }
+    if (eventType == "Offer removed") {
+      alert("The following property has been removed from the market: " + tokenId);
+    }
+    if (eventType == "House purchased") {
+      alert("Congrats on your purchase. You have acquired the following property: " + tokenId);
+    }
+    if (eventType == "House in Escrow") {
+      alert("Congratulations! You are in escrow for " + tokenId);
+    }
+    if (eventType == "Escrow Refunded") {
+      alert("Sale wasn't successful. Escrow has been refunded for " + tokenId); //CONSIDER putting this in a DIV for the house
+    }
+    if (eventType == "House SOLD") {
+      alert("Congratulations! Escrow has successfully closed and the following property is sold: " + tokenId);
+    }
+  })
+    .on("error", console.error);
+  
+  usersInstance.events.userAdded().on("data", (event) => {
+    alert("Welcome to Tsaishen Crypto! You are registered with account " + user);
+  });
+  
 });
 
 var value = $("#marketValue").val();
 var income = $("#currentIncome").val();
+// let cost = new BigNumber(1);
 
 /*
 **************************************
@@ -85,9 +107,11 @@ Have to pass the payable function - can't figure it out
 **************************************
 */ 
 async function uploadHouse(value, income) {
-  let oneEther = 1 * 10 ** 18; //NOT WORKING
-  let cost = new BigNumber(oneEther); //NOT WORKING
-  var amount = web3.utils.toWei(cost, "ether");
+  // let oneEther = 1 * 10 ** 18; //NOT WORKING
+  // let cost = new BigNumber(oneEther); //NOT WORKING
+
+  // ERROR: pass number as strings or BigNumber objects
+  var amount = web3.utils.toWei("1", "ether");
   await houseTokenInstance.methods.createHouse(value, income).send({value: amount}, function (txHash) {
     try {
       console.log("uploadHouse: ", txHash);
@@ -118,7 +142,7 @@ async function checkOffer(id) {
   let x;
 
   try {
-    x = await marketplaceInstance.methods.getOffier(id).call();
+    x = await marketplaceInstance.methods.getOffer(id).call();
     var price = x.price;
     var seller = x.seller;
     var onSale = x.active;
@@ -185,13 +209,15 @@ async function removeOffer() {
 async function buyHomeInETH (id, price) {
   await checkOffer(id);
   var amount = web3.utils.toWei(price, "ether");
+  var ethBuy = await marketplaceInstance.methods.buyHouseWithETH(id).send({ value: amount });
+  var escrowBuy = await marketplaceInstance.methods.buyHouseWithEscrowEth(id).send({ value: amount });
 
   try {
     if ($("#buyWithETH").on("click", function () {
-      await marketplaceInstance.methods.buyHouseWithETH(id).send({ value: amount });
+      ethBuy;
     }));
     else if ($("#buyWithETHEscrow").on("click", function () {
-      await marketplaceInstance.methods.buyHouseWithEscrowEth(id).send({ value: amount });
+      escrowBuy;
     }));
   }
   catch (err) {
@@ -202,16 +228,32 @@ async function buyHomeInETH (id, price) {
 async function buyHomeInUDSC() {
   await checkOffer(id);
   var amount = web3.utils.toWei(price, "USDC");
+  var buy = await marketplaceInstance.methods.buyWithUSDC(id).send({ value: amount });
+  var escrowBuy = await marketplaceInstance.methods.escrowBuyUsdc(id).send({ value: amount });
 
   try {
     if ($("#buyWithUSDC").on("click", function () {
-      await marketplaceInstance.methods.buyWithUSDC(id).send({ value: amount });
+      buy;
     }));
     else if ($("#buyWithUSDCEscrow").on("click", function () {
-      await marketplaceInstance.methods.escrowBuyUsdc(id).send({ value: amount });
+      escrowBuy;
     }));
   }
   catch (err) {
     console.log(err);
   }
 }
+
+// add escrow transactions functionality
+
+// async function deedConfirm(id){}
+
+// async function checkDeposit(id){}
+
+// async function escrowUpdate(id){}
+
+// async function checkRefund(id){}
+
+// async function checkPayout(id){}
+
+// async function houseEscrowInfo(id){}

@@ -44,7 +44,7 @@ contract TsaishenUsers is Ownable, Storage {
         houseToken = _houseToken;
     }
 
-    function addUser (address newUser) public {
+    function addUser (address newUser) public onlyAuthorized{
         EnumerableSet.UintSet memory _houses;
         address payable user = address(uint160(newUser));
         userInfo[newUser] = User(user, false, false, false, false, _houses);
@@ -53,12 +53,12 @@ contract TsaishenUsers is Ownable, Storage {
         emit userAdded("New user added", newUser, true);
     }
 
-    function addHouseToUser(address user, uint256 houseId) public {
+    function addHouseToUser(address user, uint256 houseId) public onlyAuthorized{
         userInfo[user].houses.add(houseId);
         userInfo[user].houseOwner = true;
     }
 
-    function deleteHouseFromUser(address user, uint256 houseId) public {
+    function deleteHouseFromUser(address user, uint256 houseId) public onlyAuthorized{
         userInfo[user].houses.remove(houseId);
     }
 
@@ -66,7 +66,7 @@ contract TsaishenUsers is Ownable, Storage {
         return users.contains(userToSearch);
     }
 
-    function deleteUser(address userToDelete) public {
+    function deleteUser(address userToDelete) public onlyAuthorized{
         users.remove(userToDelete);
 
         emit userDeleted("User deleted", userToDelete, false);
