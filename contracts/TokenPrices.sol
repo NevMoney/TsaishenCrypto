@@ -33,12 +33,12 @@ contract TokenPrices is Ownable {
 
     mapping (address => address) availableOracles;
 
-    constructor() public {
-        // @Dev NOTE: THESE ARE TESTNET Rinkeby --> verify/change B4 deploy 
-        addOracle(address(0), 0x8A753747A1Fa494EC906cE90E9f37563A8AF630e); //ETH
-        addOracle(0x6B175474E89094C44Da98b954EedeAC495271d0F, 0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF); //DAI
-        addOracle(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 0xa24de01df22b63d23Ebc1882a5E3d4ec0d907bFB); //USDC
-    }
+    // constructor() public {
+    //     // @Dev NOTE: THESE ARE TESTNET Rinkeby --> verify/change B4 deploy 
+    //     addOracle(address(0), 0x8A753747A1Fa494EC906cE90E9f37563A8AF630e); //ETH
+    //     addOracle(0x6B175474E89094C44Da98b954EedeAC495271d0F, 0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF); //DAI
+    //     addOracle(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 0xa24de01df22b63d23Ebc1882a5E3d4ec0d907bFB); //USDC
+    // }
 
     function getOracleUsdPrice(address token) public view returns(int256, uint256){
         // oracle instance

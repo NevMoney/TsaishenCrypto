@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2020 CryptoManiacs
+// Code updated by Nev K.
 
 pragma solidity 0.6.10;
 
