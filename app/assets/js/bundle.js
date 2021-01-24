@@ -64,7 +64,7 @@
         description: $("#description").val(),
         image: 'https://gateway.ipfs.io/ipfs/' + ipfsHash,
         // will likely need to tweak this once I figure out the actual URL, but for now
-        external_url: "https://tsaishen.co/cryptoHouse/marketplace/ipfsFileHash/tokenId",
+        external_url: "https://tsaishen.crypto/marketplace/ipfsFileHash/tokenId",
         attributes: [
           {
             key: "address",

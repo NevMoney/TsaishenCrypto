@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x7F25b0104c864118B2f5B12c390756DF4F9d8b0F";
-var houseTokenAddress = "0x4330ca56Ee9a7675EFcAaD82932B4cd15A6d7976";
-var marketplaceAddress = "0xc333468B5b6dEb333cd9d6E66655E454A813eAf9";
+var tsaishenUsersAddress = "0x7ADAe44A10B88C545474ed3Acb05f44499606CF3";
+var houseTokenAddress = "0xF50cf73C396306EA041458A1Ab837DCBA3a1dc45";
+var marketplaceAddress = "0xFD56020874395D7e94b184155C137318b4BE0308";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
 const ethereumButton = document.querySelector('.enableEthereumButton');
@@ -99,7 +99,8 @@ $(document).ready(async () => {
 
 var value = $("#marketValue").val();
 var income = $("#currentIncome").val();
-// let cost = new BigNumber(1);
+// let cost = new BigNumber(1); using this gives ERROR: cannot access "cost" before initialization
+//passing just number in the amount causes error looking for BN or string but neither will take
 
 /*
 **************************************
@@ -107,11 +108,8 @@ Have to pass the payable function - can't figure it out
 **************************************
 */ 
 async function uploadHouse(value, income) {
-  // let oneEther = 1 * 10 ** 18; //NOT WORKING
-  // let cost = new BigNumber(oneEther); //NOT WORKING
-
-  // ERROR: pass number as strings or BigNumber objects
-  var amount = web3.utils.toWei("1", "ether");
+  
+  var amount = web3.utils.toWei('1', "ether");
   await houseTokenInstance.methods.createHouse(value, income).send({value: amount}, function (txHash) {
     try {
       console.log("uploadHouse: ", txHash);
@@ -206,36 +204,17 @@ async function removeOffer() {
   goToInventory();
 }
 
-async function buyHomeInETH (id, price) {
+async function buyHome (id, price) {
   await checkOffer(id);
   var amount = web3.utils.toWei(price, "ether");
-  var ethBuy = await marketplaceInstance.methods.buyHouseWithETH(id).send({ value: amount });
-  var escrowBuy = await marketplaceInstance.methods.buyHouseWithEscrowEth(id).send({ value: amount });
+  var buy = await marketplaceInstance.methods.buyHouse(id).send({ value: amount });
+  var escrowBuy = await marketplaceInstance.methods.buyHouseWithEscrow(id).send({ value: amount });
 
   try {
-    if ($("#buyWithETH").on("click", function () {
-      ethBuy;
-    }));
-    else if ($("#buyWithETHEscrow").on("click", function () {
-      escrowBuy;
-    }));
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
-
-async function buyHomeInUDSC() {
-  await checkOffer(id);
-  var amount = web3.utils.toWei(price, "USDC");
-  var buy = await marketplaceInstance.methods.buyWithUSDC(id).send({ value: amount });
-  var escrowBuy = await marketplaceInstance.methods.escrowBuyUsdc(id).send({ value: amount });
-
-  try {
-    if ($("#buyWithUSDC").on("click", function () {
+    if ($("#buyBtn").on("click", function () {
       buy;
     }));
-    else if ($("#buyWithUSDCEscrow").on("click", function () {
+    else if ($("#buyEscrowBtn").on("click", function () {
       escrowBuy;
     }));
   }
@@ -243,8 +222,6 @@ async function buyHomeInUDSC() {
     console.log(err);
   }
 }
-
-// add escrow transactions functionality
 
 // async function deedConfirm(id){}
 

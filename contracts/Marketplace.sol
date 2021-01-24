@@ -232,31 +232,32 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("House purchased", msg.sender, _tokenId);
     }
 
-    // function buyHouseWithEscrowEth (uint256 _tokenId) public payable nonReentrant{
-    //     Offer storage offer = offerDetails[_tokenId];      
-    //     require(offer.active == true, "ERR20"); 
+    function buyHouseWithEscrow (IERC20 token, uint256 _tokenId) public nonReentrant{
+        Offer storage offer = offerDetails[_tokenId];      
+        require(offer.active == true, "House not for sale."); 
 
-    //     (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
-    //     uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
+        (int256 currentPrice, uint256 updatedAt) = (getOracleUsdPrice(address (token)));
+        uint256 cryptoHousePrice = offer.price.mul(housePrice).mul(1 ether).div(uint(currentPrice));
         
-    //     require(msg.value > housePriceInETH, "ERR21");
-    //     require(updatedAt >= now - 1 hours, "Data too old.");
+        // require(msg.value > housePriceInETH, "ERR21"); -- needed for ETH
+        require(updatedAt >= now - 1 hours, "Data too old.");
 
-    //     //transfer funds into escrow
-    //     deposit(offer.seller, msg.sender, housePriceInETH, _tokenId);
+        //transfer funds into escrow
+        // is THIS accurate given they can choose any supporting coin?
+        deposit(offer.seller, msg.sender, cryptoHousePrice, _tokenId);
 
-    //     offers[offer.index].active = false;
+        offers[offer.index].active = false;
 
-    //     // add/update user
-    //     _tsaishenUsers.addUser(msg.sender);
+        // add/update user
+        _tsaishenUsers.addUser(msg.sender);
 
-    //     // refund user if sent more than the price
-    //     if (msg.value > housePriceInETH){
-    //         msg.sender.transfer(msg.value.sub(housePriceInETH));
-    //     }
+        // refund user if sent more than the price
+        // if (msg.value > cryptoHousePrice){
+        //     msg.sender.transfer(msg.value.sub(cryptoHousePrice));
+        // }
 
-    //     emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
-    // }
+        emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
+    }
 
     function permitRefunds(uint256 _tokenId) public onlyOwner {
         Offer storage offer = offerDetails[_tokenId];
