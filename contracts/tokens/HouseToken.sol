@@ -16,45 +16,34 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     using SafeMath for uint256;
     using StringsConcats for string;
 
-    mapping (uint256 => address) public houseIndexToApproved;
-
-    mapping (address => uint256) private _balances;
-    mapping (address => mapping (address => uint256)) private _allowances;
+    event Minted(address _owner, uint256 id, string tokenURI);
 
     address public _contractOwner;
     bool public _initialized;
     address payable internal _creator;
+    uint public balance;    
+    uint256 public houseCounter;
 
-    // MUST ALWAYS BE PUBLIC!
+    mapping (uint256 => address) public houseIndexToApproved;
+    mapping (address => uint256) private _balances;
+    mapping (address => mapping (address => uint256)) private _allowances;
+    mapping(uint256 => string) ipfsHash;
+
+    // *** CONSTRUCTOR ***
     constructor(address _userContractAddress, address payable creator) public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "ipfs://") {
         setUserContract(_userContractAddress);
         _creator = creator;
     }
 
+    // *** MODIFIER ***
     modifier costs (uint cost){
         require(msg.value >= cost);
         _;
     }
 
-    uint public balance;    
-    uint256 public houseCounter;
-
-    mapping(uint256 => string) ipfsHash;
-
-    event Minted(address _owner, uint256 id, string tokenURI);
-
+    // === INTERNAL & PRIVATE FUNCTIONS ===
     function setUserContract(address _userContractAddress) internal onlyOwner {
         _tsaishenUsers = TsaishenUsers(_userContractAddress);
-    }
-      
-    // generate house on blockchain: value, ID, owner address
-    function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
-        // require identification of the user KYC/AML before execution
-        balance.add(msg.value);
-
-        houseCounter++;
-
-        return _createHouse(value, income, msg.sender);
     }
 
     function _createHouse(uint256 _value, uint256 _income, address _owner) private returns (uint256) {    
@@ -91,14 +80,31 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         );
     }
 
+    // *** PUBLIC onlyOwner ***
+    function withdrawAll() public onlyOwner nonReentrant{
+        msg.sender.transfer(address(this).balance);
+    }
+
+    // *** PUBLIC SETTER FUNCTIONS ***
+    function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
+        // require identification of the user KYC/AML before execution
+        balance.add(msg.value);
+
+        houseCounter++;
+
+        return _createHouse(value, income, msg.sender);
+    }
+
+    // *** PUBLIC GETTER FUNCTIONS ***
     function getHouse(uint256 _id) public view returns(uint256 value, uint256 income, string memory uri) {
         value = houseInfo[_id].value;
         income = houseInfo[_id].income;
         uri = houseTokenURI(_id);
     }
 
-    function withdrawAll() public onlyOwner nonReentrant{
-        msg.sender.transfer(address(this).balance);
+    function ownsHouse(address _address) public view returns(bool){
+        if(balanceOf(_address) > 0) return true;
+        return false;
     }
 
     // //NOT WORKING!
@@ -108,10 +114,4 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     //     }    
     // }
     
-    // this checks if they own the house
-    function ownsHouse(address _address) public view returns(bool){
-        if(balanceOf(_address) > 0) return true;
-        return false;
-    }
-
 }
