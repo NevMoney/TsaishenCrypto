@@ -113,10 +113,10 @@ contract TsaishenEscrow is Ownable{
         escrowById[_tokenId].amount = 0;
         
         // transfer fee to producer
-        escrowById[_tokenId].token.universalTransfer(eFeeRecipient, transactionFee);
+        require(escrowById[_tokenId].token.universalTransfer(eFeeRecipient, transactionFee));
 
         // transfer proceeds to seller
-        escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, paymentToSeller);
+        require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, paymentToSeller));
 
         // transfer house to buyer
         escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _tokenId);
