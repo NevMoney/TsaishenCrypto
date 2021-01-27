@@ -36,7 +36,7 @@ contract TsaishenEscrow is Ownable{
         uint256 amount;
         uint256 timelock;
     }
-  
+   
     // // modifier to check if NOW is greater than when activated timelock
     // modifier notLocked(State _st){
     //     require(timelock[_st] !=0 && timelock[_st] <= now, "Function is timelocked");

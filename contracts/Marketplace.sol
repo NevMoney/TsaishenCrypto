@@ -255,7 +255,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
 
     function closeEscrow(uint256 tokenId) public onlyOwner {
         Offer storage offer = offerDetails[tokenId];
-        require(escrowById[tokenId].amount > 0, "No sufficient funds in escrow.");
+        require(escrowById[tokenId].amount > 0, "Insufficient escrow funds.");
         
         _resetState(tokenId);
         _close(tokenId);
@@ -269,7 +269,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
         _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
 
-        emit MarketTransaction("House SOLD", offer.seller, tokenId);
+        emit MarketTransaction("Escrow closed. House SOLD.", offer.seller, tokenId);
     }
 
 }
