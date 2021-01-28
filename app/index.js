@@ -104,25 +104,22 @@ async function setContractsForUsers() {
 
 var value = $("#marketValue").val();
 var income = $("#currentIncome").val();
-// let cost = new BigNumber(1); using this gives ERROR: cannot access "cost" before initialization
-//passing just number in the amount causes error looking for BN or string but neither will take
-
-/*
-**************************************
-Have to pass the payable function - can't figure it out
-**************************************
-*/ 
+ 
 async function uploadHouse(value, income) {
-  
-  var amount = web3.utils.toWei('1', "ether");
-  await houseTokenInstance.methods.createHouse(value, income).send({value: amount}, function (txHash) {
+  var amount = web3.utils.toWei("1", "ether");
+
+  console.log(amount);
+
     try {
-      console.log("uploadHouse: ", txHash);
+      const receipt =
+        await houseTokenInstance.methods
+          .createHouse(value, income, ifpsHash)
+          .send({ value: amount });
+      console.log("uploadHouse: ", receipt.txHash);
     }
     catch (err) {
       console.log(err)
     }
-  });
 }
 
 async function getUserHomes() {

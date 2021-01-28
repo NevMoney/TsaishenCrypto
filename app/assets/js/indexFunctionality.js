@@ -220,7 +220,7 @@ $("#upload").on("click", function () {
     uploadHouse();
 });
 
-// FOR TESTING ONLY DELETE
+// FOR TESTING ONLY DELETE - weird button that doesn't belong
 $("#testing").on("click", function () {
     uploadHouse();
 });
