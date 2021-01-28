@@ -5,7 +5,7 @@ pragma solidity 0.6.10;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-import "./UniversalERC20.sol";
+import "./libs/UniversalERC20.sol";
 
 contract TsaishenEscrow is Ownable{
 

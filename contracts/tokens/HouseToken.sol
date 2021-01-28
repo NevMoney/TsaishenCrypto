@@ -4,20 +4,17 @@ pragma solidity 0.6.10;
 
 import "@openzeppelin/contracts/presets/ERC721PresetMinterPauserAutoId.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../Storage.sol";
 import "../TsaishenUsers.sol";
-import "../StringsConcats.sol";
 
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard, Storage {
-    TsaishenUsers private _tsaishenUsers;
 
     using SafeMath for uint256;
-    using StringsConcats for string;
 
     event Minted(address _owner, uint256 id, string uri);
 
+    TsaishenUsers private _tsaishenUsers;
     address public _contractOwner;
     bool public _initialized;
     address payable internal _creator;

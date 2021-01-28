@@ -34,9 +34,19 @@ interface AggregatorV3Interface {
 }
 
 contract Marketplace is ReentrancyGuard, TsaishenEscrow {
+
+    event MarketTransaction (string, address, uint);
+
     HouseToken private _houseToken;
     TsaishenUsers private _tsaishenUsers;
-    
+    address payable internal feeRecipient;
+    uint256 housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
+    uint256 txFee = 2; //2% transaction fee
+
+    mapping (address => address) availableOracles;
+    mapping(uint256 => Offer) internal offerDetails;
+    Offer [] offers;
+
     struct Offer {
         address payable seller;
         uint256 price;
@@ -46,16 +56,6 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         uint256 tokenId;
         bool active;
     }
-
-    event MarketTransaction (string, address, uint);
-
-    address payable internal feeRecipient;
-    uint256 housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
-    uint256 txFee = 2; //2% transaction fee
-
-    mapping (address => address) availableOracles;
-    mapping(uint256 => Offer) internal offerDetails;
-    Offer [] offers;
     
 
     // *** CONSTRUCTOR ***

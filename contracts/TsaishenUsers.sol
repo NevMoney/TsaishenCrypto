@@ -13,14 +13,13 @@ contract TsaishenUsers is Ownable, Storage {
 
     using EnumerableSet for EnumerableSet.UintSet;
 
+    event userAdded(string, address user, bool active);
+    event userDeleted(string, address user, bool active);
+
     address marketplace;
     address houseToken;
 
-    // for local testing we won't use it but for testNet and mainNet we will
-    modifier onlyAuthorized(){
-        require(msg.sender == marketplace || msg.sender == houseToken || msg.sender == owner(), "Not authorized.");
-        _;
-    }
+    mapping(address => User) internal userInfo;
 
     struct User {
         address payable user;
@@ -31,11 +30,13 @@ contract TsaishenUsers is Ownable, Storage {
         EnumerableSet.UintSet houses;
     }    
 
-    mapping(address => User) internal userInfo;
+    // MUST use for test and mainNet
+    modifier onlyAuthorized(){
+        require(msg.sender == marketplace || msg.sender == houseToken || msg.sender == owner(), "Not authorized.");
+        _;
+    }
 
-    event userAdded(string, address user, bool active);
-    event userDeleted(string, address user, bool active);
-
+    // *** PUBLIC SETTER FUNCTION onlyOwner ***
     function setMarketplaceAddress(address _marketplace) public onlyOwner{
         marketplace = _marketplace;
     }
@@ -62,16 +63,17 @@ contract TsaishenUsers is Ownable, Storage {
         userInfo[user].houses.remove(houseId);
     }
 
-    function isUser(address userToSearch) public view returns(bool){
-        return users.contains(userToSearch);
-    }
-
     function deleteUser(address userToDelete) public onlyAuthorized{
         users.remove(userToDelete);
 
         emit userDeleted("User deleted", userToDelete, false);
     }
 
+    // *** PUBLIC GETTER FUNCTIONS ***
+    function isUser(address userToSearch) public view returns(bool){
+        return users.contains(userToSearch);
+    }
+    
     function userCount() public view returns(uint256){
         return users.length();
     }
