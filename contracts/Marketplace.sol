@@ -72,7 +72,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         addOracle(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 0xa24de01df22b63d23Ebc1882a5E3d4ec0d907bFB); //USDC
     }
 
-    // *** ORACLE GETTER FUNCTIONS ***
+    // *** GETTER ***
     function getOracleUsdPrice(address token) public view returns(int256, uint256){
         // oracle instance
         address oracleAddress = availableOracles[token];
@@ -87,16 +87,6 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         // return (10000000000, 1607202219); 
     }
 
-    // *** ORACLE SETTER FUNCTIONS ***
-    function addOracle(address token, address oracle) public onlyOwner{
-        availableOracles[token] = oracle;
-    }
-
-    function removeOracle(address token) public onlyOwner{
-        delete availableOracles[token];
-    }
-
-    // *** MARKETPLACE GETTER FUNCTIONS PUBLIC *** 
     function getOffer(uint256 _tokenId) public view returns 
         (address seller, 
         uint256 price, 
@@ -137,12 +127,15 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         }
     }
 
-    //*** INTERNAL FUNCTIONS ***
-    function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool) {
-        return (_houseToken.ownerOf(_tokenId) == _address);
+    // *** SETTER ***
+    function addOracle(address token, address oracle) public onlyOwner{
+        availableOracles[token] = oracle;
     }
 
-    // *** PUBLIC SETTER FUNCTIONS ***
+    function removeOracle(address token) public onlyOwner{
+        delete availableOracles[token];
+    }
+
     function sellHouse(uint256 price, uint256 tokenId) public nonReentrant {
         require(_ownsHouse(msg.sender, tokenId), "Not authorized.");
         require(offerDetails[tokenId].active == false, "Already active.");
@@ -271,5 +264,11 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
 
         emit MarketTransaction("Escrow closed. House SOLD.", offer.seller, tokenId);
     }
+
+    //*** INTERNAL ***
+    function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool) {
+        return (_houseToken.ownerOf(_tokenId) == _address);
+    }
+
 
 }

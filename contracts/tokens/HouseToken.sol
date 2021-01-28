@@ -37,11 +37,40 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         _;
     }
 
-    // === INTERNAL & PRIVATE FUNCTIONS ===
+    // *** SETTER ***
+    function createHouse (uint256 value, uint256 income, string memory ipfsHash) public payable costs (1 ether) returns (uint256) {
+        // require identification of the user KYC/AML before execution
+        balance.add(msg.value);
+
+        houseCounter++;
+
+        _setTokenURI(_tokenIdTracker.current(), ipfsHash);
+
+        return _createHouse(value, income, msg.sender);
+    }
+
+    // *** GETTER ***
+    function getHouse(uint256 id) public view returns(uint256 value, uint256 income, string memory uri) {
+        value = houseInfo[id].value;
+        income = houseInfo[id].income;
+        uri = tokenURI(id);
+    }
+
+    function ownsHouse(address _address) public view returns(bool){
+        if(balanceOf(_address) > 0) return true;
+        return false;
+    }
+
+    // === OWNER ===
     function setUserContract(address _userContractAddress) internal onlyOwner {
         _tsaishenUsers = TsaishenUsers(_userContractAddress);
     }
 
+    function withdrawAll() public onlyOwner nonReentrant{
+        msg.sender.transfer(address(this).balance);
+    }
+
+    // === PRIVATE ===
     function _createHouse(uint256 _value, uint256 _income, address _owner) private returns (uint256) {    
         House memory _house = House({
             value: _value,
@@ -64,36 +93,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         return _tokenIdTracker.current();
     }
 
-    // *** PUBLIC onlyOwner ***
-    function withdrawAll() public onlyOwner nonReentrant{
-        msg.sender.transfer(address(this).balance);
-    }
-
-    // *** PUBLIC SETTER FUNCTIONS ***
-    function createHouse (uint256 value, uint256 income, string memory ipfsHash) public payable costs (1 ether) returns (uint256) {
-        // require identification of the user KYC/AML before execution
-        balance.add(msg.value);
-
-        houseCounter++;
-
-        _setTokenURI(_tokenIdTracker.current(), ipfsHash);
-
-        return _createHouse(value, income, msg.sender);
-    }
-
-    // *** PUBLIC GETTER FUNCTIONS ***
-    function getHouse(uint256 id) public view returns(uint256 value, uint256 income, string memory uri) {
-        value = houseInfo[id].value;
-        income = houseInfo[id].income;
-        uri = tokenURI(id);
-    }
-
-    function ownsHouse(address _address) public view returns(bool){
-        if(balanceOf(_address) > 0) return true;
-        return false;
-    }
-
-    // //NOT WORKING!
+    // !!!*** NOT WORKING ***!!!
     // function _autoWithdraw() internal {
     //     if(address(this).balance >= 10 ether) {
     //         _creator.transfer(address(this).balance);

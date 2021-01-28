@@ -53,8 +53,53 @@ contract TsaishenEscrow is Ownable{
     //     timelock[_st] = 0;
     // }
 
-    
-    // *** INTERNAL SETTER FUNCTIONS ***
+    // *** GETTER ***
+    function escrowInfo(uint256 tokenId) public view returns(
+        address seller, 
+        address buyer, 
+        State state, 
+        uint256 amount, 
+        uint256 timelock){
+        return (
+            escrowById[tokenId].seller, 
+            escrowById[tokenId].buyer, 
+            escrowById[tokenId].state, 
+            escrowById[tokenId].amount, 
+            escrowById[tokenId].timelock);
+    }
+
+    function sellerDeposits(uint256 tokenId) public view returns (address, uint256) {  
+        return (escrowById[tokenId].seller, escrowById[tokenId].amount);
+    }
+
+    function buyerDeposits(uint256 tokenId) public view returns (address, uint256) {
+        return (escrowById[tokenId].buyer, escrowById[tokenId].amount);   
+    }
+
+    function refundAllowed(uint256 tokenId) public view returns (bool) {
+       return escrowById[tokenId].state == State.Refunding;
+    }
+
+    function escrowState(uint256 tokenId) public view returns (State) {
+        return escrowById[tokenId].state;
+    }
+
+    function withdrawalAllowed(uint256 tokenId) public view returns (bool){
+        if(escrowById[tokenId].state != State.Closed) return false;
+        return true;
+    }
+
+    function confirmDelivery(uint256 tokenId) public {
+        require(msg.sender == escrowById[tokenId].buyer, "Not authorized.");
+        if(escrowById[tokenId].state == State.Refunding){
+            _resetState(tokenId);
+        }
+        escrowById[tokenId].timelock = 0;
+        escrowById[tokenId].state = State.Closed;
+        _beneficiaryWithdraw(escrowById[tokenId].seller, tokenId);
+    }
+
+    // *** INTERNAL & onlyOwner ***
     function _deposit(IERC20 _token, address _seller, address _buyer, uint256 _amount, uint256 _tokenId) internal {
         require(_seller != address(0), "Address can't be zero.");
 
@@ -71,7 +116,6 @@ contract TsaishenEscrow is Ownable{
         escrowById[_tokenId].state = State.Active;
     }
 
-    // === ONLY OWNER ===
     function _enableRefunds(uint256 _tokenId) internal onlyOwner {
         require(now >= _TIMELOCK, "Timelocked.");
         require(escrowById[_tokenId].state == State.Active, "Must be active.");
@@ -124,52 +168,6 @@ contract TsaishenEscrow is Ownable{
         emit Withdrawn(_seller, paymentToSeller);
     } 
 
-    // *** PUBLIC GETTER FUNCTIONS ***
-    function escrowInfo(uint256 tokenId) public view returns(
-        address seller, 
-        address buyer, 
-        State state, 
-        uint256 amount, 
-        uint256 timelock){
-        return (
-            escrowById[tokenId].seller, 
-            escrowById[tokenId].buyer, 
-            escrowById[tokenId].state, 
-            escrowById[tokenId].amount, 
-            escrowById[tokenId].timelock);
-    }
-
-    function sellerDeposits(uint256 tokenId) public view returns (address, uint256) {  
-        return (escrowById[tokenId].seller, escrowById[tokenId].amount);
-    }
-
-    function buyerDeposits(uint256 tokenId) public view returns (address, uint256) {
-        return (escrowById[tokenId].buyer, escrowById[tokenId].amount);   
-    }
-
-    function refundAllowed(uint256 tokenId) public view returns (bool) {
-       return escrowById[tokenId].state == State.Refunding;
-    }
-
-    function escrowState(uint256 tokenId) public view returns (State) {
-        return escrowById[tokenId].state;
-    }
-
-    function withdrawalAllowed(uint256 tokenId) public view returns (bool){
-        if(escrowById[tokenId].state != State.Closed) return false;
-        return true;
-    }
-
-    // only Buyer
-    function confirmDelivery(uint256 tokenId) public {
-        require(msg.sender == escrowById[tokenId].buyer, "Not authorized.");
-        if(escrowById[tokenId].state == State.Refunding){
-            _resetState(tokenId);
-        }
-        escrowById[tokenId].timelock = 0;
-        escrowById[tokenId].state = State.Closed;
-        _beneficiaryWithdraw(escrowById[tokenId].seller, tokenId);
-    }
 }
 
    

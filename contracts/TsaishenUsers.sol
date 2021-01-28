@@ -36,40 +36,7 @@ contract TsaishenUsers is Ownable, Storage {
         _;
     }
 
-    // *** PUBLIC SETTER FUNCTION onlyOwner ***
-    function setMarketplaceAddress(address _marketplace) public onlyOwner{
-        marketplace = _marketplace;
-    }
-
-    function setHouseTokenAddress(address _houseToken) public onlyOwner{
-        houseToken = _houseToken;
-    }
-
-    function addUser (address newUser) public onlyAuthorized{
-        EnumerableSet.UintSet memory _houses;
-        address payable user = address(uint160(newUser));
-        userInfo[newUser] = User(user, false, false, false, false, _houses);
-        users.add(newUser);
-
-        emit userAdded("New user added", newUser, true);
-    }
-
-    function addHouseToUser(address user, uint256 houseId) public onlyAuthorized{
-        userInfo[user].houses.add(houseId);
-        userInfo[user].houseOwner = true;
-    }
-
-    function deleteHouseFromUser(address user, uint256 houseId) public onlyAuthorized{
-        userInfo[user].houses.remove(houseId);
-    }
-
-    function deleteUser(address userToDelete) public onlyAuthorized{
-        users.remove(userToDelete);
-
-        emit userDeleted("User deleted", userToDelete, false);
-    }
-
-    // *** PUBLIC GETTER FUNCTIONS ***
+    // *** GETTER ***
     function isUser(address userToSearch) public view returns(bool){
         return users.contains(userToSearch);
     }
@@ -104,5 +71,38 @@ contract TsaishenUsers is Ownable, Storage {
 
     function getUserHomes(address user) public view returns(bytes32[] memory homes){
         return homes = userInfo[user].houses._inner._values;
+    }
+
+    // *** SETTER onlyOwner ***
+    function setMarketplaceAddress(address _marketplace) public onlyOwner{
+        marketplace = _marketplace;
+    }
+
+    function setHouseTokenAddress(address _houseToken) public onlyOwner{
+        houseToken = _houseToken;
+    }
+
+    function addUser (address newUser) public onlyAuthorized{
+        EnumerableSet.UintSet memory _houses;
+        address payable user = address(uint160(newUser));
+        userInfo[newUser] = User(user, false, false, false, false, _houses);
+        users.add(newUser);
+
+        emit userAdded("New user added", newUser, true);
+    }
+
+    function addHouseToUser(address user, uint256 houseId) public onlyAuthorized{
+        userInfo[user].houses.add(houseId);
+        userInfo[user].houseOwner = true;
+    }
+
+    function deleteHouseFromUser(address user, uint256 houseId) public onlyAuthorized{
+        userInfo[user].houses.remove(houseId);
+    }
+
+    function deleteUser(address userToDelete) public onlyAuthorized{
+        users.remove(userToDelete);
+
+        emit userDeleted("User deleted", userToDelete, false);
     }
 }
