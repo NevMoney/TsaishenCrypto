@@ -16,7 +16,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     using SafeMath for uint256;
     using StringsConcats for string;
 
-    event Minted(address _owner, uint256 id, string tokenURI);
+    event Minted(address _owner, uint256 id, string uri);
 
     address public _contractOwner;
     bool public _initialized;
@@ -27,7 +27,6 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     mapping (uint256 => address) public houseIndexToApproved;
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
-    mapping(uint256 => string) ipfsHash;
 
     // *** CONSTRUCTOR ***
     constructor(address _userContractAddress, address payable creator) public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "ipfs://") {
@@ -55,7 +54,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         //places house in mapping and assigns ID
         houseInfo[_tokenIdTracker.current()] = _house;
 
-        emit Minted(_owner, _tokenIdTracker.current(), "");
+        emit Minted(_owner, _tokenIdTracker.current(), tokenURI(_tokenIdTracker.current()));
 
         //mint new token, transfer to the owner with the house ID
         _mint(_owner, _tokenIdTracker.current());
@@ -68,38 +67,28 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         return _tokenIdTracker.current();
     }
 
-    function houseHashURI(uint256 _tokenId) internal view returns(string memory){
-        return ipfsHash[_tokenId];
-    }
-
-    // actual URI of the token used in getHouse()
-    function houseTokenURI(uint256 _tokenId) internal view returns(string memory){
-        return StringsConcats.strConcat(
-            houseHashURI(_tokenId),
-            StringsConcats.uint2str(_tokenId)
-        );
-    }
-
     // *** PUBLIC onlyOwner ***
     function withdrawAll() public onlyOwner nonReentrant{
         msg.sender.transfer(address(this).balance);
     }
 
     // *** PUBLIC SETTER FUNCTIONS ***
-    function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
+    function createHouse (uint256 value, uint256 income, string memory ipfsHash) public payable costs (1 ether) returns (uint256) {
         // require identification of the user KYC/AML before execution
         balance.add(msg.value);
 
         houseCounter++;
 
+        _setTokenURI(_tokenIdTracker.current(), ipfsHash);
+
         return _createHouse(value, income, msg.sender);
     }
 
     // *** PUBLIC GETTER FUNCTIONS ***
-    function getHouse(uint256 _id) public view returns(uint256 value, uint256 income, string memory uri) {
-        value = houseInfo[_id].value;
-        income = houseInfo[_id].income;
-        uri = houseTokenURI(_id);
+    function getHouse(uint256 id) public view returns(uint256 value, uint256 income, string memory uri) {
+        value = houseInfo[id].value;
+        income = houseInfo[id].income;
+        uri = tokenURI(id);
     }
 
     function ownsHouse(address _address) public view returns(bool){
