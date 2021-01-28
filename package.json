@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "flat": "truffle-flattener contracts/Marketplace.sol > flats/Marketplace.sol"
+    "flat": "truffle-flattener contracts/Marketplace.sol > flats/Marketplace.sol",
+    "flat": "truffle-flattener contracts/HouseToken.sol > flats/HouseToken.sol"
   },
   "repository": {
     "type": "git",

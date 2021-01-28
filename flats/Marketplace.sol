@@ -1,265 +1,6 @@
-// File: node_modules\@openzeppelin\contracts\GSN\Context.sol
-
-// SPDX-License-Identifier: MIT
-
-pragma solidity ^0.6.0;
-
-/*
- * @dev Provides information about the current execution context, including the
- * sender of the transaction and its data. While these are generally available
- * via msg.sender and msg.data, they should not be accessed in such a direct
- * manner, since when dealing with GSN meta-transactions the account sending and
- * paying for execution may not be the actual sender (as far as an application
- * is concerned).
- *
- * This contract is only required for intermediate, library-like contracts.
- */
-abstract contract Context {
-    function _msgSender() internal view virtual returns (address payable) {
-        return msg.sender;
-    }
-
-    function _msgData() internal view virtual returns (bytes memory) {
-        this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
-        return msg.data;
-    }
-}
-
-// File: @openzeppelin\contracts\access\Ownable.sol
-
-
-
-pragma solidity ^0.6.0;
-
-/**
- * @dev Contract module which provides a basic access control mechanism, where
- * there is an account (an owner) that can be granted exclusive access to
- * specific functions.
- *
- * By default, the owner account will be the one that deploys the contract. This
- * can later be changed with {transferOwnership}.
- *
- * This module is used through inheritance. It will make available the modifier
- * `onlyOwner`, which can be applied to your functions to restrict their use to
- * the owner.
- */
-contract Ownable is Context {
-    address private _owner;
-
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-    /**
-     * @dev Initializes the contract setting the deployer as the initial owner.
-     */
-    constructor () internal {
-        address msgSender = _msgSender();
-        _owner = msgSender;
-        emit OwnershipTransferred(address(0), msgSender);
-    }
-
-    /**
-     * @dev Returns the address of the current owner.
-     */
-    function owner() public view returns (address) {
-        return _owner;
-    }
-
-    /**
-     * @dev Throws if called by any account other than the owner.
-     */
-    modifier onlyOwner() {
-        require(_owner == _msgSender(), "Ownable: caller is not the owner");
-        _;
-    }
-
-    /**
-     * @dev Leaves the contract without owner. It will not be possible to call
-     * `onlyOwner` functions anymore. Can only be called by the current owner.
-     *
-     * NOTE: Renouncing ownership will leave the contract without an owner,
-     * thereby removing any functionality that is only available to the owner.
-     */
-    function renounceOwnership() public virtual onlyOwner {
-        emit OwnershipTransferred(_owner, address(0));
-        _owner = address(0);
-    }
-
-    /**
-     * @dev Transfers ownership of the contract to a new account (`newOwner`).
-     * Can only be called by the current owner.
-     */
-    function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
-        emit OwnershipTransferred(_owner, newOwner);
-        _owner = newOwner;
-    }
-}
-
-// File: @openzeppelin\contracts\math\SafeMath.sol
-
-
-
-pragma solidity ^0.6.0;
-
-/**
- * @dev Wrappers over Solidity's arithmetic operations with added overflow
- * checks.
- *
- * Arithmetic operations in Solidity wrap on overflow. This can easily result
- * in bugs, because programmers usually assume that an overflow raises an
- * error, which is the standard behavior in high level programming languages.
- * `SafeMath` restores this intuition by reverting the transaction when an
- * operation overflows.
- *
- * Using this library instead of the unchecked operations eliminates an entire
- * class of bugs, so it's recommended to use it always.
- */
-library SafeMath {
-    /**
-     * @dev Returns the addition of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `+` operator.
-     *
-     * Requirements:
-     *
-     * - Addition cannot overflow.
-     */
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        uint256 c = a + b;
-        require(c >= a, "SafeMath: addition overflow");
-
-        return c;
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting on
-     * overflow (when the result is negative).
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        return sub(a, b, "SafeMath: subtraction overflow");
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
-     * overflow (when the result is negative).
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
-    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-        require(b <= a, errorMessage);
-        uint256 c = a - b;
-
-        return c;
-    }
-
-    /**
-     * @dev Returns the multiplication of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `*` operator.
-     *
-     * Requirements:
-     *
-     * - Multiplication cannot overflow.
-     */
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-        // benefit is lost if 'b' is also tested.
-        // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-        if (a == 0) {
-            return 0;
-        }
-
-        uint256 c = a * b;
-        require(c / a == b, "SafeMath: multiplication overflow");
-
-        return c;
-    }
-
-    /**
-     * @dev Returns the integer division of two unsigned integers. Reverts on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator. Note: this function uses a
-     * `revert` opcode (which leaves remaining gas untouched) while Solidity
-     * uses an invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        return div(a, b, "SafeMath: division by zero");
-    }
-
-    /**
-     * @dev Returns the integer division of two unsigned integers. Reverts with custom message on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator. Note: this function uses a
-     * `revert` opcode (which leaves remaining gas untouched) while Solidity
-     * uses an invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-        require(b > 0, errorMessage);
-        uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-
-        return c;
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * Reverts when dividing by zero.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-        return mod(a, b, "SafeMath: modulo by zero");
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * Reverts with custom message when dividing by zero.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-        require(b != 0, errorMessage);
-        return a % b;
-    }
-}
-
 // File: @openzeppelin\contracts\utils\ReentrancyGuard.sol
 
-
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
 
@@ -789,6 +530,33 @@ library Address {
                 revert(errorMessage);
             }
         }
+    }
+}
+
+// File: node_modules\@openzeppelin\contracts\GSN\Context.sol
+
+
+
+pragma solidity ^0.6.0;
+
+/*
+ * @dev Provides information about the current execution context, including the
+ * sender of the transaction and its data. While these are generally available
+ * via msg.sender and msg.data, they should not be accessed in such a direct
+ * manner, since when dealing with GSN meta-transactions the account sending and
+ * paying for execution may not be the actual sender (as far as an application
+ * is concerned).
+ *
+ * This contract is only required for intermediate, library-like contracts.
+ */
+abstract contract Context {
+    function _msgSender() internal view virtual returns (address payable) {
+        return msg.sender;
+    }
+
+    function _msgData() internal view virtual returns (bytes memory) {
+        this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
+        return msg.data;
     }
 }
 
@@ -2519,10 +2287,80 @@ contract ERC721PresetMinterPauserAutoId is Context, AccessControl, ERC721Burnabl
     }
 }
 
-// File: contracts\Storage.sol
+// File: @openzeppelin\contracts\access\Ownable.sol
+
 
 
 pragma solidity ^0.6.0;
+
+/**
+ * @dev Contract module which provides a basic access control mechanism, where
+ * there is an account (an owner) that can be granted exclusive access to
+ * specific functions.
+ *
+ * By default, the owner account will be the one that deploys the contract. This
+ * can later be changed with {transferOwnership}.
+ *
+ * This module is used through inheritance. It will make available the modifier
+ * `onlyOwner`, which can be applied to your functions to restrict their use to
+ * the owner.
+ */
+contract Ownable is Context {
+    address private _owner;
+
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    /**
+     * @dev Initializes the contract setting the deployer as the initial owner.
+     */
+    constructor () internal {
+        address msgSender = _msgSender();
+        _owner = msgSender;
+        emit OwnershipTransferred(address(0), msgSender);
+    }
+
+    /**
+     * @dev Returns the address of the current owner.
+     */
+    function owner() public view returns (address) {
+        return _owner;
+    }
+
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
+    modifier onlyOwner() {
+        require(_owner == _msgSender(), "Ownable: caller is not the owner");
+        _;
+    }
+
+    /**
+     * @dev Leaves the contract without owner. It will not be possible to call
+     * `onlyOwner` functions anymore. Can only be called by the current owner.
+     *
+     * NOTE: Renouncing ownership will leave the contract without an owner,
+     * thereby removing any functionality that is only available to the owner.
+     */
+    function renounceOwnership() public virtual onlyOwner {
+        emit OwnershipTransferred(_owner, address(0));
+        _owner = address(0);
+    }
+
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * Can only be called by the current owner.
+     */
+    function transferOwnership(address newOwner) public virtual onlyOwner {
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        emit OwnershipTransferred(_owner, newOwner);
+        _owner = newOwner;
+    }
+}
+
+// File: contracts\Storage.sol
+
+
+pragma solidity 0.6.10;
 
 contract Storage {
 
@@ -2531,13 +2369,12 @@ contract Storage {
     mapping (string => bool) _boolStorage;
     mapping (string => string) _stringStorage;
     mapping (string => bytes4) _bytesStorage;
+    mapping (uint256 => House) internal houseInfo;
 
     struct House {
         uint256 value;
         uint256 income;
     }
-
-    mapping (uint256 => House) internal houseInfo;
 
 }
 
@@ -2802,14 +2639,13 @@ contract TsaishenUsers is Ownable, Storage {
 
     using EnumerableSet for EnumerableSet.UintSet;
 
+    event userAdded(string, address user, bool active);
+    event userDeleted(string, address user, bool active);
+
     address marketplace;
     address houseToken;
 
-    // for local testing we won't use it but for testNet and mainNet we will
-    modifier onlyAuthorized(){
-        require(msg.sender == marketplace || msg.sender == houseToken || msg.sender == owner(), "Not authorized.");
-        _;
-    }
+    mapping(address => User) internal userInfo;
 
     struct User {
         address payable user;
@@ -2820,47 +2656,17 @@ contract TsaishenUsers is Ownable, Storage {
         EnumerableSet.UintSet houses;
     }    
 
-    mapping(address => User) internal userInfo;
-
-    event userAdded(string, address user, bool active);
-    event userDeleted(string, address user, bool active);
-
-    function setMarketplaceAddress(address _marketplace) public onlyOwner{
-        marketplace = _marketplace;
+    // MUST use for test and mainNet
+    modifier onlyAuthorized(){
+        require(msg.sender == marketplace || msg.sender == houseToken || msg.sender == owner(), "Not authorized.");
+        _;
     }
 
-    function setHouseTokenAddress(address _houseToken) public onlyOwner{
-        houseToken = _houseToken;
-    }
-
-    function addUser (address newUser) public {
-        EnumerableSet.UintSet memory _houses;
-        address payable user = address(uint160(newUser));
-        userInfo[newUser] = User(user, false, false, false, false, _houses);
-        users.add(newUser);
-
-        emit userAdded("New user added", newUser, true);
-    }
-
-    function addHouseToUser(address user, uint256 houseId) public {
-        userInfo[user].houses.add(houseId);
-        userInfo[user].houseOwner = true;
-    }
-
-    function deleteHouseFromUser(address user, uint256 houseId) public {
-        userInfo[user].houses.remove(houseId);
-    }
-
+    // *** GETTER ***
     function isUser(address userToSearch) public view returns(bool){
         return users.contains(userToSearch);
     }
-
-    function deleteUser(address userToDelete) public {
-        users.remove(userToDelete);
-
-        emit userDeleted("User deleted", userToDelete, false);
-    }
-
+    
     function userCount() public view returns(uint256){
         return users.length();
     }
@@ -2892,6 +2698,39 @@ contract TsaishenUsers is Ownable, Storage {
     function getUserHomes(address user) public view returns(bytes32[] memory homes){
         return homes = userInfo[user].houses._inner._values;
     }
+
+    // *** SETTER onlyOwner ***
+    function setMarketplaceAddress(address _marketplace) public onlyOwner{
+        marketplace = _marketplace;
+    }
+
+    function setHouseTokenAddress(address _houseToken) public onlyOwner{
+        houseToken = _houseToken;
+    }
+
+    function addUser (address newUser) public onlyAuthorized{
+        EnumerableSet.UintSet memory _houses;
+        address payable user = address(uint160(newUser));
+        userInfo[newUser] = User(user, false, false, false, false, _houses);
+        users.add(newUser);
+
+        emit userAdded("New user added", newUser, true);
+    }
+
+    function addHouseToUser(address user, uint256 houseId) public onlyAuthorized{
+        userInfo[user].houses.add(houseId);
+        userInfo[user].houseOwner = true;
+    }
+
+    function deleteHouseFromUser(address user, uint256 houseId) public onlyAuthorized{
+        userInfo[user].houses.remove(houseId);
+    }
+
+    function deleteUser(address userToDelete) public onlyAuthorized{
+        users.remove(userToDelete);
+
+        emit userDeleted("User deleted", userToDelete, false);
+    }
 }
 
 // File: contracts\tokens\HouseToken.sol
@@ -2900,51 +2739,74 @@ contract TsaishenUsers is Ownable, Storage {
 
 pragma solidity 0.6.10;
 
+
+
+
+
+
 contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard, Storage {
-    TsaishenUsers private _tsaishenUsers;
 
     using SafeMath for uint256;
 
-    mapping (uint256 => address) public houseIndexToApproved;
+    event Minted(address _owner, uint256 id, string uri);
 
-    mapping (address => uint256) private _balances;
-    mapping (address => mapping (address => uint256)) private _allowances;
-
+    TsaishenUsers private _tsaishenUsers;
     address public _contractOwner;
     bool public _initialized;
     address payable internal _creator;
+    uint public balance;    
+    uint256 public houseCounter;
 
-    // MUST ALWAYS BE PUBLIC!
-    constructor(address _userContractAddress) public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.daonomic.com/ipfs/") {
+    mapping (uint256 => address) public houseIndexToApproved;
+    mapping (address => uint256) private _balances;
+    mapping (address => mapping (address => uint256)) private _allowances;
+
+    // *** CONSTRUCTOR ***
+    constructor(address _userContractAddress, address payable creator) public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "ipfs://") {
         setUserContract(_userContractAddress);
+        _creator = creator;
     }
 
+    // *** MODIFIER ***
     modifier costs (uint cost){
         require(msg.value >= cost);
         _;
     }
 
-    uint public balance;    
-    uint256 public houseCounter;
-
-    mapping(uint256 => string) ipfsHash;
-
-    event Minted(address _owner, uint256 id, string tokenURI);
-
-    function setUserContract(address _userContractAddress) internal onlyOwner {
-        _tsaishenUsers = TsaishenUsers(_userContractAddress);
-    }
-      
-    // generate house on blockchain: value, ID, owner address
-    function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
+    // *** SETTER ***
+    function createHouse (uint256 value, uint256 income, string memory ipfsHash) public payable costs (1 ether) returns (uint256) {
         // require identification of the user KYC/AML before execution
         balance.add(msg.value);
 
         houseCounter++;
 
+        _setTokenURI(_tokenIdTracker.current(), ipfsHash);
+
         return _createHouse(value, income, msg.sender);
     }
 
+    // *** GETTER ***
+    function getHouse(uint256 id) public view returns(uint256 value, uint256 income, string memory uri) {
+        value = houseInfo[id].value;
+        income = houseInfo[id].income;
+        uri = tokenURI(id);
+    }
+
+    function ownsHouse(address _address) public view returns(bool){
+        if(balanceOf(_address) > 0) return true;
+        return false;
+    }
+
+    // === OWNER ===
+    function setUserContract(address _userContractAddress) internal onlyOwner {
+        _tsaishenUsers = TsaishenUsers(_userContractAddress);
+    }
+
+    function withdrawAll() public onlyOwner nonReentrant{
+        msg.sender.transfer(address(this).balance);
+    }
+
+    // === PRIVATE ===
     function _createHouse(uint256 _value, uint256 _income, address _owner) private returns (uint256) {    
         House memory _house = House({
             value: _value,
@@ -2954,7 +2816,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         //places house in mapping and assigns ID
         houseInfo[_tokenIdTracker.current()] = _house;
 
-        emit Minted(_owner, _tokenIdTracker.current(), "");
+        emit Minted(_owner, _tokenIdTracker.current(), tokenURI(_tokenIdTracker.current()));
 
         //mint new token, transfer to the owner with the house ID
         _mint(_owner, _tokenIdTracker.current());
@@ -2967,30 +2829,175 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         return _tokenIdTracker.current();
     }
 
-    function getHouse(uint256 _id) public view returns(uint256 value, uint256 income, string memory uri) {
-        value = houseInfo[_id].value;
-        income = houseInfo[_id].income;
-        uri = tokenURI(_id); 
-        //USE THIS INSTEAD WHEN PART DONE 
-        // uri = ipfsHash[_id];
-    }
-
-    function withdrawAll() public onlyOwner {
-        msg.sender.transfer(address(this).balance);
-    }
-
-    function _autoWithdraw() internal {
-        if(address(this).balance >= 10 ether) {
-            _creator.transfer(address(this).balance);
-        }    
-    }
+    // !!!*** NOT WORKING ***!!!
+    // function _autoWithdraw() internal {
+    //     if(address(this).balance >= 10 ether) {
+    //         _creator.transfer(address(this).balance);
+    //     }    
+    // }
     
-    // this checks if they own the house
-    function ownsHouse(address _address) public view returns(bool){
-        if(balanceOf(_address) > 0) return true;
-        return false;
+}
+
+// File: @openzeppelin\contracts\math\SafeMath.sol
+
+
+
+pragma solidity ^0.6.0;
+
+/**
+ * @dev Wrappers over Solidity's arithmetic operations with added overflow
+ * checks.
+ *
+ * Arithmetic operations in Solidity wrap on overflow. This can easily result
+ * in bugs, because programmers usually assume that an overflow raises an
+ * error, which is the standard behavior in high level programming languages.
+ * `SafeMath` restores this intuition by reverting the transaction when an
+ * operation overflows.
+ *
+ * Using this library instead of the unchecked operations eliminates an entire
+ * class of bugs, so it's recommended to use it always.
+ */
+library SafeMath {
+    /**
+     * @dev Returns the addition of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `+` operator.
+     *
+     * Requirements:
+     *
+     * - Addition cannot overflow.
+     */
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a + b;
+        require(c >= a, "SafeMath: addition overflow");
+
+        return c;
     }
 
+    /**
+     * @dev Returns the subtraction of two unsigned integers, reverting on
+     * overflow (when the result is negative).
+     *
+     * Counterpart to Solidity's `-` operator.
+     *
+     * Requirements:
+     *
+     * - Subtraction cannot overflow.
+     */
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        return sub(a, b, "SafeMath: subtraction overflow");
+    }
+
+    /**
+     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
+     * overflow (when the result is negative).
+     *
+     * Counterpart to Solidity's `-` operator.
+     *
+     * Requirements:
+     *
+     * - Subtraction cannot overflow.
+     */
+    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        require(b <= a, errorMessage);
+        uint256 c = a - b;
+
+        return c;
+    }
+
+    /**
+     * @dev Returns the multiplication of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `*` operator.
+     *
+     * Requirements:
+     *
+     * - Multiplication cannot overflow.
+     */
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
+        // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
+        if (a == 0) {
+            return 0;
+        }
+
+        uint256 c = a * b;
+        require(c / a == b, "SafeMath: multiplication overflow");
+
+        return c;
+    }
+
+    /**
+     * @dev Returns the integer division of two unsigned integers. Reverts on
+     * division by zero. The result is rounded towards zero.
+     *
+     * Counterpart to Solidity's `/` operator. Note: this function uses a
+     * `revert` opcode (which leaves remaining gas untouched) while Solidity
+     * uses an invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        return div(a, b, "SafeMath: division by zero");
+    }
+
+    /**
+     * @dev Returns the integer division of two unsigned integers. Reverts with custom message on
+     * division by zero. The result is rounded towards zero.
+     *
+     * Counterpart to Solidity's `/` operator. Note: this function uses a
+     * `revert` opcode (which leaves remaining gas untouched) while Solidity
+     * uses an invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        require(b > 0, errorMessage);
+        uint256 c = a / b;
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+
+        return c;
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
+     * Reverts when dividing by zero.
+     *
+     * Counterpart to Solidity's `%` operator. This function uses a `revert`
+     * opcode (which leaves remaining gas untouched) while Solidity uses an
+     * invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+        return mod(a, b, "SafeMath: modulo by zero");
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
+     * Reverts with custom message when dividing by zero.
+     *
+     * Counterpart to Solidity's `%` operator. This function uses a `revert`
+     * opcode (which leaves remaining gas untouched) while Solidity uses an
+     * invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        require(b != 0, errorMessage);
+        return a % b;
+    }
 }
 
 // File: @openzeppelin\contracts\utils\Address.sol
@@ -3137,11 +3144,287 @@ library Address {
     }
 }
 
+// File: node_modules\@openzeppelin\contracts\token\ERC20\IERC20.sol
+
+
+
+pragma solidity ^0.6.0;
+
+/**
+ * @dev Interface of the ERC20 standard as defined in the EIP.
+ */
+interface IERC20 {
+    /**
+     * @dev Returns the amount of tokens in existence.
+     */
+    function totalSupply() external view returns (uint256);
+
+    /**
+     * @dev Returns the amount of tokens owned by `account`.
+     */
+    function balanceOf(address account) external view returns (uint256);
+
+    /**
+     * @dev Moves `amount` tokens from the caller's account to `recipient`.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * Emits a {Transfer} event.
+     */
+    function transfer(address recipient, uint256 amount) external returns (bool);
+
+    /**
+     * @dev Returns the remaining number of tokens that `spender` will be
+     * allowed to spend on behalf of `owner` through {transferFrom}. This is
+     * zero by default.
+     *
+     * This value changes when {approve} or {transferFrom} are called.
+     */
+    function allowance(address owner, address spender) external view returns (uint256);
+
+    /**
+     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * IMPORTANT: Beware that changing an allowance with this method brings the risk
+     * that someone may use both the old and the new allowance by unfortunate
+     * transaction ordering. One possible solution to mitigate this race
+     * condition is to first reduce the spender's allowance to 0 and set the
+     * desired value afterwards:
+     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+     *
+     * Emits an {Approval} event.
+     */
+    function approve(address spender, uint256 amount) external returns (bool);
+
+    /**
+     * @dev Moves `amount` tokens from `sender` to `recipient` using the
+     * allowance mechanism. `amount` is then deducted from the caller's
+     * allowance.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * Emits a {Transfer} event.
+     */
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+
+    /**
+     * @dev Emitted when `value` tokens are moved from one account (`from`) to
+     * another (`to`).
+     *
+     * Note that `value` may be zero.
+     */
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    /**
+     * @dev Emitted when the allowance of a `spender` for an `owner` is set by
+     * a call to {approve}. `value` is the new allowance.
+     */
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+}
+
+// File: @openzeppelin\contracts\token\ERC20\SafeERC20.sol
+
+
+
+pragma solidity ^0.6.0;
+
+
+
+
+/**
+ * @title SafeERC20
+ * @dev Wrappers around ERC20 operations that throw on failure (when the token
+ * contract returns false). Tokens that return no value (and instead revert or
+ * throw on failure) are also supported, non-reverting calls are assumed to be
+ * successful.
+ * To use this library you can add a `using SafeERC20 for IERC20;` statement to your contract,
+ * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
+ */
+library SafeERC20 {
+    using SafeMath for uint256;
+    using Address for address;
+
+    function safeTransfer(IERC20 token, address to, uint256 value) internal {
+        _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
+    }
+
+    function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
+        _callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
+    }
+
+    /**
+     * @dev Deprecated. This function has issues similar to the ones found in
+     * {IERC20-approve}, and its usage is discouraged.
+     *
+     * Whenever possible, use {safeIncreaseAllowance} and
+     * {safeDecreaseAllowance} instead.
+     */
+    function safeApprove(IERC20 token, address spender, uint256 value) internal {
+        // safeApprove should only be called when setting an initial allowance,
+        // or when resetting it to zero. To increase and decrease it, use
+        // 'safeIncreaseAllowance' and 'safeDecreaseAllowance'
+        // solhint-disable-next-line max-line-length
+        require((value == 0) || (token.allowance(address(this), spender) == 0),
+            "SafeERC20: approve from non-zero to non-zero allowance"
+        );
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
+    }
+
+    function safeIncreaseAllowance(IERC20 token, address spender, uint256 value) internal {
+        uint256 newAllowance = token.allowance(address(this), spender).add(value);
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+    }
+
+    function safeDecreaseAllowance(IERC20 token, address spender, uint256 value) internal {
+        uint256 newAllowance = token.allowance(address(this), spender).sub(value, "SafeERC20: decreased allowance below zero");
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+    }
+
+    /**
+     * @dev Imitates a Solidity high-level call (i.e. a regular function call to a contract), relaxing the requirement
+     * on the return value: the return value is optional (but if data is returned, it must not be false).
+     * @param token The token targeted by the call.
+     * @param data The call data (encoded using abi.encode or one of its variants).
+     */
+    function _callOptionalReturn(IERC20 token, bytes memory data) private {
+        // We need to perform a low level call here, to bypass Solidity's return data size checking mechanism, since
+        // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
+        // the target address contains contract code and also asserts for success in the low-level call.
+
+        bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
+        if (returndata.length > 0) { // Return data is optional
+            // solhint-disable-next-line max-line-length
+            require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
+        }
+    }
+}
+
+// File: contracts\libs\UniversalERC20.sol
+
+
+// Copyright (c) 2020 CryptoManiacs
+// Code updated by Nev K.
+
+pragma solidity 0.6.10;
+
+
+
+
+
+library UniversalERC20 {
+
+    using SafeMath for uint256;
+    using SafeERC20 for IERC20;
+
+    IERC20 private constant ZERO_ADDRESS = IERC20(0x0000000000000000000000000000000000000000);
+    IERC20 private constant ETH_ADDRESS = IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
+
+    function universalTransfer(IERC20 token, address to, uint256 amount) internal returns(bool) {
+        if (amount == 0) {
+            return true;
+        }
+
+        if (isETH(token)) {
+            address(uint160(to)).transfer(amount);
+        } else {
+            token.safeTransfer(to, amount);
+            return true;
+        }
+    }
+
+    function universalTransferFrom(IERC20 token, address from, address to, uint256 amount) internal {
+        if (amount == 0) {
+            return;
+        }
+
+        if (isETH(token)) {
+            require(from == msg.sender && msg.value >= amount, "Wrong function usage.");
+            if (to != address(this)) {
+                address(uint160(to)).transfer(amount);
+            }
+            if (msg.value > amount) {
+                msg.sender.transfer(msg.value.sub(amount));
+            }
+        } else {
+            token.safeTransferFrom(from, to, amount);
+        }
+    }
+
+    function universalTransferFromSenderToThis(IERC20 token, uint256 amount) internal {
+        if (amount == 0) {
+            return;
+        }
+
+        if (isETH(token)) {
+            if (msg.value > amount) {
+                // Return remainder if exist
+                msg.sender.transfer(msg.value.sub(amount));
+            }
+        } else {
+            token.safeTransferFrom(msg.sender, address(this), amount);
+        }
+    }
+
+    function universalApprove(IERC20 token, address to, uint256 amount) internal {
+        if (!isETH(token)) {
+            if (amount == 0) {
+                token.safeApprove(to, 0);
+                return;
+            }
+
+            uint256 allowance = token.allowance(address(this), to);
+            if (allowance < amount) {
+                if (allowance > 0) {
+                    token.safeApprove(to, 0);
+                }
+                token.safeApprove(to, amount);
+            }
+        }
+    }
+
+    function universalBalanceOf(IERC20 token, address who) internal view returns (uint256) {
+        if (isETH(token)) {
+            return who.balance;
+        } else {
+            return token.balanceOf(who);
+        }
+    }
+
+    function universalDecimals(IERC20 token) internal view returns (uint256) {
+
+        if (isETH(token)) {
+            return 18;
+        }
+
+        (bool success, bytes memory data) = address(token).staticcall{gas: 10000}(
+            abi.encodeWithSignature("decimals()")
+        );
+        if (!success || data.length == 0) {
+            (success, data) = address(token).staticcall{gas: 10000}(
+                abi.encodeWithSignature("DECIMALS()")
+            );
+        }
+
+        return (success && data.length > 0) ? abi.decode(data, (uint256)) : 18;
+    }
+
+    function isETH(IERC20 token) internal pure returns(bool) {
+        return (address(token) == address(ZERO_ADDRESS) || address(token) == address(ETH_ADDRESS));
+    }
+
+    function notExist(IERC20 token) internal pure returns(bool) {
+        return (address(token) == address(-1));
+    }
+}
+
 // File: contracts\TsaishenEscrow.sol
 
 
 
-pragma solidity ^0.6.10;
+pragma solidity 0.6.10;
+
 
 
 
@@ -3150,6 +3433,7 @@ contract TsaishenEscrow is Ownable{
 
     using SafeMath for uint256;
     using Address for address payable;
+    using UniversalERC20 for IERC20;
 
     event Deposited(address indexed seller, uint256 weiAmount);
     event Withdrawn(address indexed seller, uint256 weiAmount);
@@ -3158,24 +3442,23 @@ contract TsaishenEscrow is Ownable{
 
     enum State { Active, Refunding, Closed }
 
-    // create a struct to hold all information about escrow
+    // timelock will be 10 days; TESTING: 1 minute
+    uint256 private constant _TIMELOCK= 1 minutes;
+    address payable internal eFeeRecipient;
+    uint256 fee = 3;
+    
+    // tokenId to Struct
+    mapping(uint256 => Escrow) escrowById;
+
     struct Escrow {
-        address payable seller; //this is beneficiary
-        address payable buyer; //this is refundee
+        IERC20 token; //does this need to say address IERC20 token???
+        address payable seller; //beneficiary
+        address payable buyer; //refundee
         State state;
         uint256 amount;
         uint256 timelock;
     }
-
-    // tokenId is the key to the struct within mapping
-    mapping(uint256 => Escrow) escrowById;
-
-    address payable internal eFeeRecipient;
-    uint256 fee = 3;
-
-     // timelock will be 10 days; for testing it's 1 minute
-    uint256 private constant _TIMELOCK= 1 minutes;
-    
+   
     // // modifier to check if NOW is greater than when activated timelock
     // modifier notLocked(State _st){
     //     require(timelock[_st] !=0 && timelock[_st] <= now, "Function is timelocked");
@@ -3191,19 +3474,20 @@ contract TsaishenEscrow is Ownable{
     // function cancelTimelock(State _st) public onlyOwner {
     //     timelock[_st] = 0;
     // }
-        
-    // deposit funds to be held for the beneficiary (seller)
-    function deposit(address seller, address buyer, uint256 amount, uint256 tokenId) internal {
-        require(seller != address(0), "ERR01");
-        // uint256 amount = msg.value;
-        Escrow memory escrow = Escrow(payable(seller), payable(buyer), State.Active, amount, now + _TIMELOCK);
-        escrowById[tokenId] = escrow;
 
-        emit Deposited(seller, amount);
-    }
-
-    function escrowInfo(uint256 tokenId) public view returns(address seller, address buyer, State state, uint256 amount, uint256 timelock){
-        return (escrowById[tokenId].seller, escrowById[tokenId].buyer, escrowById[tokenId].state, escrowById[tokenId].amount, escrowById[tokenId].timelock);
+    // *** GETTER ***
+    function escrowInfo(uint256 tokenId) public view returns(
+        address seller, 
+        address buyer, 
+        State state, 
+        uint256 amount, 
+        uint256 timelock){
+        return (
+            escrowById[tokenId].seller, 
+            escrowById[tokenId].buyer, 
+            escrowById[tokenId].state, 
+            escrowById[tokenId].amount, 
+            escrowById[tokenId].timelock);
     }
 
     function sellerDeposits(uint256 tokenId) public view returns (address, uint256) {  
@@ -3214,14 +3498,6 @@ contract TsaishenEscrow is Ownable{
         return (escrowById[tokenId].buyer, escrowById[tokenId].amount);   
     }
 
-    function enableRefunds(uint256 tokenId) internal onlyOwner {
-        require(now >= _TIMELOCK, "ERR05");
-        require(escrowById[tokenId].state == State.Active, "ERR20");
-        escrowById[tokenId].state = State.Refunding;
-        
-        emit RefundsEnabled();
-    }
-
     function refundAllowed(uint256 tokenId) public view returns (bool) {
        return escrowById[tokenId].state == State.Refunding;
     }
@@ -3230,56 +3506,89 @@ contract TsaishenEscrow is Ownable{
         return escrowById[tokenId].state;
     }
 
-    function confirmDelivery(uint256 tokenId) public {
-        require(msg.sender == escrowById[tokenId].buyer, "ERR11");
-        if(escrowById[tokenId].state == State.Refunding){
-            resetState(tokenId);
-        }
-        escrowById[tokenId].timelock = 0;
-        escrowById[tokenId].state = State.Closed;
-        beneficiaryWithdraw(escrowById[tokenId].seller, tokenId);
-    }
-
-    function close(uint256 tokenId) internal onlyOwner {
-        require(escrowById[tokenId].state == State.Active, "ERR20");
-        escrowById[tokenId].state = State.Closed;
-        escrowById[tokenId].timelock = 30 seconds; //give buyer 3 days to confirm
-
-        emit RefundsClosed();
-    }
-
     function withdrawalAllowed(uint256 tokenId) public view returns (bool){
         if(escrowById[tokenId].state != State.Closed) return false;
         return true;
     }
 
-    function beneficiaryWithdraw(address payable seller, uint256 tokenId) internal onlyOwner{
-        require(now >= escrowById[tokenId].timelock, "ERR05");
-        require(escrowById[tokenId].state == State.Closed, "ERR20");
-        uint256 transactionFee = escrowById[tokenId].amount.mul(fee).div(100);
-        uint256 paymentToSeller = escrowById[tokenId].amount.sub(transactionFee);
-        escrowById[tokenId].amount = 0;
-        eFeeRecipient.transfer(transactionFee);
-        escrowById[tokenId].seller.transfer(paymentToSeller);
-        escrowById[tokenId].buyer.transfer(tokenId);
-
-        emit Withdrawn(seller, paymentToSeller);
+    function confirmDelivery(uint256 tokenId) public {
+        require(msg.sender == escrowById[tokenId].buyer, "Not authorized.");
+        if(escrowById[tokenId].state == State.Refunding){
+            _resetState(tokenId);
+        }
+        escrowById[tokenId].timelock = 0;
+        escrowById[tokenId].state = State.Closed;
+        _beneficiaryWithdraw(escrowById[tokenId].seller, tokenId);
     }
 
-    function issueRefund(address payable buyer, uint256 tokenId) internal onlyOwner{
-        require(now >= escrowById[tokenId].timelock, "ERR05");
-        require(escrowById[tokenId].state == State.Refunding, "ERR20");         
-        uint256 refund = escrowById[tokenId].amount;
-        escrowById[tokenId].amount = 0;
-        escrowById[tokenId].buyer.transfer(refund);
-        escrowById[tokenId].seller.transfer(tokenId);
+    // *** INTERNAL & onlyOwner ***
+    function _deposit(IERC20 _token, address _seller, address _buyer, uint256 _amount, uint256 _tokenId) internal {
+        require(_seller != address(0), "Address can't be zero.");
 
-        emit Withdrawn(buyer, refund);
+        // transfer funds from buyer
+        _token.universalTransferFromSenderToThis(_amount);
+
+        Escrow memory _escrow = Escrow(_token, payable(_seller), payable(_buyer), State.Active, _amount, now + _TIMELOCK);
+        escrowById[_tokenId] = _escrow;
+
+        emit Deposited(_seller, _amount);
     }
 
-    function resetState(uint256 tokenId) internal {
-        escrowById[tokenId].state = State.Active;
+    function _resetState(uint256 _tokenId) internal {
+        escrowById[_tokenId].state = State.Active;
     }
+
+    function _enableRefunds(uint256 _tokenId) internal onlyOwner {
+        require(now >= _TIMELOCK, "Timelocked.");
+        require(escrowById[_tokenId].state == State.Active, "Must be active.");
+        escrowById[_tokenId].state = State.Refunding;
+        
+        emit RefundsEnabled();
+    }
+
+    function _issueRefund(address payable _buyer, uint256 _tokenId) internal onlyOwner{
+        require(now >= escrowById[_tokenId].timelock, "Timelocked.");
+        require(escrowById[_tokenId].state == State.Refunding, "Must be refunding.");         
+        
+        uint256 _refund = escrowById[_tokenId].amount;
+        escrowById[_tokenId].amount = 0;
+
+        // refund buyer
+        escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund);
+
+        // return house to seller
+        escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, _tokenId);
+
+        emit Withdrawn(_buyer, _refund);
+    }
+
+    function _close(uint256 _tokenId) internal onlyOwner {
+        require(escrowById[_tokenId].state == State.Active, "Must be active.");
+        escrowById[_tokenId].state = State.Closed;
+        escrowById[_tokenId].timelock = 30 seconds; //give buyer 3 days to confirm
+
+        emit RefundsClosed();
+    }
+
+    function _beneficiaryWithdraw(address payable _seller, uint256 _tokenId) internal onlyOwner{
+        require(now >= escrowById[_tokenId].timelock, "Timelocked.");
+        require(escrowById[_tokenId].state == State.Closed, "Must be closed.");
+
+        uint256 transactionFee = escrowById[_tokenId].amount.mul(fee).div(100);
+        uint256 paymentToSeller = escrowById[_tokenId].amount.sub(transactionFee);
+        escrowById[_tokenId].amount = 0;
+        
+        // transfer fee to producer
+        require(escrowById[_tokenId].token.universalTransfer(eFeeRecipient, transactionFee));
+
+        // transfer proceeds to seller
+        require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, paymentToSeller));
+
+        // transfer house to buyer
+        escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _tokenId);
+
+        emit Withdrawn(_seller, paymentToSeller);
+    } 
 
 }
 
@@ -3287,8 +3596,7 @@ contract TsaishenEscrow is Ownable{
 
 
 
-pragma solidity ^0.6.10;
-
+pragma solidity 0.6.10;
 
 
 
@@ -3302,9 +3610,6 @@ interface AggregatorV3Interface {
   function description() external view returns (string memory);
   function version() external view returns (uint256);
 
-  // getRoundData and latestRoundData should both raise "No data present"
-  // if they do not have data to report, instead of returning unset values
-  // which could be misinterpreted as actual reported values.
   function getRoundData(uint80 _roundId) external view returns (
       uint80 roundId,
       int256 answer,
@@ -3323,11 +3628,19 @@ interface AggregatorV3Interface {
 
 }
 
-contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
+contract Marketplace is ReentrancyGuard, TsaishenEscrow {
+
+    event MarketTransaction (string, address, uint);
+
     HouseToken private _houseToken;
     TsaishenUsers private _tsaishenUsers;
+    address payable internal feeRecipient;
+    uint256 housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
+    uint256 txFee = 2; //2% transaction fee
 
-    using SafeMath for uint256;
+    mapping (address => address) availableOracles;
+    mapping(uint256 => Offer) internal offerDetails;
+    Offer [] offers;
 
     struct Offer {
         address payable seller;
@@ -3338,63 +3651,37 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
         uint256 tokenId;
         bool active;
     }
-
-    // store offer information
-    mapping(uint256 => Offer) internal offerDetails;
-    Offer [] offers;
- 
-    // using chainlink for realtime crypto/USD conversion -- @Dev this is TESTNET rinkeby!!
-    AggregatorV3Interface internal priceFeedETH = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);
-    // AggregatorV3Interface internal priceFeedDAI = AggregatorV3Interface(0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF);
-    AggregatorV3Interface internal priceFeedUSDC = AggregatorV3Interface(0xa24de01df22b63d23Ebc1882a5E3d4ec0d907bFB);
-
-    //pull DAI & USDC addresses
-    // address daiAddress = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-    address usdcAddress = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
-
-    // IERC20 public dai;
-    IERC20 public usdc;
-
-    uint256 housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
-    uint256 txFee = 2; //2% transaction fee
     
-    address payable internal feeRecipient;
 
-    // MUST ALWAYS BE PUBLIC!
+    // *** CONSTRUCTOR ***
     constructor(
         address _userContractAddress, 
         address _houseTokenAddress, 
-        address payable _feeRecipient, 
-        // IERC20 _dai, 
-        IERC20 _usdc) public {
+        address payable _feeRecipient
+        ) public {
         _tsaishenUsers = TsaishenUsers(_userContractAddress);
         _houseToken = HouseToken(_houseTokenAddress);
         feeRecipient = _feeRecipient;
-        // dai = _dai;
-        usdc = _usdc;
+        addOracle(address(0), 0x8A753747A1Fa494EC906cE90E9f37563A8AF630e); //ETH
+        addOracle(0x6B175474E89094C44Da98b954EedeAC495271d0F, 0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF); //DAI
+        addOracle(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 0xa24de01df22b63d23Ebc1882a5E3d4ec0d907bFB); //USDC
     }
 
-    event MarketTransaction (string, address, uint);
+    // *** GETTER ***
+    function getOracleUsdPrice(address token) public view returns(int256, uint256){
+        // oracle instance
+        address oracleAddress = availableOracles[token];
+        require(oracleAddress != address(0), "Token not supported.");
 
-    // @notice get latest ETH/USD price from Chainlink
-    function getEthPrice() public pure returns (int256, uint256) {
-        // (, int256 answer, , uint256 updatedAt, ) = priceFeedETH.latestRoundData();
-        // return (answer, updatedAt);
-        return (10000000000, 1607202219); //this is for local testing DO NOT USE for other networks
-    }
-
-    // // @notice get latest DAI/USD price from Chainlink
-    // function getDaiPrice() public view returns (int256, uint256) {
-    //     (, int256 answer, , uint256 updatedAt, ) = priceFeedDAI.latestRoundData();
-    //     return (answer, updatedAt);
-    // }
-
-    // @notice get latest USDC/USD price from Chainlink
-    function getUsdcPrice() public view returns (int256, uint256) {
-        (, int256 answer, , uint256 updatedAt, ) = priceFeedUSDC.latestRoundData();
-        return (answer, updatedAt);
-    }
+        // get the latest price
+        (, int256 answer, , uint256 updatedAt, ) = AggregatorV3Interface(oracleAddress).latestRoundData();
         
+        
+        return (answer, updatedAt);
+        //for local testing ONLY
+        // return (10000000000, 1607202219); 
+    }
+
     function getOffer(uint256 _tokenId) public view returns 
         (address seller, 
         uint256 price, 
@@ -3435,249 +3722,148 @@ contract Marketplace is Ownable, ReentrancyGuard, TsaishenEscrow {
         }
     }
 
-    //internal function to verify that particular address owns particular tokenID
-    function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool) {
-        return (_houseToken.ownerOf(_tokenId) == _address);
+    // *** SETTER ***
+    function addOracle(address token, address oracle) public onlyOwner{
+        availableOracles[token] = oracle;
     }
 
-    function sellHouse(uint256 _price, uint256 _tokenId) public nonReentrant {
-        require(_ownsHouse(msg.sender, _tokenId), "ERR11");
-        require(offerDetails[_tokenId].active == false, "ERR20");
+    function removeOracle(address token) public onlyOwner{
+        delete availableOracles[token];
+    }
+
+    function sellHouse(uint256 price, uint256 tokenId) public nonReentrant {
+        require(_ownsHouse(msg.sender, tokenId), "Not authorized.");
+        require(offerDetails[tokenId].active == false, "Already active.");
         // comment this out for local testing
-        require(_houseToken.isApprovedForAll(msg.sender, address(this)), "ERR10");
+        require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Not approved.");
 
         // get income amount from houseToken
-        ( , uint256 _income, ) = _houseToken.getHouse(_tokenId);
+        ( , uint256 income, ) = _houseToken.getHouse(tokenId);
 
         //create offer by inserting items into the array
         Offer memory _offer = Offer({
             seller: msg.sender,
-            price: _price,
-            income: _income,
+            price: price,
+            income: income,
             loan: 0,
             active: true,
-            tokenId: _tokenId,
+            tokenId: tokenId,
             index: offers.length
         });
 
-        offerDetails[_tokenId] = _offer; //add offer to the mapping
+        offerDetails[tokenId] = _offer; //add offer to the mapping
         offers.push(_offer); //add to the offers array
 
-        emit MarketTransaction("House listed", msg.sender, _tokenId);
+        emit MarketTransaction("House listed", msg.sender, tokenId);
     }
 
-    function removeOffer(uint256 _tokenId) public {
-        Offer storage offer = offerDetails[_tokenId]; //first access the offer
-        require(offer.seller == msg.sender, "ERR11"); //ensure owner only can do this
+    function removeOffer(uint256 tokenId) public {
+        Offer storage offer = offerDetails[tokenId]; //first access the offer
+        require(offer.seller == msg.sender, "Not authorized."); //ensure owner only can do this
    
         delete offers[offer.index]; //first delete the index within the array
-        delete offerDetails[_tokenId]; //then remove the id from the mapping
+        delete offerDetails[tokenId]; //then remove the id from the mapping
 
-        emit MarketTransaction("Offer removed", msg.sender, _tokenId);
+        emit MarketTransaction("Offer removed", msg.sender, tokenId);
     }
 
-    function buyHouseWithETH (uint256 _tokenId) public payable nonReentrant{
-        Offer storage offer = offerDetails[_tokenId];      
-        require(offer.active == true, "ERR20");
+    function buyHouse (IERC20 token, uint256 tokenId) public nonReentrant{
+        // access offer
+        Offer storage offer = offerDetails[tokenId];  
 
-        // get ETHUSD conversion
-        (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
+        // make sure it's active 
+        require(offer.active == true, "Must be active.");
 
-        // convert USD house price to ETH
-        uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
+        // get price conversion
+        (int256 currentPrice, uint256 updatedAt) = (getOracleUsdPrice(address (token)));
 
-        // make transaction fee house specific
-        uint256 houseTransactionFee = housePriceInETH.mul(txFee).div(100);
+        // convert USD house price to crypto
+        uint256 cryptoHousePrice = offer.price.mul(housePrice).mul(1 ether).div(uint(currentPrice));
 
-        // convert offer price from USD to ETH and ensure enough funds are sent by buyer
-        require(msg.value > housePriceInETH, "ERR21");
+        //ensure oracle price data is recent
+        require(updatedAt >= now - 1 hours, "Data too old.");
 
-        //price data should be fresher than 1 hour
-        require(updatedAt >= now - 1 hours, "ERR22");
+        // calculate transaction fee
+        uint256 houseTransactionFee = cryptoHousePrice.mul(txFee).div(100);
 
-        // transfer fee to feeRecipient
-        feeRecipient.transfer(houseTransactionFee);
+        // transfer funds from buyer
+        token.universalTransferFromSenderToThis(cryptoHousePrice);
 
-        // transfer proceeds to seller - txFee
-         offer.seller.transfer(housePriceInETH.sub(houseTransactionFee));
+        // pay the fee collector
+        require(token.universalTransfer(feeRecipient, houseTransactionFee));
 
-        //finalize by transfering token ownership
-        _houseToken.safeTransferFrom(offer.seller, msg.sender, _tokenId);
+        // pay the seller
+        require(token.universalTransfer(offer.seller, cryptoHousePrice.sub(houseTransactionFee)));
+        
+        // transfer house to buyer
+        _houseToken.safeTransferFrom(offer.seller, msg.sender, tokenId);
 
-        // set the id to inactive
+        // make offer inactive and take off market
         offers[offer.index].active = false;
 
-        // remove from mapping BEFORE transfer takes place to ensure there is no double sale
-        delete offerDetails[_tokenId];
+        // remove from mapping to prevent double sale
+        delete offerDetails[tokenId];
 
-        // refund user if sent more than the price
-        if (msg.value > housePriceInETH){
-            msg.sender.transfer(msg.value - housePriceInETH);
-        }
-
-        // add/update user info
+        // handle user ledger
         _tsaishenUsers.addUser(msg.sender);
-        _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
-        _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
+        _tsaishenUsers.addHouseToUser(msg.sender, tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
 
-        emit MarketTransaction("House purchased", msg.sender, _tokenId);
+        emit MarketTransaction("House purchased", msg.sender, tokenId);
     }
+ 
+    function buyHouseWithEscrow (IERC20 token, uint256 tokenId) public nonReentrant{
+        Offer storage offer = offerDetails[tokenId];      
+        require(offer.active == true, "House not for sale."); 
 
-    // function to allow users to purchase with DAI
-    // function buyWithDAI (uint256 _tokenId) public payable nonReentrant{
-    //     Offer storage offer = offerDetails[_tokenId];      
-    //     require(offer.active == true, "ERR20");
-
-    //     (int256 currentDaiPrice, uint256 daiUpdatedAt) = (getDaiPrice());
-    //     uint256 housePriceInDAI = offer.price.mul(housePrice).mul(1 ether).div(uint(currentDaiPrice));
-
-    //     require(daiUpdatedAt >= now - 1 hours, "ERR22");
-    //     require(dai.approve(address(this), housePriceInDAI), "ERR10");
-    //     require(dai.transferFrom(msg.sender, address(this), housePriceInDAI), "ERR21");
-        
-    //     dai.transferFrom(msg.sender, address(this), housePriceInDAI);
-    //     uint256 houseTransactionFee = housePriceInDAI.mul(txFee).div(100);
-
-    //     feeRecipient.transfer(houseTransactionFee);
-    //     offer.seller.transfer(housePriceInDAI.sub(houseTransactionFee));
-
-    //     _houseToken.safeTransferFrom(offer.seller, msg.sender, _tokenId);
-    //     offers[offer.index].active = false;
-    //     delete offerDetails[_tokenId];
-
-    //     _tsaishenUsers.addUser(msg.sender);
-    //     _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
-    //     _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
-
-    //     emit MarketTransaction("House purchased", msg.sender, _tokenId);
-    // }
-
-    function buyWithUSDC (uint256 _tokenId) public payable nonReentrant{
-        Offer storage offer = offerDetails[_tokenId];      
-        require(offer.active == true, "ERR20");
-
-        (int256 currentUsdcPrice, uint256 usdcUpdatedAt) = (getUsdcPrice());
-        uint256 housePriceInUSDC = offer.price.mul(housePrice).mul(1 ether).div(uint(currentUsdcPrice));
-
-        require(usdcUpdatedAt >= now - 1 hours, "ERR22");
-        require(usdc.approve(address(this), housePriceInUSDC), "ERR10");
-        require(usdc.transferFrom(msg.sender, address(this), housePriceInUSDC), "ERR21");
-        
-        usdc.transferFrom(msg.sender, address(this), housePriceInUSDC);
-        uint256 houseTransactionFee = housePriceInUSDC.mul(txFee).div(100);
-
-        feeRecipient.transfer(houseTransactionFee);
-        offer.seller.transfer(housePriceInUSDC.sub(houseTransactionFee));
-
-        _houseToken.safeTransferFrom(offer.seller, msg.sender, _tokenId);
-        offers[offer.index].active = false;
-        delete offerDetails[_tokenId];
-
-        _tsaishenUsers.addUser(msg.sender);
-        _tsaishenUsers.addHouseToUser(msg.sender, _tokenId);
-        _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
-
-        emit MarketTransaction("House purchased", msg.sender, _tokenId);
-    }
-
-    function buyHouseWithEscrowEth (uint256 _tokenId) public payable nonReentrant{
-        Offer storage offer = offerDetails[_tokenId];      
-        require(offer.active == true, "ERR20"); 
-
-        (int256 currentEthPrice, uint256 updatedAt) = (getEthPrice());
-        uint256 housePriceInETH = offer.price.mul(housePrice).mul(1 ether).div(uint(currentEthPrice));
-        
-        require(msg.value > housePriceInETH, "ERR21");
-        require(updatedAt >= now - 1 hours, "ERR22");
+        (int256 currentPrice, uint256 updatedAt) = (getOracleUsdPrice(address (token)));
+        uint256 cryptoHousePrice = offer.price.mul(housePrice).mul(1 ether).div(uint(currentPrice));
+        require(updatedAt >= now - 1 hours, "Data too old.");
 
         //transfer funds into escrow
-        deposit(offer.seller, msg.sender, housePriceInETH, _tokenId);
+        _deposit(token, offer.seller, msg.sender, cryptoHousePrice, tokenId);
 
         offers[offer.index].active = false;
 
         // add/update user
         _tsaishenUsers.addUser(msg.sender);
 
-        // refund user if sent more than the price
-        if (msg.value > housePriceInETH){
-            msg.sender.transfer(msg.value.sub(housePriceInETH));
-        }
-
-        emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
+        emit MarketTransaction("House in Escrow", msg.sender, tokenId);
     }
 
-    // function escrowBuyDai (uint256 _tokenId) public payable nonReentrant{
-    //     Offer storage offer = offerDetails[_tokenId];      
-    //     require(offer.active == true, "ERR20"); 
-
-    //     (int256 currentDaiPrice, uint256 daiUpdatedAt) = (getDaiPrice());
-    //     uint256 housePriceInDAI = offer.price.mul(housePrice).mul(1 ether).div(uint(currentDaiPrice));
-
-    //     require(daiUpdatedAt >= now - 1 hours, "ERR22");
-    //     require(dai.approve(address(this), housePriceInDAI), "ERR10");
-    //     require(dai.transferFrom(msg.sender, address(this), housePriceInDAI), "ERR21");
-
-    //     //transfer funds into escrow
-    //     deposit(offer.seller, msg.sender, housePriceInDAI, _tokenId);
-
-    //     offers[offer.index].active = false;
-
-    //     // add/update user
-    //     _tsaishenUsers.addUser(msg.sender);
-
-    //     emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
-    // }
-
-    function escrowBuyUsdc (uint256 _tokenId) public payable nonReentrant{
-        Offer storage offer = offerDetails[_tokenId];      
-        require(offer.active == true, "ERR20"); 
-
-        (int256 currentUsdcPrice, uint256 usdcUpdatedAt) = (getUsdcPrice());
-        uint256 housePriceInUSDC = offer.price.mul(housePrice).mul(1 ether).div(uint(currentUsdcPrice));
-
-        require(usdcUpdatedAt >= now - 1 hours, "ERR22");
-        require(usdc.approve(address(this), housePriceInUSDC), "ERR10");
-        require(usdc.transferFrom(msg.sender, address(this), housePriceInUSDC), "ERR21");
-
-        //transfer funds into escrow
-        deposit(offer.seller, msg.sender, housePriceInUSDC, _tokenId);
-
-        offers[offer.index].active = false;
-
-        // add/update user
-        _tsaishenUsers.addUser(msg.sender);
-
-        emit MarketTransaction("House in Escrow", msg.sender, _tokenId);
-    }
-
-    function permitRefunds(uint256 _tokenId) public onlyOwner {
-        Offer storage offer = offerDetails[_tokenId];
-        enableRefunds(_tokenId);
-        issueRefund(escrowById[_tokenId].buyer, _tokenId);
+    function permitRefunds(uint256 tokenId) public onlyOwner {
+        Offer storage offer = offerDetails[tokenId];
+        _enableRefunds(tokenId);
+        _issueRefund(escrowById[tokenId].buyer, tokenId);
 
         offers[offer.index].active = true;
 
-        emit MarketTransaction("Escrow Refunded", escrowById[_tokenId].buyer, _tokenId);
+        emit MarketTransaction("Escrow Refunded", escrowById[tokenId].buyer, tokenId);
     }
 
-    // Time has run out or buyer uploads deed to IPFS execute
-    function closeEscrow(uint256 _tokenId) public onlyOwner {
-        Offer storage offer = offerDetails[_tokenId];
-        require(escrowById[_tokenId].amount > 0, "ERR20");
+    function closeEscrow(uint256 tokenId) public onlyOwner {
+        Offer storage offer = offerDetails[tokenId];
+        require(escrowById[tokenId].amount > 0, "Insufficient escrow funds.");
         
-        resetState(_tokenId);
-        close(_tokenId);
+        _resetState(tokenId);
+        _close(tokenId);
         
-        beneficiaryWithdraw(offer.seller, _tokenId);
+        _beneficiaryWithdraw(offer.seller, tokenId);
 
         //remove token from the mapping
-        delete offerDetails[_tokenId];    
+        delete offerDetails[tokenId];    
 
         // finalize transaction with users
-        _tsaishenUsers.addHouseToUser(escrowById[_tokenId].buyer, _tokenId);
-        _tsaishenUsers.deleteHouseFromUser(offer.seller, _tokenId);
+        _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
 
-        emit MarketTransaction("House SOLD", offer.seller, _tokenId);
+        emit MarketTransaction("Escrow closed. House SOLD.", offer.seller, tokenId);
     }
+
+    //*** INTERNAL ***
+    function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool) {
+        return (_houseToken.ownerOf(_tokenId) == _address);
+    }
+
 
 }
