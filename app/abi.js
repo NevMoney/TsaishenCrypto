@@ -107,81 +107,6 @@ var abi = {
         "inputs": [
           {
             "internalType": "address",
-            "name": "_marketplace",
-            "type": "address"
-          }
-        ],
-        "name": "setMarketplaceAddress",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_houseToken",
-            "type": "address"
-          }
-        ],
-        "name": "setHouseTokenAddress",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "newUser",
-            "type": "address"
-          }
-        ],
-        "name": "addUser",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "user",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "houseId",
-            "type": "uint256"
-          }
-        ],
-        "name": "addHouseToUser",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "user",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "houseId",
-            "type": "uint256"
-          }
-        ],
-        "name": "deleteHouseFromUser",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
             "name": "userToSearch",
             "type": "address"
           }
@@ -195,19 +120,6 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "userToDelete",
-            "type": "address"
-          }
-        ],
-        "name": "deleteUser",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -350,6 +262,94 @@ var abi = {
         ],
         "stateMutability": "view",
         "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_marketplace",
+            "type": "address"
+          }
+        ],
+        "name": "setMarketplaceAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_houseToken",
+            "type": "address"
+          }
+        ],
+        "name": "setHouseTokenAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "newUser",
+            "type": "address"
+          }
+        ],
+        "name": "addUser",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "houseId",
+            "type": "uint256"
+          }
+        ],
+        "name": "addHouseToUser",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "houseId",
+            "type": "uint256"
+          }
+        ],
+        "name": "deleteHouseFromUser",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "userToDelete",
+            "type": "address"
+          }
+        ],
+        "name": "deleteUser",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       }
     ],
 
@@ -438,7 +438,7 @@ var abi = {
           {
             "indexed": false,
             "internalType": "string",
-            "name": "tokenURI",
+            "name": "uri",
             "type": "string"
           }
         ],
@@ -1261,6 +1261,11 @@ var abi = {
             "internalType": "uint256",
             "name": "income",
             "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "ipfsHash",
+            "type": "string"
           }
         ],
         "name": "createHouse",
@@ -1278,7 +1283,7 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "_id",
+            "name": "id",
             "type": "uint256"
           }
         ],
@@ -1304,13 +1309,6 @@ var abi = {
         "type": "function"
       },
       {
-        "inputs": [],
-        "name": "withdrawAll",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
         "inputs": [
           {
             "internalType": "address",
@@ -1327,6 +1325,13 @@ var abi = {
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "withdrawAll",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       }
     ],
@@ -1664,37 +1669,6 @@ var abi = {
       {
         "inputs": [
           {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "oracle",
-            "type": "address"
-          }
-        ],
-        "name": "addOracle",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          }
-        ],
-        "name": "removeOracle",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
             "internalType": "uint256",
             "name": "_tokenId",
             "type": "uint256"
@@ -1757,13 +1731,44 @@ var abi = {
       {
         "inputs": [
           {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "oracle",
+            "type": "address"
+          }
+        ],
+        "name": "addOracle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          }
+        ],
+        "name": "removeOracle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "uint256",
-            "name": "_price",
+            "name": "price",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1776,7 +1781,7 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1794,7 +1799,7 @@ var abi = {
           },
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1812,7 +1817,7 @@ var abi = {
           },
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1825,7 +1830,7 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1838,7 +1843,7 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],

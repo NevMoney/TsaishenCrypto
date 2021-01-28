@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x7ADAe44A10B88C545474ed3Acb05f44499606CF3";
-var houseTokenAddress = "0xF50cf73C396306EA041458A1Ab837DCBA3a1dc45";
-var marketplaceAddress = "0xFD56020874395D7e94b184155C137318b4BE0308";
+var tsaishenUsersAddress = "0x28686d1CFAcCeb7D7cAe7a4D726Ee3818E70Ba6a";
+var houseTokenAddress = "0xB97689A7B7D3875e4d0e1E888793E8FDfeff517E";
+var marketplaceAddress = "0x79886ec9a1B42851803414723a93561B0fcCCb86";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
 const ethereumButton = document.querySelector('.enableEthereumButton');
@@ -113,7 +113,7 @@ async function uploadHouse(value, income) {
     try {
       const receipt =
         await houseTokenInstance.methods
-          .createHouse(value, income, ifpsHash)
+          .createHouse(value, income, ipfsFileHash)
           .send({ value: amount });
       console.log("uploadHouse: ", receipt.txHash);
     }
