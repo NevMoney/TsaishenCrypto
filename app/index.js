@@ -97,11 +97,6 @@ $(document).ready(async () => {
   
 });
 
-async function setContractsForUsers() {
-  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress);
-  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress);
-}
-
 var value = $("#marketValue").val();
 var income = $("#currentIncome").val();
  
@@ -114,7 +109,7 @@ async function uploadHouse(value, income) {
       const receipt =
         await houseTokenInstance.methods
           .createHouse(value, income, ipfsFileHash)
-          .send({ value: amount });
+          .send({ from: user, value: amount });
       console.log("uploadHouse: ", receipt.txHash);
     }
     catch (err) {
@@ -139,10 +134,8 @@ async function getUserHomes() {
 }
 
 async function checkOffer(id) {
-  let x;
-
   try {
-    x = await marketplaceInstance.methods.getOffer(id).call();
+    let x = await marketplaceInstance.methods.getOffer(id).call();
     var price = x.price;
     var seller = x.seller;
     var onSale = x.active;
@@ -189,8 +182,10 @@ async function sellHouse(id) {
   const isApproved = await houseTokenInstance.methods.isApprovedForAll(user, marketplaceAddress).call();
   try {
     if (!isApproved) {
-      await houseTokenInstance.methods.setApprovalForAll(marketplaceAddress, true).send().on("receipt", function (receipt) {
-        console.log("operator approval: ", receipt);
+      await houseTokenInstance.methods
+        .setApprovalForAll(marketplaceAddress, true)
+        .send().on("receipt", function (receipt) {
+      console.log("operator approval: ", receipt);
       });
     }
     await marketplaceInstance.methods.setOffer(amount, id).send();
@@ -210,7 +205,9 @@ async function buyHome (id, price) {
   await checkOffer(id);
   var amount = web3.utils.toWei(price, "ether");
   var buy = await marketplaceInstance.methods.buyHouse(id).send({ value: amount });
-  var escrowBuy = await marketplaceInstance.methods.buyHouseWithEscrow(id).send({ value: amount });
+  var escrowBuy = await marketplaceInstance.methods
+    .buyHouseWithEscrow(id)
+    .send({ value: amount });
 
   try {
     if ($("#buyBtn").on("click", function () {

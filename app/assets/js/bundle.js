@@ -130,9 +130,10 @@
         certification: validateCheckbox(), //this is NOT working
       });
     
-      insert = await ipfs.add(propertyData);
+      const insert = await ipfs.add(propertyData);
     
       ipfsFileHash = insert.cid.toString();
+      console.log(ipfsFileHash);
     
       const ipfsLink =
         "<a target='_blank' rel='noopener noreferrer' href='https://gateway.ipfs.io/ipfs/" +
@@ -200,9 +201,9 @@
     });
     
     
-    $("#upload").click(() => {
-      console.log("data hash: " + ipfsFileHash);
-      addFileToIpfs();
+      $("#upload").click(() => {
+        addFileToIpfs();
+        console.log("data hash: " + ipfsFileHash);
     });
     
     $("#deedUpload").click(() => addDeedToIpfs());

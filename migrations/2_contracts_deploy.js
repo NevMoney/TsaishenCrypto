@@ -54,7 +54,6 @@ module.exports = async function (deployer, network, accounts) {
     const isUser = await tsaishenUsersInstance.isUser(accounts[2]);
     console.log("is user 2 should be TRUE", isUser);
 
-    // test FAILED
     const ownsHouse2 = await houseTokenInstance.ownsHouse(accounts[5]);
     console.log("ownsHouse Should be false:", ownsHouse2);
     const isUser2 = await tsaishenUsersInstance.isUser(accounts[5]);
