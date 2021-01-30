@@ -152,9 +152,15 @@
       try {
         const receipt =
           await houseTokenInstance.methods
-            .createHouse(value, income, ipfsFileHash)
+            .createHouse(value, income)
             .send({ from: user, value: amount });
         console.log("uploadHouse: ", receipt.txHash);
+
+        const receiptUri =
+          await houseTokenInstance.methods
+            .setHouseURI(id, ipfsFileHash)
+            .send();
+        console.log("houseURI: ", ipfsFileHash, "houseUriFunctionHash: ", receiptUri.txHash);
       }
       catch (err) {
         console.log(err)

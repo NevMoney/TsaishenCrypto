@@ -38,15 +38,17 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     }
 
     // *** SETTER ***
-    function createHouse (uint256 value, uint256 income, string memory ipfsHash) public payable costs (1 ether) returns (uint256) {
+    function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
         // require identification of the user KYC/AML before execution
         balance.add(msg.value);
 
         houseCounter++;
 
-        _setTokenURI(_tokenIdTracker.current(), ipfsHash);
-
         return _createHouse(value, income, msg.sender);
+    }
+
+    function setHouseURI(uint256 tokenId, string memory ipfsHash) public returns (string memory) {
+        return _setHouseURI(tokenId, ipfsHash);
     }
 
     // *** GETTER ***
@@ -84,15 +86,18 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         _mint(_owner, _tokenIdTracker.current());
         _tokenIdTracker.increment();
 
-        // _setTokenURI(_tokenIdTracker.current(), ipfsHash);
-
-        emit Minted(_owner, _tokenIdTracker.current(), tokenURI(_tokenIdTracker.current()));
+        emit Minted(_owner, _tokenIdTracker.current(), "");
         
         // add user if new
         _tsaishenUsers.addUser(msg.sender);
         _tsaishenUsers.addHouseToUser(msg.sender, _tokenIdTracker.current());
 
         return _tokenIdTracker.current();
+    }
+
+    function _setHouseURI(uint256 _tokenId, string memory _ifpsHash) private returns (string memory) {
+        _setTokenURI(_tokenId, _ifpsHash);
+        return _ifpsHash;
     }
 
     // !!!*** NOT WORKING ***!!!

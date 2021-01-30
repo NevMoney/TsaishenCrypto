@@ -2,7 +2,6 @@
 const TsaishenUsers = artifacts.require("TsaishenUsers");
 const HouseToken = artifacts.require("HouseToken");
 const Marketplace = artifacts.require("Marketplace");
-const TsaishenEscrow = artifacts.require("TsaishenEscrow");
 
 module.exports = async function (deployer, network, accounts) {
     console.log("network used", network);
@@ -23,13 +22,10 @@ module.exports = async function (deployer, network, accounts) {
     // Basic Tests
     const tsaishenUsersInstance = await TsaishenUsers.deployed();
     const houseTokenInstance = await HouseToken.deployed();
-    const tsaishenEscrowInstance = await TsaishenEscrow.deployed();
     const marketplaceInstance = await Marketplace.deployed();
 
     await tsaishenUsersInstance.setMarketplaceAddress(marketplaceInstance.address);
     await tsaishenUsersInstance.setHouseTokenAddress(HouseToken.address);
-    await tsaishenEscrowInstance.setMarketplaceAddress(marketplaceInstance.address);
-    await tsaishenEscrowInstance.setBuyerAddress(accounts[3]);
 
     console.log("creating house");
     
@@ -38,7 +34,10 @@ module.exports = async function (deployer, network, accounts) {
     // await houseTokenInstance.methods.createHouse(1000, 10).send(1 ether);
     // in truffle you don't have to doo all that, but can/should specify from which account
     
-    await houseTokenInstance.createHouse(1000, 10, {from: accounts[2], value:web3.utils.toWei("1")});
+    await houseTokenInstance.createHouse(1000, 10, { from: accounts[2], value: web3.utils.toWei("1") });
+    
+    console.log("setting house URI...")
+    await houseTokenInstance.setHouseURI(0, "QmUjTPXvPCVvYR9DfSvrpdqm4BFMSXTv1anJAdf4j8KxzV");
 
     // this is one way to access info, but the latter is better because we're accessing object
     // const houseInfo = await houseTokenInstance.getHouse(0);
@@ -77,6 +76,8 @@ module.exports = async function (deployer, network, accounts) {
     const getAllUsers = await tsaishenUsersInstance.getAllUsers();
     console.log("all users:", getAllUsers);
 
+    return;
+
     // testing Escrow - PASSED
     const deposit = await tsaishenEscrowInstance.deposit(accounts[2], accounts[3], {from: accounts[3], value:web3.utils.toWei("10")});
     const sellerDeposits = await tsaishenEscrowInstance.sellerDeposits(accounts[2]);
@@ -97,8 +98,6 @@ module.exports = async function (deployer, network, accounts) {
     // refund FAILED
     // const issueRefund = await tsaishenEscrowInstance.issueRefund(accounts[3]);
     // console.log("buyer deposit", Number(buyerDeposits));
-
-    return;
 
     // could NOT test these errored out
     const sellHouse = await marketplaceInstance.sellHouse(10, 0, {from: accounts[2]});
