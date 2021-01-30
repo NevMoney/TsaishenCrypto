@@ -2,9 +2,10 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x28686d1CFAcCeb7D7cAe7a4D726Ee3818E70Ba6a";
-var houseTokenAddress = "0xB97689A7B7D3875e4d0e1E888793E8FDfeff517E";
-var marketplaceAddress = "0x79886ec9a1B42851803414723a93561B0fcCCb86";
+var tsaishenUsersAddress = "0xBAd880EFb516aC588eDAe754f55e92326c920387";
+var houseTokenAddress = "0xFe52355309912D3A8fc37942aA17F4E7464f2d18";
+var marketplaceAddress = "0xfEAe130d6454fa765e6a28bDc1946F40C49BF0E1";
+const contractOwnerAddress = "0xde4b630a136637A8Db7ac40b814B5FF5DDDdeA07";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
 const ethereumButton = document.querySelector('.enableEthereumButton');
@@ -100,22 +101,22 @@ $(document).ready(async () => {
 var value = $("#marketValue").val();
 var income = $("#currentIncome").val();
  
-async function uploadHouse(value, income) {
-  var amount = web3.utils.toWei("1", "ether");
+// async function uploadHouse(value, income) {
+//   var amount = web3.utils.toWei("1", "ether");
 
-  console.log(amount);
+//   console.log(amount);
 
-    try {
-      const receipt =
-        await houseTokenInstance.methods
-          .createHouse(value, income, ipfsFileHash)
-          .send({ from: user, value: amount });
-      console.log("uploadHouse: ", receipt.txHash);
-    }
-    catch (err) {
-      console.log(err)
-    }
-}
+//     try {
+//       const receipt =
+//         await houseTokenInstance.methods
+//           .createHouse(value, income, ipfsFileHash)
+//           .send({ from: user, value: amount });
+//       console.log("uploadHouse: ", receipt.txHash);
+//     }
+//     catch (err) {
+//       console.log(err)
+//     }
+// }
 
 async function getUserHomes() {
   var arrayId;

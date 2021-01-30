@@ -80,11 +80,13 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         //places house in mapping and assigns ID
         houseInfo[_tokenIdTracker.current()] = _house;
 
-        emit Minted(_owner, _tokenIdTracker.current(), tokenURI(_tokenIdTracker.current()));
-
         //mint new token, transfer to the owner with the house ID
         _mint(_owner, _tokenIdTracker.current());
         _tokenIdTracker.increment();
+
+        // _setTokenURI(_tokenIdTracker.current(), ipfsHash);
+
+        emit Minted(_owner, _tokenIdTracker.current(), tokenURI(_tokenIdTracker.current()));
         
         // add user if new
         _tsaishenUsers.addUser(msg.sender);

@@ -47,7 +47,9 @@
       };
     }
     
-    const addFileToIpfs = async () => {
+    $("#upload").click(( async() => {
+  
+    const addFileToIpfs = await
       console.log("adding to IPFS...");
       $("#upload").html("Uploading");
     
@@ -64,7 +66,7 @@
         description: $("#description").val(),
         image: 'https://gateway.ipfs.io/ipfs/' + ipfsHash,
         // will likely need to tweak this once I figure out the actual URL, but for now
-        external_url: "https://tsaishen.crypto/marketplace/ipfsFileHash/tokenId",
+        external_url: "https://tsaishen.crypto/marketplace/ipfsFileHash",
         attributes: [
           {
             key: "address",
@@ -133,7 +135,6 @@
       const insert = await ipfs.add(propertyData);
     
       ipfsFileHash = insert.cid.toString();
-      console.log(ipfsFileHash);
     
       const ipfsLink =
         "<a target='_blank' rel='noopener noreferrer' href='https://gateway.ipfs.io/ipfs/" +
@@ -142,7 +143,24 @@
         ipfsFileHash +
         "</a>";
       $("#ipfsResult").html(ipfsLink);
-    };
+
+      console.log("data hash: " + ipfsFileHash);
+
+      var amount = web3.utils.toWei("1", "ether");
+      console.log(amount);
+      
+      try {
+        const receipt =
+          await houseTokenInstance.methods
+            .createHouse(value, income, ipfsFileHash)
+            .send({ from: user, value: amount });
+        console.log("uploadHouse: ", receipt.txHash);
+      }
+      catch (err) {
+        console.log(err)
+      } 
+      
+    }));
     
     const addDeedToIpfs = async () => {
       $("#deedUpload").html("Uploading");
@@ -201,10 +219,10 @@
     });
     
     
-      $("#upload").click(() => {
-        addFileToIpfs();
-        console.log("data hash: " + ipfsFileHash);
-    });
+    //   $("#upload").click(() => {
+    //     addFileToIpfs();
+    //     console.log("data hash: " + ipfsFileHash);
+    // });
     
     $("#deedUpload").click(() => addDeedToIpfs());
     
