@@ -59,12 +59,12 @@ $(document).ready(async () => {
 
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
-    let owner = event.returnValues.owner;
-    let houseId = event.returnValues.tokenId;
-    let houseUri = event.returnValues.houseTokenURI;
+    let owner = event.returnValues._owner; //this works
+    let houseId = event.Transfer.returnValues.tokenId; //not working
+    let houseUri = event.returnValues.uri; //this works
     $("#houseUploadedMsg").css("display", "block");
-    $("#houseUploadedMsg").text("Congrats! You have just uploaded your house onto the blockchain. Owner: "
-      + owner + ", houseId: " + houseId + ", house on blockchain url: " + houseUri)
+    $("#houseUploadedMsg").text("Congrats! You have just uploaded a real property onto the blockchain. Registered owner address is "
+      + owner + ", house token ID is " + houseId + ", and the raw data about the house can be found here: " + houseUri);
   })
     .on("error", console.error);
   
@@ -97,26 +97,6 @@ $(document).ready(async () => {
   });
   
 });
-
-var value = $("#marketValue").val();
-var income = $("#currentIncome").val();
- 
-// async function uploadHouse(value, income) {
-//   var amount = web3.utils.toWei("1", "ether");
-
-//   console.log(amount);
-
-//     try {
-//       const receipt =
-//         await houseTokenInstance.methods
-//           .createHouse(value, income, ipfsFileHash)
-//           .send({ from: user, value: amount });
-//       console.log("uploadHouse: ", receipt.txHash);
-//     }
-//     catch (err) {
-//       console.log(err)
-//     }
-// }
 
 async function getUserHomes() {
   var arrayId;

@@ -11,10 +11,13 @@
     let ipfsHash;
     let ipfsFileHash;
     let ipfsDeed;
+      
+    var value = $("#marketValue").val();
+    var income = $("#currentIncome").val();
     
     function hashFile(file) {
       console.log(file);
-      console.log(file.name);
+      //console.log(file.name);
       $("#fileUpload").hide(file.name);
       $("#fileName").show();
       $("#fileName>h5").html(`File Name: ${file.name}`);
@@ -23,9 +26,9 @@
       reader.readAsArrayBuffer(file);
       reader.onloadend = () => {
         buffer = Buffer(reader.result);
-        console.log(buffer);
+        //console.log(buffer);
         const hash = window.web3.utils.sha3(buffer);
-        console.log("hash", hash);
+        //console.log("hash", hash);
       };
     }
     
@@ -154,13 +157,16 @@
           await houseTokenInstance.methods
             .createHouse(value, income)
             .send({ from: user, value: amount });
-        console.log("uploadHouse: ", receipt.txHash);
+        console.log("uploadHouse: ", receipt);
+        console.log("uploadHouse: ", receipt.events.Transfer.returnValues.tokenId);
+
+        // let houseId = receipt.events.Transfer.returnValues.tokenId;
 
         const receiptUri =
           await houseTokenInstance.methods
-            .setHouseURI(id, ipfsFileHash)
+            .setHouseURI(houseId, ipfsFileHash)
             .send();
-        console.log("houseURI: ", ipfsFileHash, "houseUriFunctionHash: ", receiptUri.txHash);
+        console.log("houseURI: ", ipfsFileHash, "houseUriFunctionHash: ", receiptUri, "house ID: ", houseId);
       }
       catch (err) {
         console.log(err)
@@ -215,7 +221,7 @@
     };
     
     $("#file").change((e) => {
-      console.log(e.target.files[0]);
+      //console.log(e.target.files[0]);
       hashFile(e.target.files[0]);
     });
     
