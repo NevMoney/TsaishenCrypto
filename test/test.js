@@ -1,7 +1,6 @@
 const TsaishenUsers = artifacts.require("TsaishenUsers");
 const HouseToken = artifacts.require("HouseToken");
 const Marketplace = artifacts.require("Marketplace");
-const TsaishenToken = artifacts.require("TsaishenToken");
 const truffleAssert = require('truffle-assertions');
 
 var acceptableAmount = web3.utils.toWei('1', 'ether');
@@ -64,7 +63,7 @@ async function checkHouseOffer(marketplaceInstance, tokenID, _user) {
 
 async function approveMarketPlace(marketplaceInstance, tsaishenTokenInstance,tokenID, _user) {
     var offer = await marketplaceInstance.getOffer(tokenID);
-    var oraclePrice = await marketplaceInstance.getOracleUsdPrice(TsaishenToken.address);
+    var oraclePrice = await marketplaceInstance.getOracleUsdPrice(token.address);
     var b = (offer.price * housePrice) / oraclePrice[0];
     await tsaishenTokenInstance.approve(Marketplace.address, web3.utils.toWei(b.toString(), 'ether'), { from: _user });
 }
@@ -85,9 +84,8 @@ contract("Positive tests", (accounts) => {
         marketplaceInstance = await Marketplace.deployed();
         houseTokenInstance = await HouseToken.deployed();
         usersIntance = await TsaishenUsers.deployed();
-        tsaishenTokenInstance = await TsaishenToken.deployed();
         var tokenBalance = await tsaishenTokenInstance.balanceOf(owner);
-        await marketplaceInstance.addOracle(TsaishenToken.address, '0x0000000000000000000000000000000000000001')
+        await marketplaceInstance.addOracle(token.address, '0x0000000000000000000000000000000000000001')
         await usersIntance.setHouseTokenAddress(HouseToken.address);
         await usersIntance.setMarketplaceAddress(Marketplace.address);
         console.log(web3.utils.fromWei(tokenBalance, 'ether'));
@@ -180,7 +178,7 @@ contract("Positive tests", (accounts) => {
             assert.equal(owner, accounts[0], "incorrect owner account");
         });
         it("should get correct Oracle price", async () => {
-            let orcPrice = await marketplaceInstance.getOracleUsdPrice(TsaishenToken.address);
+            let orcPrice = await marketplaceInstance.getOracleUsdPrice(token.address);
             assert.equal(orcPrice[0], 10000000000, "incorrect oracle price");
         });
     });
@@ -224,7 +222,7 @@ contract("Positive tests", (accounts) => {
     describe("Marketplace::Buy House", () => {
         it("Should buy house 0 for user3 directly", async () => {
             await approveMarketPlace(marketplaceInstance,tsaishenTokenInstance, 0, user3);
-            let res = await marketplaceInstance.buyHouse(TsaishenToken.address, 0, { from: user3 });
+            let res = await marketplaceInstance.buyHouse(token.address, 0, { from: user3 });
             let x = await usersIntance.getUserInfo(user3);
             assert.isTrue(x.houseOwner);
             assert.isFalse(x.borrower);
@@ -235,13 +233,13 @@ contract("Positive tests", (accounts) => {
         });
         it("Should put money in escrow for house 1 from user3", async () => {
             await approveMarketPlace(marketplaceInstance,tsaishenTokenInstance, 1, user3);
-            let res = await marketplaceInstance.buyHouseWithEscrow(TsaishenToken.address,1, {from: user3});
+            let res = await marketplaceInstance.buyHouseWithEscrow(token.address,1, {from: user3});
             let marketBalance = await tsaishenTokenInstance.balanceOf(Marketplace.address);
             assert.equal(web3.utils.fromWei(marketBalance,'ether'),0.1,"market balance should be 0.1");
         });
         it("Should put money in escrow for house 2 from user3", async () => {
             await approveMarketPlace(marketplaceInstance,tsaishenTokenInstance, 2, user3);
-            let res = await marketplaceInstance.buyHouseWithEscrow(TsaishenToken.address,2, {from: user3});
+            let res = await marketplaceInstance.buyHouseWithEscrow(token.address,2, {from: user3});
             let marketBalance = await tsaishenTokenInstance.balanceOf(Marketplace.address);
             assert.equal(web3.utils.fromWei(marketBalance,'ether'),0.2,"market balance should be 0.1");
         });
@@ -306,7 +304,6 @@ contract("Positive tests", (accounts) => {
 contract("Reverted tests", (accounts) => {
     var houseTokenInstance;
     var usersIntance;
-    var tsaishenTokenInstance;
     var marketplaceInstance
     var owner = accounts[0];
     var creator = accounts[1];
@@ -317,8 +314,7 @@ contract("Reverted tests", (accounts) => {
         marketplaceInstance = await Marketplace.deployed();
         houseTokenInstance = await HouseToken.deployed();
         usersIntance = await TsaishenUsers.deployed();
-        tsaishenTokenInstance = await TsaishenToken.deployed();
-        await marketplaceInstance.addOracle(TsaishenToken.address, '0x0000000000000000000000000000000000000001')
+        await marketplaceInstance.addOracle(token.address, '0x0000000000000000000000000000000000000001')
         await usersIntance.setHouseTokenAddress(HouseToken.address);
         await usersIntance.setMarketplaceAddress(Marketplace.address)
         console.log(Marketplace.address);
