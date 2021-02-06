@@ -30,9 +30,9 @@ contract TsaishenUsers is Ownable, Storage {
         EnumerableSet.UintSet houses;
     }    
 
-    // MUST use for test and mainNet
+    // MUST USE
     modifier onlyAuthorized(){
-        require(msg.sender == marketplace || msg.sender == houseToken || msg.sender == owner(), "Not authorized.");
+        require(msg.sender == marketplace || msg.sender == houseToken || msg.sender == owner(), "TU: Not authorized.");
         _;
     }
 
@@ -83,12 +83,15 @@ contract TsaishenUsers is Ownable, Storage {
     }
 
     function addUser (address newUser) public onlyAuthorized{
-        EnumerableSet.UintSet memory _houses;
-        address payable user = address(uint160(newUser));
-        userInfo[newUser] = User(user, false, false, false, false, _houses);
-        users.add(newUser);
+        if(!users.contains(newUser)){
+            EnumerableSet.UintSet memory _houses;
+            address payable user = address(uint160(newUser));
+            userInfo[newUser] = User(user, false, false, false, false, _houses);
+            users.add(newUser);
 
-        emit userAdded("New user added", newUser, true);
+            emit userAdded("New user added", newUser, true);
+
+        }
     }
 
     function addHouseToUser(address user, uint256 houseId) public onlyAuthorized{
@@ -98,8 +101,31 @@ contract TsaishenUsers is Ownable, Storage {
 
     function deleteHouseFromUser(address user, uint256 houseId) public onlyAuthorized{
         userInfo[user].houses.remove(houseId);
+        if(userInfo[user].houses.length() == 0){
+            userInfo[user].houseOwner = false;
+        }
     }
 
+    function setAsLender(address user) public onlyAuthorized{
+        userInfo[user].lender = true;
+    }
+
+    function removeLenderTag(address user) public onlyAuthorized{
+        userInfo[user].lender = false;
+    }
+
+    function setAsBorrower(address user) public onlyAuthorized{
+        userInfo[user].borrower = true;
+    }
+
+    function removeBorrowerTag(address user) public onlyAuthorized{
+        userInfo[user].borrower = false;
+    }
+
+    function rewardIssued(address user) public onlyAuthorized{
+        userInfo[user].reward = true;
+    }
+    
     function deleteUser(address userToDelete) public onlyAuthorized{
         users.remove(userToDelete);
 
