@@ -19,7 +19,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     bool public _initialized;
     address payable internal _creator;
     uint public balance;    
-    uint256 public houseCounter;
+    uint256 public houseCounter; //we could perhaps remove this
 
     mapping (uint256 => address) public houseIndexToApproved;
     mapping (address => uint256) private _balances;
@@ -33,23 +33,23 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
 
     // *** MODIFIER ***
     modifier costs (uint cost){
-        require(msg.value >= cost);
+        require(msg.value >= cost, "HT: Insufficient funds.");
         _;
     }
 
     // *** SETTER ***
-    function createHouse (uint256 value, uint256 income) public payable costs (1 ether) returns (uint256) {
+    function createHouse (uint256 value, uint256 income, string memory ipfsHash) public payable costs (1 ether) returns (uint256) {
         // require identification of the user KYC/AML before execution
         balance.add(msg.value);
 
-        houseCounter++;
+        houseCounter++;//might not need this
 
-        return _createHouse(value, income, msg.sender);
+        return _createHouse(value, income, msg.sender, ipfsHash);
     }
 
-    function setHouseURI(uint256 tokenId, string memory ipfsHash) public returns (string memory) {
-        return _setHouseURI(tokenId, ipfsHash);
-    }
+    // function setHouseURI(uint256 tokenId, string memory ipfsHash) public returns (string memory) {
+    //     return _setHouseURI(tokenId, ipfsHash);
+    // }
 
     // *** GETTER ***
     function getHouse(uint256 id) public view returns(uint256 value, uint256 income, string memory uri) {
@@ -73,7 +73,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     }
 
     // === PRIVATE ===
-    function _createHouse(uint256 _value, uint256 _income, address _owner) private returns (uint256) {    
+    function _createHouse(uint256 _value, uint256 _income, address _owner, string memory _ipfsHash) private returns (uint256) {    
         House memory _house = House({
             value: _value,
             income: _income
@@ -84,21 +84,21 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
 
         //mint new token, transfer to the owner with the house ID
         _mint(_owner, _tokenIdTracker.current());
-        _tokenIdTracker.increment();
-
-        emit Minted(_owner, _tokenIdTracker.current(), "");
+        _setTokenURI(_tokenIdTracker.current(), _ipfsHash);
+        emit Minted(_owner, _tokenIdTracker.current(), tokenURI(_tokenIdTracker.current()));
         
         // add user if new
         _tsaishenUsers.addUser(msg.sender);
         _tsaishenUsers.addHouseToUser(msg.sender, _tokenIdTracker.current());
 
+        _tokenIdTracker.increment();
         return _tokenIdTracker.current();
     }
 
-    function _setHouseURI(uint256 _tokenId, string memory _ifpsHash) private returns (string memory) {
-        _setTokenURI(_tokenId, _ifpsHash);
-        return _ifpsHash;
-    }
+    // function _setHouseURI(uint256 _tokenId, string memory _ifpsHash) private returns (string memory) {
+    //     _setTokenURI(_tokenId, _ifpsHash);
+    //     return _ifpsHash;
+    // }
 
     // !!!*** NOT WORKING ***!!!
     // function _autoWithdraw() internal {
