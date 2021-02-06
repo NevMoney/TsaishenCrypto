@@ -11,10 +11,13 @@
     let ipfsHash;
     let ipfsFileHash;
     let ipfsDeed;
+      
+    var value = $("#marketValue").val();
+    var income = $("#currentIncome").val();
     
     function hashFile(file) {
       console.log(file);
-      console.log(file.name);
+      //console.log(file.name);
       $("#fileUpload").hide(file.name);
       $("#fileName").show();
       $("#fileName>h5").html(`File Name: ${file.name}`);
@@ -23,9 +26,9 @@
       reader.readAsArrayBuffer(file);
       reader.onloadend = () => {
         buffer = Buffer(reader.result);
-        console.log(buffer);
+        //console.log(buffer);
         const hash = window.web3.utils.sha3(buffer);
-        console.log("hash", hash);
+        //console.log("hash", hash);
       };
     }
     
@@ -47,7 +50,9 @@
       };
     }
     
-    const addFileToIpfs = async () => {
+    $("#upload").click(( async() => {
+  
+    const addFileToIpfs = await
       console.log("adding to IPFS...");
       $("#upload").html("Uploading");
     
@@ -64,7 +69,7 @@
         description: $("#description").val(),
         image: 'https://gateway.ipfs.io/ipfs/' + ipfsHash,
         // will likely need to tweak this once I figure out the actual URL, but for now
-        external_url: "https://tsaishen.crypto/marketplace/ipfsFileHash/tokenId",
+        external_url: "https://tsaishen.crypto/marketplace/ipfsFileHash",
         attributes: [
           {
             key: "address",
@@ -130,10 +135,25 @@
         certification: validateCheckbox(), //this is NOT working
       });
     
-      insert = await ipfs.add(propertyData);
+      const insert = await ipfs.add(propertyData);
     
       ipfsFileHash = insert.cid.toString();
     
+      var amount = web3.utils.toWei("1", "ether");
+      console.log(amount);
+      
+      try {
+        const receipt =
+          await houseTokenInstance.methods
+            .createHouse(value, income, ipfsFileHash)
+            .send({ from: user, value: amount });
+        console.log("uploadHouse: ", receipt);
+        console.log("uploadHouse: ", receipt.events.Transfer.returnValues.tokenId);
+      }
+      catch (err) {
+        console.log(err)
+      } 
+
       const ipfsLink =
         "<a target='_blank' rel='noopener noreferrer' href='https://gateway.ipfs.io/ipfs/" +
         ipfsFileHash +
@@ -141,7 +161,10 @@
         ipfsFileHash +
         "</a>";
       $("#ipfsResult").html(ipfsLink);
-    };
+
+      console.log("data hash: " + ipfsFileHash);
+      
+    }));
     
     const addDeedToIpfs = async () => {
       $("#deedUpload").html("Uploading");
@@ -190,7 +213,7 @@
     };
     
     $("#file").change((e) => {
-      console.log(e.target.files[0]);
+      //console.log(e.target.files[0]);
       hashFile(e.target.files[0]);
     });
     
@@ -200,10 +223,10 @@
     });
     
     
-    $("#upload").click(() => {
-      console.log("data hash: " + ipfsFileHash);
-      addFileToIpfs();
-    });
+    //   $("#upload").click(() => {
+    //     addFileToIpfs();
+    //     console.log("data hash: " + ipfsFileHash);
+    // });
     
     $("#deedUpload").click(() => addDeedToIpfs());
     

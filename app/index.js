@@ -2,9 +2,10 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x7ADAe44A10B88C545474ed3Acb05f44499606CF3";
-var houseTokenAddress = "0xF50cf73C396306EA041458A1Ab837DCBA3a1dc45";
-var marketplaceAddress = "0xFD56020874395D7e94b184155C137318b4BE0308";
+var tsaishenUsersAddress = "0xE955755836EeDB8dC559fa08dec84335e1D2Ee68";
+var houseTokenAddress = "0x6dc33c0D2E43045b67145a8903584E4B398867a9";
+var marketplaceAddress = "0xC96E9E842BFa85Bc3F5a05090D923a92e8259af1";
+const contractOwnerAddress = "0xf6C0317c72781137475904c07afF15B5a114B820";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
 const ethereumButton = document.querySelector('.enableEthereumButton');
@@ -56,14 +57,19 @@ $(document).ready(async () => {
   console.log("house ", houseTokenInstance);
   console.log("marketplace ", marketplaceInstance);
 
+  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
+  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send();
+  console.log("Marketplace: ", marketplaceAddress);
+  console.log("HouseToken: ", houseTokenAddress);
+
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
-    let owner = event.returnValues.owner;
-    let houseId = event.returnValues.tokenId;
-    let houseUri = event.returnValues.houseTokenURI;
+    let owner = event.returnValues._owner;
+    let houseId = event.returnValues.id;
+    // let houseUri = event.returnValues.uri;
     $("#houseUploadedMsg").css("display", "block");
-    $("#houseUploadedMsg").text("Congrats! You have just uploaded your house onto the blockchain. Owner: "
-      + owner + ", houseId: " + houseId + ", house on blockchain url: " + houseUri)
+    $("#houseUploadedMsg").text("Congratulations! You have successfully uploaded your real property onto the blockchain. The registered owner wallet address is "
+      + owner + " and your house token ID is " + houseId);
   })
     .on("error", console.error);
   
@@ -92,38 +98,12 @@ $(document).ready(async () => {
     .on("error", console.error);
   
   usersInstance.events.userAdded().on("data", (event) => {
-    alert("Welcome to Tsaishen Crypto! You are registered with account " + user);
-  });
+    alert("Welcome to Tsaishen Crypto House! You are registered with account " + user +
+      ". Now give it a few minutes for the transaction to complete and then head over to Portfolio page.");
+  })
+    .on("error", console.error);
   
 });
-
-async function setContractsForUsers() {
-  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress);
-  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress);
-}
-
-var value = $("#marketValue").val();
-var income = $("#currentIncome").val();
-// let cost = new BigNumber(1); using this gives ERROR: cannot access "cost" before initialization
-//passing just number in the amount causes error looking for BN or string but neither will take
-
-/*
-**************************************
-Have to pass the payable function - can't figure it out
-**************************************
-*/ 
-async function uploadHouse(value, income) {
-  
-  var amount = web3.utils.toWei('1', "ether");
-  await houseTokenInstance.methods.createHouse(value, income).send({value: amount}, function (txHash) {
-    try {
-      console.log("uploadHouse: ", txHash);
-    }
-    catch (err) {
-      console.log(err)
-    }
-  });
-}
 
 async function getUserHomes() {
   var arrayId;
@@ -142,10 +122,8 @@ async function getUserHomes() {
 }
 
 async function checkOffer(id) {
-  let x;
-
   try {
-    x = await marketplaceInstance.methods.getOffer(id).call();
+    let x = await marketplaceInstance.methods.getOffer(id).call();
     var price = x.price;
     var seller = x.seller;
     var onSale = x.active;
@@ -192,8 +170,10 @@ async function sellHouse(id) {
   const isApproved = await houseTokenInstance.methods.isApprovedForAll(user, marketplaceAddress).call();
   try {
     if (!isApproved) {
-      await houseTokenInstance.methods.setApprovalForAll(marketplaceAddress, true).send().on("receipt", function (receipt) {
-        console.log("operator approval: ", receipt);
+      await houseTokenInstance.methods
+        .setApprovalForAll(marketplaceAddress, true)
+        .send().on("receipt", function (receipt) {
+      console.log("operator approval: ", receipt);
       });
     }
     await marketplaceInstance.methods.setOffer(amount, id).send();
@@ -213,7 +193,9 @@ async function buyHome (id, price) {
   await checkOffer(id);
   var amount = web3.utils.toWei(price, "ether");
   var buy = await marketplaceInstance.methods.buyHouse(id).send({ value: amount });
-  var escrowBuy = await marketplaceInstance.methods.buyHouseWithEscrow(id).send({ value: amount });
+  var escrowBuy = await marketplaceInstance.methods
+    .buyHouseWithEscrow(id)
+    .send({ value: amount });
 
   try {
     if ($("#buyBtn").on("click", function () {

@@ -42,6 +42,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     address payable internal feeRecipient;
     uint256 housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
     uint256 txFee = 2; //2% transaction fee
+    uint256 private balance;
 
     mapping (address => address) availableOracles;
     mapping(uint256 => Offer) internal offerDetails;
@@ -57,6 +58,11 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         bool active;
     }
     
+    // *** MODIFIER ***
+    modifier costs (uint cost){
+        require(msg.value >= cost, "TE: Insufficient funds.");
+        _;
+    }
 
     // *** CONSTRUCTOR ***
     constructor(
@@ -84,7 +90,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         
         return (answer, updatedAt);
         //for local testing ONLY
-        // return (10000000000, 1607202219); 
+        // return (10000000000, now); 
     }
 
     function getOffer(uint256 _tokenId) public view returns 
@@ -128,6 +134,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     }
 
     // *** SETTER ***
+    //  -- oracles --
     function addOracle(address token, address oracle) public onlyOwner{
         availableOracles[token] = oracle;
     }
@@ -136,6 +143,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         delete availableOracles[token];
     }
 
+    // -- house on/off market --
     function sellHouse(uint256 price, uint256 tokenId) public nonReentrant {
         require(_ownsHouse(msg.sender, tokenId), "Not authorized.");
         require(offerDetails[tokenId].active == false, "Already active.");
@@ -172,6 +180,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("Offer removed", msg.sender, tokenId);
     }
 
+    // -- house transaction --
     function buyHouse (IERC20 token, uint256 tokenId) public nonReentrant{
         // access offer
         Offer storage offer = offerDetails[tokenId];  
@@ -190,13 +199,10 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
 
         // calculate transaction fee
         uint256 houseTransactionFee = cryptoHousePrice.mul(txFee).div(100);
-
         // transfer funds from buyer
         token.universalTransferFromSenderToThis(cryptoHousePrice);
-
         // pay the fee collector
         require(token.universalTransfer(feeRecipient, houseTransactionFee));
-
         // pay the seller
         require(token.universalTransfer(offer.seller, cryptoHousePrice.sub(houseTransactionFee)));
         
@@ -206,14 +212,13 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         // make offer inactive and take off market
         offers[offer.index].active = false;
 
-        // remove from mapping to prevent double sale
-        delete offerDetails[tokenId];
-
         // handle user ledger
         _tsaishenUsers.addUser(msg.sender);
         _tsaishenUsers.addHouseToUser(msg.sender, tokenId);
         _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
 
+        // remove from mapping to prevent double sale
+        delete offerDetails[tokenId];
         emit MarketTransaction("House purchased", msg.sender, tokenId);
     }
  
@@ -236,7 +241,8 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("House in Escrow", msg.sender, tokenId);
     }
 
-    function permitRefunds(uint256 tokenId) public onlyOwner {
+    // -- escrow management --
+    function refundEscrow(uint256 tokenId) public onlyOwner {
         Offer storage offer = offerDetails[tokenId];
         _enableRefunds(tokenId);
         _issueRefund(escrowById[tokenId].buyer, tokenId);
@@ -251,24 +257,89 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         require(escrowById[tokenId].amount > 0, "Insufficient escrow funds.");
         
         _resetState(tokenId);
-        _close(tokenId);
-        
-        _beneficiaryWithdraw(offer.seller, tokenId);
+        _close(tokenId); //this extends timelock
 
-        //remove token from the mapping
-        delete offerDetails[tokenId];    
+        emit MarketTransaction("Escrow closed. Buyer has 3 days to verify.", offer.seller, tokenId);
+    }    
+
+    function buyerVerify(uint256 tokenId) public {
+        Offer storage offer = offerDetails[tokenId];
+        require(escrowById[tokenId].amount > 0, "Insufficient escrow funds.");
+
+        _confirmDelivery(tokenId);
 
         // finalize transaction with users
         _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
         _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
 
-        emit MarketTransaction("Escrow closed. House SOLD.", offer.seller, tokenId);
+        //remove token from the mapping
+        delete offerDetails[tokenId];  
+
+        emit MarketTransaction("Buyer verified, house SOLD.", offer.seller, tokenId);
     }
+
+    function buyerReviewRequest(uint256 tokenId) public {
+        require(msg.sender == escrowById[tokenId].buyer, "Not authorized.");
+        require(escrowById[tokenId].state == State.Active, "Escrow must be active.");
+        Offer storage offer = offerDetails[tokenId];
+
+        _extendTimelock(tokenId);
+
+        emit MarketTransaction("3-day document review or update request issued.", offer.seller, tokenId);
+    }
+
+    function finalizeEscrowTransaction(uint256 tokenId) public onlyOwner {
+        Offer storage offer = offerDetails[tokenId];
+        require(escrowById[tokenId].amount > 0, "Insufficient escrow funds.");
+
+        _resetState(tokenId);
+        _close(tokenId);
+        _cancelTimelock(tokenId);
+
+        _beneficiaryWithdraw(offer.seller, tokenId, feeRecipient);
+
+        // finalize transaction with users
+        _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
+
+        //remove token from the mapping
+        delete offerDetails[tokenId];  
+
+        emit MarketTransaction("House SOLD.", offer.seller, tokenId);
+    }
+
+    function sellerWithdrawFunds(uint256 tokenId) public nonReentrant{
+        Offer storage offer = offerDetails[tokenId];
+        require(msg.sender == offer.seller, "Must be the house seller.");
+
+        _beneficiaryWithdraw(offer.seller, tokenId, feeRecipient);
+
+        // finalize transaction with users
+        _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
+
+        //remove token from the mapping
+        delete offerDetails[tokenId];  
+
+        emit MarketTransaction("House SOLD.", offer.seller, tokenId);        
+    }
+
+    function buyerClaimRefund(uint256 tokenId) public nonReentrant{
+        require(msg.sender == escrowById[tokenId].buyer, "Must be the house buyer.");
+
+        _enableRefunds(tokenId);
+        _issueRefund(escrowById[tokenId].buyer, tokenId);
+    }
+
+    function cancelEscrowSale(uint256 tokenId) public payable costs(2 ether){
+        balance.add(msg.value);
+
+        _cancelEscrowSale(tokenId);
+    }   
 
     //*** INTERNAL ***
     function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool) {
         return (_houseToken.ownerOf(_tokenId) == _address);
     }
-
 
 }

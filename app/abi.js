@@ -81,7 +81,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -102,6 +103,174 @@ var abi = {
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "userToSearch",
+            "type": "address"
+          }
+        ],
+        "name": "isUser",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "userCount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "index",
+            "type": "uint256"
+          }
+        ],
+        "name": "userAtIndex",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "getAllUsers",
+        "outputs": [
+          {
+            "internalType": "bytes32[]",
+            "name": "_users",
+            "type": "bytes32[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "borrower",
+            "type": "address"
+          }
+        ],
+        "name": "borrowedMoney",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "lender",
+            "type": "address"
+          }
+        ],
+        "name": "lentMoney",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          }
+        ],
+        "name": "getUserInfo",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "houseOwner",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "borrower",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "lender",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "reward",
+            "type": "bool"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "houses",
+            "type": "bytes32[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          }
+        ],
+        "name": "getUserHomes",
+        "outputs": [
+          {
+            "internalType": "bytes32[]",
+            "name": "homes",
+            "type": "bytes32[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -182,19 +351,65 @@ var abi = {
         "inputs": [
           {
             "internalType": "address",
-            "name": "userToSearch",
+            "name": "user",
             "type": "address"
           }
         ],
-        "name": "isUser",
-        "outputs": [
+        "name": "setAsLender",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
           {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
           }
         ],
-        "stateMutability": "view",
+        "name": "removeLenderTag",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          }
+        ],
+        "name": "setAsBorrower",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          }
+        ],
+        "name": "removeBorrowerTag",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          }
+        ],
+        "name": "rewardIssued",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -208,147 +423,6 @@ var abi = {
         "name": "deleteUser",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "userCount",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "index",
-            "type": "uint256"
-          }
-        ],
-        "name": "userAtIndex",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "getAllUsers",
-        "outputs": [
-          {
-            "internalType": "bytes32[]",
-            "name": "_users",
-            "type": "bytes32[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "borrower",
-            "type": "address"
-          }
-        ],
-        "name": "borrowedMoney",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "lender",
-            "type": "address"
-          }
-        ],
-        "name": "lentMoney",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "user",
-            "type": "address"
-          }
-        ],
-        "name": "getUserInfo",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "houseOwner",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "borrower",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "lender",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "reward",
-            "type": "bool"
-          },
-          {
-            "internalType": "bytes32[]",
-            "name": "houses",
-            "type": "bytes32[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "user",
-            "type": "address"
-          }
-        ],
-        "name": "getUserHomes",
-        "outputs": [
-          {
-            "internalType": "bytes32[]",
-            "name": "homes",
-            "type": "bytes32[]"
-          }
-        ],
-        "stateMutability": "view",
         "type": "function"
       }
     ],
@@ -438,7 +512,7 @@ var abi = {
           {
             "indexed": false,
             "internalType": "string",
-            "name": "tokenURI",
+            "name": "uri",
             "type": "string"
           }
         ],
@@ -601,7 +675,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -614,7 +689,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -627,7 +703,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -640,7 +717,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -653,7 +731,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -684,7 +763,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -703,7 +783,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -716,7 +797,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -748,7 +830,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -767,7 +850,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -791,7 +875,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -810,7 +895,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -852,7 +938,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -865,7 +952,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -884,7 +972,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -908,7 +997,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -934,7 +1024,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -947,7 +1038,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -966,7 +1058,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -986,7 +1079,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -1117,7 +1211,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -1130,7 +1225,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -1149,7 +1245,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -1173,7 +1270,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -1192,7 +1290,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -1205,7 +1304,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -1261,6 +1361,11 @@ var abi = {
             "internalType": "uint256",
             "name": "income",
             "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "ipfsHash",
+            "type": "string"
           }
         ],
         "name": "createHouse",
@@ -1272,13 +1377,14 @@ var abi = {
           }
         ],
         "stateMutability": "payable",
-        "type": "function"
+        "type": "function",
+        "payable": true
       },
       {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "_id",
+            "name": "id",
             "type": "uint256"
           }
         ],
@@ -1301,14 +1407,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "withdrawAll",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -1327,6 +1427,14 @@ var abi = {
           }
         ],
         "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [],
+        "name": "withdrawAll",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       }
     ],
@@ -1356,6 +1464,12 @@ var abi = {
       {
         "anonymous": false,
         "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
           {
             "indexed": true,
             "internalType": "address",
@@ -1418,19 +1532,63 @@ var abi = {
       },
       {
         "anonymous": false,
-        "inputs": [],
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
         "name": "RefundsClosed",
         "type": "event"
       },
       {
         "anonymous": false,
-        "inputs": [],
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
         "name": "RefundsEnabled",
         "type": "event"
       },
       {
         "anonymous": false,
         "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
           {
             "indexed": true,
             "internalType": "address",
@@ -1469,20 +1627,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          }
-        ],
-        "name": "confirmDelivery",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -1521,7 +1667,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -1540,7 +1687,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -1553,7 +1701,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -1572,7 +1721,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -1603,7 +1753,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -1635,7 +1786,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -1659,38 +1811,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "oracle",
-            "type": "address"
-          }
-        ],
-        "name": "addOracle",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          }
-        ],
-        "name": "removeOracle",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [
@@ -1739,7 +1861,8 @@ var abi = {
           }
         ],
         "stateMutability": "view",
-        "type": "function"
+        "type": "function",
+        "constant": true
       },
       {
         "inputs": [],
@@ -1752,18 +1875,50 @@ var abi = {
           }
         ],
         "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "oracle",
+            "type": "address"
+          }
+        ],
+        "name": "addOracle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          }
+        ],
+        "name": "removeOracle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "_price",
+            "name": "price",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1776,7 +1931,7 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1794,7 +1949,7 @@ var abi = {
           },
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1812,7 +1967,7 @@ var abi = {
           },
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1825,11 +1980,11 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
-        "name": "permitRefunds",
+        "name": "refundEscrow",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1838,7 +1993,7 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "_tokenId",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1846,6 +2001,85 @@ var abi = {
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "buyerVerify",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "buyerReviewRequest",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "finalizeEscrowTransaction",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "sellerWithdrawFunds",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "buyerClaimRefund",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "cancelEscrowSale",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function",
+        "payable": true
       }
     ]
 
