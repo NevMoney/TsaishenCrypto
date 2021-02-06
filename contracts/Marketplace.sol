@@ -302,7 +302,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         Offer storage offer = offerDetails[tokenId];
         require(msg.sender == offer.seller, "Must be the house seller.");
 
-        _sellerSelfWithdraw(tokenId);
+        _sellerSelfWithdraw(tokenId, feeRecipient);
 
         // finalize transaction with users
         _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
@@ -317,8 +317,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     function buyerClaimRefund(uint256 tokenId) public nonReentrant{
         require(msg.sender == escrowById[tokenId].buyer, "Must be the house buyer.");
 
-        _enableRefunds(tokenId);
-        _buyerSelfRefund(escrowById[tokenId].buyer, tokenId);
+        _buyerSelfRefund(tokenId);
     }
 
     function cancelEscrowSale(uint256 tokenId) public payable costs(2 ether){

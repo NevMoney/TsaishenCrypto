@@ -136,7 +136,7 @@ contract TsaishenEscrow is Ownable{
         emit Withdrawn("Funds refunded to buyer.", _buyer, _refund);
     }
 
-    function _buyerSelfRefund(address payable _buyer, uint256 _tokenId) internal{
+    function _buyerSelfRefund(uint256 _tokenId) internal{
         require(msg.sender == escrowById[_tokenId].buyer, "Not authorized.");
         require(now >= escrowById[_tokenId].timelock, "Timelocked.");
         if(now >= escrowById[_tokenId].timelock){
@@ -155,19 +155,19 @@ contract TsaishenEscrow is Ownable{
         // POTENTIALLY DON"T NEED THIS
         require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, _tokenId));
 
-        emit Withdrawn("Buyer refunded.", _buyer, _refund);
+        emit Withdrawn("Buyer refunded.", escrowById[_tokenId].buyer, _refund);
     }
 
-    function _confirmDelivery(uint256 tokenId) internal {
-        require(msg.sender == escrowById[tokenId].buyer, "Not authorized.");
-        if(escrowById[tokenId].state == State.Refunding){
-            _resetState(tokenId);
+    function _confirmDelivery(uint256 _tokenId) internal {
+        require(msg.sender == escrowById[_tokenId].buyer, "Not authorized.");
+        if(escrowById[_tokenId].state == State.Refunding){
+            _resetState(_tokenId);
         }
 
-        escrowById[tokenId].state = State.Closed;
-        escrowById[tokenId].timelock = 0;
+        escrowById[_tokenId].state = State.Closed;
+        escrowById[_tokenId].timelock = 0;
         
-        _sellerSelfWithdraw(escrowById[tokenId].seller, tokenId, eFeeRecipient);
+        _sellerSelfWithdraw(_tokenId, eFeeRecipient);
     }
 
     function _close(uint256 _tokenId) internal onlyOwner {
@@ -205,9 +205,9 @@ contract TsaishenEscrow is Ownable{
         require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _tokenId));
 
         emit Withdrawn("Funds transferred to seller.", _seller, paymentToSeller);
-    } 
+    }
 
-    function _sellerSelfWithdraw(address payable _seller, uint256 _tokenId, address payable _feeRecipient) internal {
+    function _sellerSelfWithdraw(uint256 _tokenId, address payable _feeRecipient) internal {
         require(msg.sender == escrowById[_tokenId].seller, "Not authorized.");
         require(now >= escrowById[_tokenId].timelock, "Timelocked.");
         require(escrowById[_tokenId].state == State.Closed, "Must be closed.");
@@ -226,7 +226,7 @@ contract TsaishenEscrow is Ownable{
         //MAY NOT NEED THIS
         require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _tokenId));
 
-        emit Withdrawn("Seller claimed funds.", _seller, paymentToSeller);
+        emit Withdrawn("Seller claimed funds.", escrowById[_tokenId].seller, paymentToSeller);
     }
 
 }
