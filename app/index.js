@@ -57,14 +57,19 @@ $(document).ready(async () => {
   console.log("house ", houseTokenInstance);
   console.log("marketplace ", marketplaceInstance);
 
+  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
+  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send();
+  console.log("Marketplace: ", marketplaceAddress);
+  console.log("HouseToken: ", houseTokenAddress);
+
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
-    let owner = event.returnValues._owner; //this works
-    let houseId = event.Transfer.returnValues.tokenId; //not working
-    let houseUri = event.returnValues.uri; //this works
+    let owner = event.returnValues._owner;
+    let houseId = event.returnValues.id;
+    // let houseUri = event.returnValues.uri;
     $("#houseUploadedMsg").css("display", "block");
-    $("#houseUploadedMsg").text("Congrats! You have just uploaded a real property onto the blockchain. Registered owner address is "
-      + owner + ", house token ID is " + houseId + ", and the raw data about the house can be found here: " + houseUri);
+    $("#houseUploadedMsg").text("Congratulations! You have successfully uploaded your real property onto the blockchain. The registered owner wallet address is "
+      + owner + " and your house token ID is " + houseId);
   })
     .on("error", console.error);
   
@@ -93,8 +98,10 @@ $(document).ready(async () => {
     .on("error", console.error);
   
   usersInstance.events.userAdded().on("data", (event) => {
-    alert("Welcome to Tsaishen Crypto! You are registered with account " + user);
-  });
+    alert("Welcome to Tsaishen Crypto House! You are registered with account " + user +
+      ". Now give it a few minutes for the transaction to complete and then head over to Portfolio page.");
+  })
+    .on("error", console.error);
   
 });
 

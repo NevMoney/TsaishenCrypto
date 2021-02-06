@@ -139,6 +139,21 @@
     
       ipfsFileHash = insert.cid.toString();
     
+      var amount = web3.utils.toWei("1", "ether");
+      console.log(amount);
+      
+      try {
+        const receipt =
+          await houseTokenInstance.methods
+            .createHouse(value, income, ipfsFileHash)
+            .send({ from: user, value: amount });
+        console.log("uploadHouse: ", receipt);
+        console.log("uploadHouse: ", receipt.events.Transfer.returnValues.tokenId);
+      }
+      catch (err) {
+        console.log(err)
+      } 
+
       const ipfsLink =
         "<a target='_blank' rel='noopener noreferrer' href='https://gateway.ipfs.io/ipfs/" +
         ipfsFileHash +
@@ -148,29 +163,6 @@
       $("#ipfsResult").html(ipfsLink);
 
       console.log("data hash: " + ipfsFileHash);
-
-      var amount = web3.utils.toWei("1", "ether");
-      console.log(amount);
-      
-      try {
-        const receipt =
-          await houseTokenInstance.methods
-            .createHouse(value, income)
-            .send({ from: user, value: amount });
-        console.log("uploadHouse: ", receipt);
-        console.log("uploadHouse: ", receipt.events.Transfer.returnValues.tokenId);
-
-        // let houseId = receipt.events.Transfer.returnValues.tokenId;
-
-        const receiptUri =
-          await houseTokenInstance.methods
-            .setHouseURI(houseId, ipfsFileHash)
-            .send();
-        console.log("houseURI: ", ipfsFileHash, "houseUriFunctionHash: ", receiptUri, "house ID: ", houseId);
-      }
-      catch (err) {
-        console.log(err)
-      } 
       
     }));
     
