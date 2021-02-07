@@ -233,9 +233,6 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         //transfer funds into escrow
         _deposit(token, offer.seller, msg.sender, cryptoHousePrice, tokenId);
 
-        // // transfer house to escrow
-        // _houseToken.safeTransferFrom(offer.seller, address(this), tokenId);
-
         // take off market
         offers[offer.index].active = false;
 
@@ -245,21 +242,22 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("House in Escrow", msg.sender, tokenId);
     }
 
-    // -- escrow management --
-    // this automatically refunds escrow
-    function refundEscrow(uint256 tokenId) public onlyOwner {
+    // -- ESCROW MANAGEMENT --
+    // can this be open to all???
+    function refundEscrow(uint256 tokenId) public {
+        require(msg.sender == escrowById[tokenId].buyer || msg.sender == escrowById[tokenId].seller || msg.sender == owner(), "Mp: Not authorized.");
+
         Offer storage offer = offerDetails[tokenId];
-        _enableRefunds(tokenId);
-        _issueRefund(escrowById[tokenId].buyer, tokenId);
+        if(now >= escrowById[tokenId].timelock){
+            _enableRefunds(tokenId);
+            _issueRefund(escrowById[tokenId].buyer, tokenId);
 
-        // transfer house back to seller
-        // _houseToken.safeTransferFrom(address(this), offer.seller, tokenId);
-        offers[offer.index].active = true;
+            offers[offer.index].active = true;
 
-        emit MarketTransaction("Escrow Refunded", escrowById[tokenId].buyer, tokenId);
+            emit MarketTransaction("Escrow Refunded", escrowById[tokenId].buyer, tokenId);
+        }
     }
 
-    // this turns escrow to close and gives 3 days to buyer to verify
     function closeEscrow(uint256 tokenId) public onlyOwner {
         Offer storage offer = offerDetails[tokenId];
         
@@ -290,11 +288,11 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
 
     // buyer notices error in documents and requests change/review
     function buyerReviewRequest(uint256 tokenId) public {
-        require(msg.sender == escrowById[tokenId].buyer, "Mp: Not authorized.");
-        require(escrowById[tokenId].state == State.Active, "Mp: Escrow must be active.");
+        require(msg.sender == escrowById[tokenId].buyer, "Mp: Buyer only.");
         Offer storage offer = offerDetails[tokenId];
 
         // allow 3 days for seller to update documents
+        _resetState(tokenId);
         _extendTimelock(tokenId);
 
         emit MarketTransaction("3-day document update request issued.", offer.seller, tokenId);
@@ -321,20 +319,12 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("House SOLD.", offer.seller, tokenId);
     }
 
-    function buyerClaimRefund(uint256 tokenId) public nonReentrant {
-        require(msg.sender == escrowById[tokenId].buyer, "Mp: Must be the house buyer.");
-
-        _enableRefunds(tokenId);
-        _issueRefund(escrowById[tokenId].buyer, tokenId);
-    }
-
-    function cancelEscrowSale(uint256 tokenId) public payable costs(2 ether){
+    function cancelEscrowSale(uint256 tokenId) public payable costs(2 ether) {
         require(msg.sender == escrowById[tokenId].buyer || msg.sender == escrowById[tokenId].seller, "Mp: Not authorized.");
         Offer storage offer = offerDetails[tokenId];
         balance.add(msg.value);
 
         _cancelEscrowSale(tokenId);
-        // _houseToken.safeTransferFrom(address(this), offer.seller, tokenId);
         offers[offer.index].active = true;
 
         emit MarketTransaction("Escrow Cancelled.", msg.sender, tokenId);

@@ -98,7 +98,6 @@ contract TsaishenEscrow is Ownable{
 
         require(escrowById[_tokenId].token.universalTransfer(feeRecipient, _paymentToProducer));
         require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund));
-        // house token transfer will be done in marketplace
 
         if(msg.sender == escrowById[_tokenId].buyer){
             require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, _paymentToHarmedParty));
@@ -108,9 +107,31 @@ contract TsaishenEscrow is Ownable{
         }
     }
 
-    // this if for buyer only
+    function _enableRefunds(uint256 _tokenId) internal {
+        require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
+        require(escrowById[_tokenId].state == State.Active, "TE: Must be active.");
+        escrowById[_tokenId].state = State.Refunding;
+        
+        emit RefundsEnabled("Escrow refund enabled.", escrowById[_tokenId].buyer, _tokenId);
+    }
+
+    function _issueRefund(address payable _buyer, uint256 _tokenId) internal {
+        require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
+        require(escrowById[_tokenId].state == State.Refunding, "TE: Must be refunding.");         
+        
+        uint256 _refund = escrowById[_tokenId].amount;
+        escrowById[_tokenId].amount = 0;
+
+        // refund buyer
+        require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund));
+
+        // return house to seller done in marketplace
+
+        emit Withdrawn("Funds refunded to buyer.", _buyer, _refund);
+    }
+
     function _confirmDelivery(uint256 _tokenId) internal {
-        require(msg.sender == escrowById[_tokenId].buyer, "TE: Not authorized.");
+        require(msg.sender == escrowById[_tokenId].buyer, "TE: Buyer only.");
 
         escrowById[_tokenId].state = State.Closed;
         escrowById[_tokenId].timelock = 0;
@@ -119,7 +140,7 @@ contract TsaishenEscrow is Ownable{
     }
 
     function _beneficiaryWithdraw(address payable _seller, uint256 _tokenId, address payable _feeRecipient) internal {
-        require(msg.sender == escrowById[_tokenId].seller || msg.sender == owner(), "TE: Not authorized.");
+        // require(msg.sender == escrowById[_tokenId].seller || msg.sender == owner(), "TE: Not authorized.");
         require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
         require(escrowById[_tokenId].state == State.Closed, "TE: Must be closed.");
 
@@ -150,15 +171,7 @@ contract TsaishenEscrow is Ownable{
 
     function _resetState(uint256 _tokenId) internal onlyOwner {
         escrowById[_tokenId].state = State.Active;
-    }
-    
-    function _enableRefunds(uint256 _tokenId) internal onlyOwner {
-        require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
-        require(escrowById[_tokenId].state == State.Active, "TE: Must be active.");
-        escrowById[_tokenId].state = State.Refunding;
-        
-        emit RefundsEnabled("Escrow refund enabled.", escrowById[_tokenId].buyer, _tokenId);
-    }
+    }  
 
     function _close(uint256 _tokenId) internal onlyOwner {
         require(escrowById[_tokenId].state == State.Active, "TE: Must be active.");
@@ -166,21 +179,6 @@ contract TsaishenEscrow is Ownable{
         escrowById[_tokenId].timelock = 30 seconds; //give buyer 3 days to confirm
 
         emit RefundsClosed("Refund closed.", escrowById[_tokenId].buyer, _tokenId);
-    }
-
-    function _issueRefund(address payable _buyer, uint256 _tokenId) internal onlyOwner{
-        require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
-        require(escrowById[_tokenId].state == State.Refunding, "TE: Must be refunding.");         
-        
-        uint256 _refund = escrowById[_tokenId].amount;
-        escrowById[_tokenId].amount = 0;
-
-        // refund buyer
-        require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund));
-
-        // return house to seller done in marketplace
-
-        emit Withdrawn("Funds refunded to buyer.", _buyer, _refund);
-    }
+    }  
 
 }

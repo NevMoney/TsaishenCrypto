@@ -228,7 +228,6 @@ contract("Positive tests", (accounts) => {
             assert.isFalse(x.lender);
             assert.isFalse(x.reward);
             assert.equal(web3.utils.hexToNumber(x.houses[0]), '0', "should be 0");
-            // assert.equal(res.length,1,"only 1 house on sale");
         });
         it("Should put money in escrow for house 1 from user3", async () => {
             await approveMarketPlace(marketplaceInstance,tsaishenTokenInstance, 1, user3);

@@ -2,10 +2,10 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xE955755836EeDB8dC559fa08dec84335e1D2Ee68";
-var houseTokenAddress = "0x6dc33c0D2E43045b67145a8903584E4B398867a9";
-var marketplaceAddress = "0xC96E9E842BFa85Bc3F5a05090D923a92e8259af1";
-const contractOwnerAddress = "0xf6C0317c72781137475904c07afF15B5a114B820";
+var tsaishenUsersAddress = "0x1Fb97deC2Daa6b9D72105f29cc5df243CBa294Bc";
+var houseTokenAddress = "0x2a38163751B77E2B6ccaf498C52E03D9F6045c6e";
+var marketplaceAddress = "0x48aF276F1b3d3F6bf42619380e1DF09E37104732";
+const contractOwnerAddress = "0x2fb76205Dc47d39119F7Ab49B2DF93DF1B13962a";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
 const ethereumButton = document.querySelector('.enableEthereumButton');

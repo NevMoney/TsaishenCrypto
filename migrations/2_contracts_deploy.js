@@ -2,7 +2,7 @@
 const TsaishenUsers = artifacts.require("TsaishenUsers");
 const HouseToken = artifacts.require("HouseToken");
 const Marketplace = artifacts.require("Marketplace");
-const TsaishenToken = artifacts.require("TsaishenToken");
+// const TsaishenToken = artifacts.require("TsaishenToken");
 
 module.exports = async function (deployer, network, accounts) {
     console.log("network used", network);
@@ -17,7 +17,7 @@ module.exports = async function (deployer, network, accounts) {
     + feeRecipient (for local testing purposes I have account 0 -- CHANGE THIS for Test/MainNet)
     */
     await deployer.deploy(Marketplace, TsaishenUsers.address, HouseToken.address, accounts[0]);
-    await deployer.deploy(TsaishenToken);
+    // await deployer.deploy(TsaishenToken);
 
 }
 /*
