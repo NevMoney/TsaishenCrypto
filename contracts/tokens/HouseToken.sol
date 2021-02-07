@@ -47,10 +47,6 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         return _createHouse(value, income, msg.sender, ipfsHash);
     }
 
-    // function setHouseURI(uint256 tokenId, string memory ipfsHash) public returns (string memory) {
-    //     return _setHouseURI(tokenId, ipfsHash);
-    // }
-
     // *** GETTER ***
     function getHouse(uint256 id) public view returns(uint256 value, uint256 income, string memory uri) {
         value = houseInfo[id].value;
@@ -95,16 +91,10 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         return _tokenIdTracker.current();
     }
 
-    // function _setHouseURI(uint256 _tokenId, string memory _ifpsHash) private returns (string memory) {
-    //     _setTokenURI(_tokenId, _ifpsHash);
-    //     return _ifpsHash;
-    // }
-
-    // !!!*** NOT WORKING ***!!!
-    // function _autoWithdraw() internal {
-    //     if(address(this).balance >= 10 ether) {
-    //         _creator.transfer(address(this).balance);
-    //     }    
-    // }
+    function _autoWithdraw() internal {
+        if(address(this).balance >= 10 ether) {
+            _creator.transfer(address(this).balance);
+        }    
+    }
     
 }

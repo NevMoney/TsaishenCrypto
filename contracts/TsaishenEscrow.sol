@@ -22,7 +22,7 @@ contract TsaishenEscrow is Ownable{
 
     // timelock will be 10 days; TESTING: 1 minute
     uint256 private constant _TIMELOCK= 1 minutes;
-    address payable internal eFeeRecipient; //MAY NOT NEED THIS!!!
+    address payable internal feeRecipient;
     uint256 fee = 3;
     
     // tokenId to Struct
@@ -73,9 +73,9 @@ contract TsaishenEscrow is Ownable{
         return true;
     }
 
-    // *** INTERNAL & onlyOwner ***
+    // *** INTERNAL ***
     function _deposit(IERC20 _token, address _seller, address _buyer, uint256 _amount, uint256 _tokenId) internal {
-        require(_seller != address(0), "Address can't be zero.");
+        require(_seller != address(0), "TE: Address can't be zero.");
 
         // transfer funds from buyer
         _token.universalTransferFromSenderToThis(_amount);
@@ -86,8 +86,9 @@ contract TsaishenEscrow is Ownable{
         emit Deposited("Funds deposited in escrow.", _seller, _amount);
     }
 
+    //gives ability to either party to get out of the deal, even if in escrow
     function _cancelEscrowSale(uint256 _tokenId) internal {
-        require(msg.sender == escrowById[_tokenId].buyer || msg.sender == escrowById[_tokenId].seller);
+        require(escrowById[_tokenId].state != State.Closed, "TE: Cannot be closed.");
 
         uint256 _refund = escrowById[_tokenId].amount;
         escrowById[_tokenId].amount = 0;
@@ -95,9 +96,9 @@ contract TsaishenEscrow is Ownable{
         uint256 _paymentToProducer = 1 ether;
         uint256 _paymentToHarmedParty = 1 ether;
 
-        require(escrowById[_tokenId].token.universalTransfer(eFeeRecipient, _paymentToProducer));
+        require(escrowById[_tokenId].token.universalTransfer(feeRecipient, _paymentToProducer));
         require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund));
-        require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, _tokenId));
+        // house token transfer will be done in marketplace
 
         if(msg.sender == escrowById[_tokenId].buyer){
             require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, _paymentToHarmedParty));
@@ -107,49 +108,20 @@ contract TsaishenEscrow is Ownable{
         }
     }
 
-    function _extendTimelock(uint256 _tokenId) internal onlyOwner {
-        escrowById[_tokenId].timelock = 30 seconds;
-    }
-
-    function _cancelTimelock(uint256 _tokenId) internal onlyOwner {
-        escrowById[_tokenId].timelock = 0;
-    }
-  
-    function _resetState(uint256 _tokenId) internal {
-        escrowById[_tokenId].state = State.Active;
-    }
-
-    function _enableRefunds(uint256 _tokenId) internal onlyOwner {
-        require(now >= escrowById[_tokenId].timelock, "Timelocked.");
-        require(escrowById[_tokenId].state == State.Active, "Must be active.");
-        escrowById[_tokenId].state = State.Refunding;
-        
-        emit RefundsEnabled("Escrow refund enabled.", escrowById[_tokenId].buyer, _tokenId);
-    }
-
-    function _close(uint256 _tokenId) internal onlyOwner {
-        require(escrowById[_tokenId].state == State.Active, "Must be active.");
-        escrowById[_tokenId].state = State.Closed;
-        escrowById[_tokenId].timelock = 30 seconds; //give buyer 3 days to confirm
-
-        emit RefundsClosed("Refund closed.", escrowById[_tokenId].buyer, _tokenId);
-    }
-
+    // this if for buyer only
     function _confirmDelivery(uint256 _tokenId) internal {
-        require(msg.sender == escrowById[_tokenId].buyer, "Not authorized.");
-        if(escrowById[_tokenId].state == State.Refunding){
-            _resetState(_tokenId);
-        }
+        require(msg.sender == escrowById[_tokenId].buyer, "TE: Not authorized.");
 
         escrowById[_tokenId].state = State.Closed;
         escrowById[_tokenId].timelock = 0;
         
-        _beneficiaryWithdraw(escrowById[_tokenId].seller, _tokenId, eFeeRecipient);
+        _beneficiaryWithdraw(escrowById[_tokenId].seller, _tokenId, feeRecipient);
     }
 
-    function _beneficiaryWithdraw(address payable _seller, uint256 _tokenId, address payable _feeRecipient) internal onlyOwner{
-        require(now >= escrowById[_tokenId].timelock, "Timelocked.");
-        require(escrowById[_tokenId].state == State.Closed, "Must be closed.");
+    function _beneficiaryWithdraw(address payable _seller, uint256 _tokenId, address payable _feeRecipient) internal {
+        require(msg.sender == escrowById[_tokenId].seller || msg.sender == owner(), "TE: Not authorized.");
+        require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
+        require(escrowById[_tokenId].state == State.Closed, "TE: Must be closed.");
 
         uint256 transactionFee = escrowById[_tokenId].amount.mul(fee).div(100);
         uint256 paymentToSeller = escrowById[_tokenId].amount.sub(transactionFee);
@@ -161,16 +133,44 @@ contract TsaishenEscrow is Ownable{
         // transfer proceeds to seller
         require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, paymentToSeller));
 
-        // transfer house to buyer
-        //MAY NOT NEED THIS
-        require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _tokenId));
+        // transfer house to buyer done in marketplace
 
         emit Withdrawn("Funds transferred to seller.", _seller, paymentToSeller);
     }
 
+    // -- onlyOwner --
+    // this extends timelock for 3 days (30 seconds for testing)
+    function _extendTimelock(uint256 _tokenId) internal onlyOwner {
+        escrowById[_tokenId].timelock = 30 seconds;
+    }
+
+    function _cancelTimelock(uint256 _tokenId) internal onlyOwner {
+        escrowById[_tokenId].timelock = 0;
+    } 
+
+    function _resetState(uint256 _tokenId) internal onlyOwner {
+        escrowById[_tokenId].state = State.Active;
+    }
+    
+    function _enableRefunds(uint256 _tokenId) internal onlyOwner {
+        require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
+        require(escrowById[_tokenId].state == State.Active, "TE: Must be active.");
+        escrowById[_tokenId].state = State.Refunding;
+        
+        emit RefundsEnabled("Escrow refund enabled.", escrowById[_tokenId].buyer, _tokenId);
+    }
+
+    function _close(uint256 _tokenId) internal onlyOwner {
+        require(escrowById[_tokenId].state == State.Active, "TE: Must be active.");
+        escrowById[_tokenId].state = State.Closed;
+        escrowById[_tokenId].timelock = 30 seconds; //give buyer 3 days to confirm
+
+        emit RefundsClosed("Refund closed.", escrowById[_tokenId].buyer, _tokenId);
+    }
+
     function _issueRefund(address payable _buyer, uint256 _tokenId) internal onlyOwner{
-        require(now >= escrowById[_tokenId].timelock, "Timelocked.");
-        require(escrowById[_tokenId].state == State.Refunding, "Must be refunding.");         
+        require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
+        require(escrowById[_tokenId].state == State.Refunding, "TE: Must be refunding.");         
         
         uint256 _refund = escrowById[_tokenId].amount;
         escrowById[_tokenId].amount = 0;
@@ -178,9 +178,7 @@ contract TsaishenEscrow is Ownable{
         // refund buyer
         require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund));
 
-        // return house to seller
-        // POTENTIALLY DON"T NEED THIS
-        require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, _tokenId));
+        // return house to seller done in marketplace
 
         emit Withdrawn("Funds refunded to buyer.", _buyer, _refund);
     }
