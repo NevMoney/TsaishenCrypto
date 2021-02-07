@@ -90,7 +90,6 @@ contract TsaishenUsers is Ownable, Storage {
             users.add(newUser);
 
             emit userAdded("New user added", newUser, true);
-
         }
     }
 
