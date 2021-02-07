@@ -22,8 +22,8 @@ contract TsaishenEscrow is Ownable{
 
     // timelock will be 10 days; TESTING: 1 minute
     uint256 private constant _TIMELOCK= 1 minutes;
-    address payable internal eFeeRecipient; //MAY NOT NEED THIS!!!
-    uint256 fee = 3; //run all fees and internal payable from here as oppose to marketplace
+    address payable internal feeRecipient;
+    uint256 fee = 3;
     
     // tokenId to Struct
     mapping(uint256 => Escrow) escrowById;
@@ -96,7 +96,7 @@ contract TsaishenEscrow is Ownable{
         uint256 _paymentToProducer = 1 ether;
         uint256 _paymentToHarmedParty = 1 ether;
 
-        require(escrowById[_tokenId].token.universalTransfer(eFeeRecipient, _paymentToProducer));
+        require(escrowById[_tokenId].token.universalTransfer(feeRecipient, _paymentToProducer));
         require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund));
         // house token transfer will be done in marketplace
 
@@ -115,7 +115,7 @@ contract TsaishenEscrow is Ownable{
         escrowById[_tokenId].state = State.Closed;
         escrowById[_tokenId].timelock = 0;
         
-        _beneficiaryWithdraw(escrowById[_tokenId].seller, _tokenId, eFeeRecipient);
+        _beneficiaryWithdraw(escrowById[_tokenId].seller, _tokenId, feeRecipient);
     }
 
     function _beneficiaryWithdraw(address payable _seller, uint256 _tokenId, address payable _feeRecipient) internal {

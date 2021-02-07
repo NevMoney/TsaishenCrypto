@@ -39,7 +39,6 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
 
     HouseToken private _houseToken;
     TsaishenUsers private _tsaishenUsers;
-    address payable internal feeRecipient;
     uint256 housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
     uint256 txFee = 2; //2% transaction fee
     uint256 private balance;
@@ -85,12 +84,13 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         require(oracleAddress != address(0), "Mp: Token not supported.");
 
         // get the latest price
-        (, int256 answer, , uint256 updatedAt, ) = AggregatorV3Interface(oracleAddress).latestRoundData();
+        // FOR TEST comment this
+        // (, int256 answer, , uint256 updatedAt, ) = AggregatorV3Interface(oracleAddress).latestRoundData();
         
-        
-        return (answer, updatedAt);
+        // FOR TEST comment this
+        // return (answer, updatedAt);
         //for local testing ONLY
-        // return (10000000000, now); 
+        return (10000000000, now); 
     }
 
     function getOffer(uint256 _tokenId) public view returns 
@@ -233,8 +233,8 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         //transfer funds into escrow
         _deposit(token, offer.seller, msg.sender, cryptoHousePrice, tokenId);
 
-        // transfer house to escrow
-        _houseToken.safeTransferFrom(offer.seller, address(this), tokenId);
+        // // transfer house to escrow
+        // _houseToken.safeTransferFrom(offer.seller, address(this), tokenId);
 
         // take off market
         offers[offer.index].active = false;
@@ -253,7 +253,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         _issueRefund(escrowById[tokenId].buyer, tokenId);
 
         // transfer house back to seller
-        _houseToken.safeTransferFrom(address(this), offer.seller, tokenId);
+        // _houseToken.safeTransferFrom(address(this), offer.seller, tokenId);
         offers[offer.index].active = true;
 
         emit MarketTransaction("Escrow Refunded", escrowById[tokenId].buyer, tokenId);
@@ -276,7 +276,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         _confirmDelivery(tokenId);
 
         // transfer house to buyer
-        _houseToken.safeTransferFrom(address(this), escrowById[tokenId].buyer, tokenId);
+        _houseToken.safeTransferFrom(offer.seller, escrowById[tokenId].buyer, tokenId);
 
         // finalize transaction with users
         _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
@@ -309,7 +309,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         _beneficiaryWithdraw(offer.seller, tokenId, feeRecipient);
 
         // transfer house to buyer
-        _houseToken.safeTransferFrom(address(this), escrowById[tokenId].buyer, tokenId);
+        _houseToken.safeTransferFrom(offer.seller, escrowById[tokenId].buyer, tokenId);
 
         // finalize transaction with users
         _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
@@ -334,7 +334,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         balance.add(msg.value);
 
         _cancelEscrowSale(tokenId);
-        _houseToken.safeTransferFrom(address(this), offer.seller, tokenId);
+        // _houseToken.safeTransferFrom(address(this), offer.seller, tokenId);
         offers[offer.index].active = true;
 
         emit MarketTransaction("Escrow Cancelled.", msg.sender, tokenId);
