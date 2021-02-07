@@ -90,11 +90,5 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         _tokenIdTracker.increment();
         return _tokenIdTracker.current();
     }
-
-    function _autoWithdraw() internal {
-        if(address(this).balance >= 10 ether) {
-            _creator.transfer(address(this).balance);
-        }    
-    }
     
 }

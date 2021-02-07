@@ -1,7 +1,7 @@
-function appendCryptoHouse(id, isMarketplace, price, owner) {
-    houseBox(id, isMarketplace, price, owner);
-    renderBlockchainHouse(id);
-    $("#houseImport" + id).html();
+function appendCryptoHouse(houseId, isMarketplace, price, owner) {
+    houseBox(houseId, isMarketplace, price, owner);
+    renderBlockchainHouse(houseId);
+    $("#houseImport" + houseId).html();
 }
 
 // get url for the minted token/house
@@ -15,20 +15,20 @@ function getHouseData() {
         res.json().then(function (data) {
             $("#portfolioDisplay").append(
                 `<tr>
-                    <th scope="row" class="notbold">House ID: ${id}</th>
-                    <td><img width=200px src=${data[id].image}></td>
-                    <td>Address: ${data[id].attributes.address}
-                        <br>Beds: ${data[id].attributes.bedrooms}
-                        &nbsp;/&nbsp; Baths: ${data[id].attributes.bathrooms}
-                        <br>Year Built: ${data[id].attributes.yearBuilt}</td>
-                    <td>House Size: ${data[id].attributes.houseSize}
-                        &nbsp;/&nbsp; Lot Size: ${data[id].attributes.lotSize}
-                        <br>Parcel Number: ${data[id].attributes.parcelNumber}
-                        <br>Property Type: ${data[id].attributes.propertyType}</td>
-                    <td>Additional Info: ${data[id].attributes.propertyLink}
-                        <br>Video: ${data[id].attributes.videoLink}
-                        <br>Value: ${data[id].attributes.marketValue}
-                        &nbsp;/&nbsp; Income: ${data[id].attributes.currentIncome}</td>
+                    <th scope="row" class="notbold">House ID: ${houseId}</th>
+                    <td><img width=200px src=${data[houseId].image}></td>
+                    <td>Address: ${data[houseId].attributes.address}
+                        <br>Beds: ${data[houseId].attributes.bedrooms}
+                        &nbsp;/&nbsp; Baths: ${data[houseId].attributes.bathrooms}
+                        <br>Year Built: ${data[houseId].attributes.yearBuilt}</td>
+                    <td>House Size: ${data[houseId].attributes.houseSize}
+                        &nbsp;/&nbsp; Lot Size: ${data[houseId].attributes.lotSize}
+                        <br>Parcel Number: ${data[houseId].attributes.parcelNumber}
+                        <br>Property Type: ${data[houseId].attributes.propertyType}</td>
+                    <td>Additional Info: ${data[houseId].attributes.propertyLink}
+                        <br>Video: ${data[houseId].attributes.videoLink}
+                        <br>Value: ${data[houseId].attributes.marketValue}
+                        &nbsp;/&nbsp; Income: ${data[houseId].attributes.currentIncome}</td>
                 </tr>`
            )
         }); 
@@ -36,40 +36,40 @@ function getHouseData() {
     
 }
 
-function houseBox(id, isMarketplace, price, owner, token) {
+function houseBox(houseId, isMarketplace, price, owner, token) {
     
-    var houseDiv = `<div class="col-lg-3 houseBox m-5 light-b-shadow" id="portfolioDisplay${id}">
+    var houseDiv = `<div class="col-lg-3 houseBox m-5 light-b-shadow" id="portfolioDisplay${houseId}">
 
-                        <div class="house" onclick="selectHouse(${id})">
-                            <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+                        <div class="house" onclick="selectHouse(${houseId})">
+                            <button class="btn btn-success" id="selectSaleBtn${houseId}" onclick="selectHouseForSale(${houseId})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
                         
-                            <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
-                            <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
-                            <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
+                            <button class="btn btn-warning light-b-shadow" id="buyBtn${houseId}" onclick="selectHouseToBuy(${houseId})">Buy ${price, token}</button>
+                            <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${houseId}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
+                            <button class="btn btn-danger" id="cancelBtn${houseId}" onclick="cancelSale(${houseId})">Cancel Sale</button>
                         </div >
                     </div>`
 
 
     if (!isMarketplace) {
         $("#houseDiv").append(houseDiv);
-        $(`#buyBtn${id}`).hide();
-        $(`#buyEscrowBtn${id}`).hide();
-        $(`#cancelBtn${id}`).hide();
-        $(`#selectSaleBtn${id}`).show();
+        $(`#buyBtn${houseId}`).hide();
+        $(`#buyEscrowBtn${houseId}`).hide();
+        $(`#cancelBtn${houseId}`).hide();
+        $(`#selectSaleBtn${houseId}`).show();
     }
     else {
         $("#houseDivSale").append(houseDiv);
-        $(`#selectSaleBtn${id}`).hide();
+        $(`#selectSaleBtn${houseId}`).hide();
 
         if (owner === user) {
-            $(`#buyBtn${id}`).hide();
-            $(`#buyEscrowBtn${id}`).hide();
-            $(`#cancelBtn${id}`).show();
+            $(`#buyBtn${houseId}`).hide();
+            $(`#buyEscrowBtn${houseId}`).hide();
+            $(`#cancelBtn${houseId}`).show();
         }
         else {
-            $(`#buyBtn${id}`).show();
-            $(`#buyEscrowBtn${id}`).show();
-            $(`#cancelBtn${id}`).hide();
+            $(`#buyBtn${houseId}`).show();
+            $(`#buyEscrowBtn${houseId}`).show();
+            $(`#cancelBtn${houseId}`).hide();
         }
     }
 }
