@@ -15,6 +15,8 @@ contract TsaishenUsers is Ownable, Storage {
 
     event userAdded(string, address user, bool active);
     event userDeleted(string, address user, bool active);
+    event houseAdded(string, address user);
+    event houseDeleted(string, address user);
 
     address marketplace;
     address houseToken;
@@ -96,6 +98,8 @@ contract TsaishenUsers is Ownable, Storage {
     function addHouseToUser(address user, uint256 houseId) public onlyAuthorized{
         userInfo[user].houses.add(houseId);
         userInfo[user].houseOwner = true;
+
+        emit houseAdded("House added", user);
     }
 
     function deleteHouseFromUser(address user, uint256 houseId) public onlyAuthorized{
@@ -103,6 +107,8 @@ contract TsaishenUsers is Ownable, Storage {
         if(userInfo[user].houses.length() == 0){
             userInfo[user].houseOwner = false;
         }
+
+        emit houseDeleted("House removed", user);
     }
 
     function setAsLender(address user) public onlyAuthorized{

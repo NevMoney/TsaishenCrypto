@@ -92,6 +92,7 @@ $(".uploadLinkBtn").on("click", function () {
     $("#aboutPage").hide();
     $("#escrowPage").hide();
     $("#houseUploadedMsg").hide();
+    $("#newUserMsg").hide();
 
     $("#upload-container").show();    
 });

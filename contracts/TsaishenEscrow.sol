@@ -20,8 +20,7 @@ contract TsaishenEscrow is Ownable{
 
     enum State { Active, Refunding, Closed }
 
-    // timelock will be 10 days; TESTING: 1 minute
-    uint256 private constant _TIMELOCK= 1 minutes;
+    uint256 private constant _TIMELOCK= 10 days;
     address payable internal feeRecipient;
     uint256 fee = 3;
     
@@ -160,9 +159,8 @@ contract TsaishenEscrow is Ownable{
     }
 
     // -- onlyOwner --
-    // this extends timelock for 3 days (30 seconds for testing)
     function _extendTimelock(uint256 _tokenId) internal onlyOwner {
-        escrowById[_tokenId].timelock = 30 seconds;
+        escrowById[_tokenId].timelock = 3 days;
     }
 
     function _cancelTimelock(uint256 _tokenId) internal onlyOwner {
@@ -176,7 +174,7 @@ contract TsaishenEscrow is Ownable{
     function _close(uint256 _tokenId) internal onlyOwner {
         require(escrowById[_tokenId].state == State.Active, "TE: Must be active.");
         escrowById[_tokenId].state = State.Closed;
-        escrowById[_tokenId].timelock = 30 seconds; //give buyer 3 days to confirm
+        _extendTimelock(_tokenId);
 
         emit RefundsClosed("Refund closed.", escrowById[_tokenId].buyer, _tokenId);
     }  

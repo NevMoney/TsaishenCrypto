@@ -2,10 +2,10 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x1Fb97deC2Daa6b9D72105f29cc5df243CBa294Bc";
-var houseTokenAddress = "0x2a38163751B77E2B6ccaf498C52E03D9F6045c6e";
-var marketplaceAddress = "0x48aF276F1b3d3F6bf42619380e1DF09E37104732";
-const contractOwnerAddress = "0x2fb76205Dc47d39119F7Ab49B2DF93DF1B13962a";
+var tsaishenUsersAddress = "0x0B60A309049F8FB0D935355393270b19F1214383";
+var houseTokenAddress = "0x936334c4BAE3250108dd6acfDe199d133CB738BE";
+var marketplaceAddress = "0x3B2973DF8a47427f2F0880D08e6e848C788030e8";
+const contractOwnerAddress = "0xEa1e80dA4436cc1fEB81f59Fd748BA72501FfdC4";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
 const ethereumButton = document.querySelector('.enableEthereumButton');
@@ -98,11 +98,11 @@ $(document).ready(async () => {
     .on("error", console.error);
   
   usersInstance.events.userAdded().on("data", (event) => {
-    alert("Welcome to Tsaishen Crypto House! You are registered with account " + user +
-      ". Now give it a few minutes for the transaction to complete and then head over to Portfolio page.");
+    $("#newUserMsg").css("display", "block");
+    $("#newUserMsg").text("Welcome to Tsaishen Crypto House! You are registered with account: " + user +
+    ". Give blockchain miners a few minutes to complete the transaction before you can see it in your Portfolio page.");
   })
     .on("error", console.error);
-  
 });
 
 async function getUserHomes() {
