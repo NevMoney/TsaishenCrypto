@@ -59,18 +59,6 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         return false;
     }
 
-    function getHouseByOwner(address owner) external view returns(uint[] memory){
-        uint[] memory result = new uint[](balanceOf(owner));
-        uint counter = 0;
-        for(uint i=0; i<homes.length; i++){
-            if(ownerOf(i) == owner){
-                result[counter] = i;
-                counter++;
-            }
-        }
-        return result;
-    }
-
     // === OWNER ===
     function setUserContract(address _userContractAddress) internal onlyOwner {
         _tsaishenUsers = TsaishenUsers(_userContractAddress);

@@ -14,6 +14,4 @@ contract Storage {
         uint256 value;
         uint256 income;
     }
-
-    House[] homes;
 }

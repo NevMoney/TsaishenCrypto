@@ -13,9 +13,6 @@
       let ipfsFileHash;
       let ipfsDeed;
       let id;
-      
-      var value = $("#marketValue").val();
-      var income = $("#currentIncome").val();
     
       function hashFile(file) {
         console.log(file);
@@ -143,6 +140,11 @@
     
         var amount = web3.utils.toWei("1", "ether");
         // console.log(amount);
+
+        var value = $("#marketValue").val();
+        var income = $("#currentIncome").val();
+        console.log("value: ", value);
+        console.log("income: ", income);
       
         const receipt =
           await houseTokenInstance.methods
