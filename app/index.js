@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x46690385A272DD972B4085FdCdb3646fC9D7579d";
-var houseTokenAddress = "0xa3B6071877cFAa4899A423D1E881f1c2450A1Fce";
-var marketplaceAddress = "0x26D458F4eAb2E4774Df07Ece730a7e0587581650";
+var tsaishenUsersAddress = "0x3d2161F092d911CCDFF8fF1F72DBc9c9B4dEB776";
+var houseTokenAddress = "0x0Fba4535B6EA64E4b5b58E082F566c755597efF6";
+var marketplaceAddress = "0x7366346234A4D2808ea2d1b33205D1F772636f04";
 const contractOwnerAddress = "0xEa1e80dA4436cc1fEB81f59Fd748BA72501FfdC4";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
@@ -66,10 +66,10 @@ $(document).ready(async () => {
   houseTokenInstance.events.Minted().on("data", function (event) {
     let owner = event.returnValues._owner;
     let houseId = event.returnValues.id;
-    // let houseUri = event.returnValues.uri;
+    let houseUri = event.returnValues.uri;
     $("#houseUploadedMsg").css("display", "block");
     $("#houseUploadedMsg").text("Congratulations! You have successfully uploaded your real property onto the blockchain. The registered owner wallet address is "
-      + owner + " and your house token ID is " + houseId);
+      + owner + " and your house token ID is " + houseId + "house URI: " + houseUri);
   })
     .on("error", console.error);
   
@@ -105,41 +105,133 @@ $(document).ready(async () => {
     .on("error", console.error);
 });
 
-// async function getHouses() {
-//   var arrayId;
-//   var home;
-
-//   try {
-//     arrayId = await houseTokenInstance.methods.getHouseByOwner(user).call();
-//     console.log("getHouses arrayId:", arrayId);
-//   } catch (err) {
-//     console.log(err);
-//   }
-//   for (i = 0; i < arrayId.length; i++){
-//     home = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
-//     // appendCryptoHouse(home[0], i);
-//   }
-//   console.log("getHouses home:", home);
-// }
-
-// gives correct array and house info -- renamed to avoid functionCall confusion
+// get array of houses and house info by user
 async function getHouses() {
   var arrayId;
   var house;
 
   try {
+    // first get array of all user homes
     arrayId = await usersInstance.methods.getUserHomes(user).call();
-    console.log("getUserHomes arrayId ", arrayId);
+    console.log("ID array ", arrayId);
+    // loop through the array and get house info(value, income, uri)
     for (i = 0; i < arrayId.length; i++){
       house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
-      // appendCrypotoHouse(arrayId[i], house.uri, false);
-      console.log("getUserHomes house ", house);
+      console.log("house info ", house);
+      
+      let id = arrayId[i];
+
+      fetch(house.uri).then(function (res) {
+        res.json().then(function (data) {
+          console.log("JSON file: ", data);
+
+          // $("#loading").hide();
+          
+          address = data.attributes[0].value;
+          beds = new Intl.NumberFormat().format(data.attributes[1].value);
+          baths = new Intl.NumberFormat().format(data.attributes[2].value);
+          year = data.attributes[3].value;
+          house = data.attributes[4].value;
+          size = data.attributes[5].value;
+          parcel = data.attributes[6].value; //showing up as undefined
+          value = new Intl.NumberFormat().format(data.attributes[7].value);
+          income = new Intl.NumberFormat().format(data.attributes[8].value);
+          type = data.attributes[9].value;
+          link = data.attributes[10].value;
+          video = data.attributes[11].value;
+          fileName = data.name;
+          imageUrl = data.image;
+          localLink = data.external_url;
+          description = data.description;
+          console.log("pic:", imageUrl, "about:", description, "address:", address, "beds:", beds,
+            "bath:", baths, "year built:", year, "house sqft:", house, "lot size:", size,
+            "parcel no:", parcel, "current value:", value, "current income:", income,
+            "property type:", type, "more info:", link, "video tour:", video);
+          
+          $("#portfolioDisplay").append(
+            `<tr>
+                <th scope="row" class="notbold">House ID: ${id}</th>
+                <td><img width=200px src=${imageUrl}></td>
+                <td>Address: ${address}
+                    <br>Beds: ${beds}
+                    &nbsp;/&nbsp; Baths: ${baths}
+                    <br>Year Built: ${year}</td>
+                <td>House Size: ${house}
+                    &nbsp;/&nbsp; Lot Size: ${size}
+                    <br>Parcel Number: ${parcel}
+                    <br>Property Type: ${type}</td>
+                <td>Additional Info: ${link}
+                    <br>Video: ${video}
+                    <br>Value: ${value}
+                    &nbsp;/&nbsp; Income: ${income}</td>
+            </tr>`
+          )
+        });
+      });
+      // append the blockchain house to Portfolio
+      // appendCrypotoHouse(arrayId[i], house.uri, house.value, house.income, false);
     }
   }
   catch (err) {
     console.log(err);
   }
 }
+
+// getHouses();
+
+
+// function appendCryptoHouse(id, utl, value, income, isMarketplace, price, owner) {
+//   // box div to display element into HTML
+//   houseBox(id, uri, isMarketplace, price, owner);
+//   getHouses;
+//   // renderBlockchainHouse(id);
+//   // $("#houseImport" + id).html();
+// }
+
+
+// function houseBox(id, isMarketplace, price, owner, token) {
+
+//   var houseDiv = `<div class="col-lg-4 pointer fit-content" id="portfolioDisplay${id}">
+//                   <div class="featureBox houseDiv">
+
+//                   <div class="image">
+//                       <div
+//                   </div>
+
+//                       <div class="house" onclick="selectHouse(${id})">
+//                           <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+                      
+//                           <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
+//                           <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
+//                           <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
+//                       </div >
+//                   </div>
+//                   </div>`
+
+
+//   if (!isMarketplace) {
+//       $("#houseDiv").append(houseDiv);
+//       $(`#buyBtn${id}`).hide();
+//       $(`#buyEscrowBtn${id}`).hide();
+//       $(`#cancelBtn${id}`).hide();
+//       $(`#selectSaleBtn${id}`).show();
+//   }
+//   else {
+//       $("#houseDivSale").append(houseDiv);
+//       $(`#selectSaleBtn${id}`).hide();
+
+//       if (owner === user) {
+//           $(`#buyBtn${id}`).hide();
+//           $(`#buyEscrowBtn${id}`).hide();
+//           $(`#cancelBtn${id}`).show();
+//       }
+//       else {
+//           $(`#buyBtn${id}`).show();
+//           $(`#buyEscrowBtn${id}`).show();
+//           $(`#cancelBtn${id}`).hide();
+//       }
+//   }
+// }
 
 async function checkOffer(id) {
   try {
