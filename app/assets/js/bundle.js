@@ -1,170 +1,280 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-    (function (Buffer){(function (){
-    const ipfsClient = require("ipfs-http-client");
-    const ipfs = ipfsClient({
-      host: "ipfs.infura.io",
-      port: 5001,
-      protocol: "https",
-    });
-    
-    let buffer;
-    let ipfsHash;
-    let ipfsFileHash;
-    let ipfsDeed;
-      
-    var value = $("#marketValue").val();
-    var income = $("#currentIncome").val();
-    
-    function hashFile(file) {
-      console.log(file);
-      //console.log(file.name);
-      $("#fileUpload").hide(file.name);
-      $("#fileName").show();
-      $("#fileName>h5").html(`File Name: ${file.name}`);
-  
-      var reader = new FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onloadend = () => {
-        buffer = Buffer(reader.result);
-        //console.log(buffer);
-        const hash = window.web3.utils.sha3(buffer);
-        //console.log("hash", hash);
-      };
-    }
-    
-    function hashDeed(deed) {
-      console.log(deed);
-      console.log(deed.name);
-      $("#deed-container").hide(deed.name);
-      $("#nextStep").hide();
-      $("#deedFileName").show();
-      $("#deedFileName>h5").html(`Deed File: ${deed.name}`);
-  
-      var deedReader = new FileReader();
-      deedReader.readAsArrayBuffer(deed);
-      deedReader.onloadend = () => {
-        buffer = Buffer(deedReader.result);
-        console.log(buffer);
-        const hash = window.web3.utils.sha3(buffer);
-        console.log("deedHash", hash);
-      };
-    }
-    
-    $("#upload").click(( async() => {
-  
-    const addFileToIpfs = await
-      console.log("adding to IPFS...");
-      $("#upload").html("Uploading");
-    
-      const added = await ipfs.add(buffer, {
-        progress: (prog) => console.log(`received: ${prog}`),
+  (function (Buffer) {
+    (function () {
+      const ipfsClient = require("ipfs-http-client");
+      const ipfs = ipfsClient({
+        host: "ipfs.infura.io",
+        port: 5001,
+        protocol: "https",
       });
     
-      $("#upload").hide();
-    
-      ipfsHash = added.cid.toString();
-    
-      const propertyData = JSON.stringify({
-        name: "Tsaishen Crypto House",
-        description: $("#description").val(),
-        image: 'https://gateway.ipfs.io/ipfs/' + ipfsHash,
-        // will likely need to tweak this once I figure out the actual URL, but for now
-        external_url: "https://tsaishen.crypto/marketplace/ipfsFileHash",
-        attributes: [
-          {
-            key: "address",
-            trait_type: "Address",
-            value: $("#address").val()
-          },
-          {
-            key: "bedrooms",
-            trait_type: "Bedrooms",
-            value: $("#bedrooms").val()
-          },
-          {
-            key: "bathrooms",
-            trait_type: "Bathrooms",
-            value: $("#bathrooms").val()
-          },
-          {
-            key: "yearBuilt",
-            trait_type: "Year Built",
-            value: $("#yearBuilt").val()
-          },
-          {
-            key: "houseSize",
-            trait_type: "House Size",
-            value: $("#houseSize").val()
-          },
-          {
-            key: "lotSize",
-            trait_type: "Lot Size",
-            value: $("#lotSize").val()
-          },
-          {
-            key: "parcelNumber",
-            trait_type: "Parcel Number",
-            value: $("#parcel").val()
-          },
-          {
-            key: "marketValue",
-            trait_type: "Market Value",
-            value: $("#marketValue").val()
-          },
-          {
-            key: "currentIncome",
-            trait_type: "Monthly Income",
-            value: $("#currentIncome").val()
-          },
-          {
-            key: "propertyType",
-            trait_type: "Property Type",
-            value: $("#propertyType").val()
-          },
-          {
-            key: "propertyLink",
-            trait_type: "Public View Link",
-            value:  $("#zillow").val()
-          },
-          {
-            key: "videoLink",
-            trait_type: "Video Link",
-            value: $("#video").val()
-          }
-        ],     //may need to remove ',' if certification moved or inside array
-        certification: validateCheckbox(), //this is NOT working
-      });
-    
-      const insert = await ipfs.add(propertyData);
-    
-      ipfsFileHash = insert.cid.toString();
-    
-      var amount = web3.utils.toWei("1", "ether");
-      console.log(amount);
+      let buffer;
+      let ipfsHash;
+      let ipfsFileHash;
+      let ipfsDeed;
+      let id;
       
-      try {
+      var value = $("#marketValue").val();
+      var income = $("#currentIncome").val();
+    
+      function hashFile(file) {
+        console.log(file);
+        //console.log(file.name);
+        $("#fileUpload").hide(file.name);
+        $("#fileName").show();
+        $("#fileName>h5").html(`File Name: ${file.name}`);
+  
+        var reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onloadend = () => {
+          buffer = Buffer(reader.result);
+          //console.log(buffer);
+          const hash = window.web3.utils.sha3(buffer);
+          //console.log("hash", hash);
+        };
+      }
+    
+      function hashDeed(deed) {
+        console.log(deed);
+        console.log(deed.name);
+        $("#deed-container").hide(deed.name);
+        $("#nextStep").hide();
+        $("#deedFileName").show();
+        $("#deedFileName>h5").html(`Deed File: ${deed.name}`);
+  
+        var deedReader = new FileReader();
+        deedReader.readAsArrayBuffer(deed);
+        deedReader.onloadend = () => {
+          buffer = Buffer(deedReader.result);
+          console.log(buffer);
+          const hash = window.web3.utils.sha3(buffer);
+          console.log("deedHash", hash);
+        };
+      }
+    
+      $("#upload").click((async () => {
+  
+        const addFileToIpfs = await
+          // console.log("adding to IPFS...");
+          $("#upload").html("Uploading");
+    
+        const added = await ipfs.add(buffer, {
+          progress: (prog) => console.log(`received: ${prog}`),
+        });
+    
+        $("#upload").hide();
+    
+        ipfsHash = added.cid.toString();
+    
+        const propertyData = JSON.stringify({
+          name: "Tsaishen Crypto House",
+          description: $("#description").val(),
+          image: 'https://gateway.ipfs.io/ipfs/' + ipfsHash,
+          // will likely need to tweak this once I figure out the actual URL, but for now
+          external_url: "https://tsaishen.crypto/marketplace/ipfsFileHash",
+          attributes: [
+            {
+              key: "address",
+              trait_type: "Address",
+              value: $("#address").val()
+            },
+            {
+              key: "bedrooms",
+              trait_type: "Bedrooms",
+              value: $("#bedrooms").val()
+            },
+            {
+              key: "bathrooms",
+              trait_type: "Bathrooms",
+              value: $("#bathrooms").val()
+            },
+            {
+              key: "yearBuilt",
+              trait_type: "Year Built",
+              value: $("#yearBuilt").val()
+            },
+            {
+              key: "houseSize",
+              trait_type: "House Size",
+              value: $("#houseSize").val()
+            },
+            {
+              key: "lotSize",
+              trait_type: "Lot Size",
+              value: $("#lotSize").val()
+            },
+            {
+              key: "parcelNumber",
+              trait_type: "Parcel Number",
+              value: $("#parcel").val()
+            },
+            {
+              key: "marketValue",
+              trait_type: "Market Value",
+              value: $("#marketValue").val()
+            },
+            {
+              key: "currentIncome",
+              trait_type: "Monthly Income",
+              value: $("#currentIncome").val()
+            },
+            {
+              key: "propertyType",
+              trait_type: "Property Type",
+              value: $("#propertyType").val()
+            },
+            {
+              key: "propertyLink",
+              trait_type: "Public View Link",
+              value: $("#zillow").val()
+            },
+            {
+              key: "videoLink",
+              trait_type: "Video Link",
+              value: $("#video").val()
+            }
+          ],     //may need to remove ',' if certification moved or inside array
+          certification: validateCheckbox(), //this is NOT working
+        });
+    
+        const insert = await ipfs.add(propertyData);
+    
+        ipfsFileHash = insert.cid.toString();
+    
+        var amount = web3.utils.toWei("1", "ether");
+        // console.log(amount);
+      
         const receipt =
           await houseTokenInstance.methods
             .createHouse(value, income, ipfsFileHash)
             .send({ from: user, value: amount });
         console.log("uploadHouse: ", receipt);
-        console.log("uploadHouse: ", receipt.events.Transfer.returnValues.tokenId);
-      }
-      catch (err) {
-        console.log(err)
-      } 
+        console.log("uploadHouse ID: ", receipt.events.Transfer.returnValues.tokenId);
+        console.log("uploadHouse uri: ", receipt.events.Minted.returnValues.uri);
 
-      const ipfsLink =
-        "<a target='_blank' rel='noopener noreferrer' href='https://gateway.ipfs.io/ipfs/" +
-        ipfsFileHash +
-        "'>" +
-        ipfsFileHash +
-        "</a>";
-      $("#ipfsResult").html(ipfsLink);
+        id = receipt.events.Transfer.returnValues.tokenId;
 
-      console.log("data hash: " + ipfsFileHash);
+        const ipfsLink =
+          "<a target='_blank' rel='noopener noreferrer' href='https://gateway.ipfs.io/ipfs/" +
+          ipfsFileHash +
+          "'>" +
+          ipfsFileHash +
+          "</a>";
+        $("#ipfsResult").html(ipfsLink);
+
+        console.log("data hash: " + ipfsFileHash);
       
-    }));
+      }));
+      
+      
+      // function appendCryptoHouse(id, uri, isMarketplace, price, owner) {
+      //   // box div to display element into HTML
+      //   houseBox(id, uri, isMarketplace, price, owner);
+      //   getHouseData(id);
+      //   renderBlockchainHouse(id);
+      //   $("#houseImport" + id).html();
+      // }
+    
+      // $("#portfolioLink").click((async () => {
+      //   // get url for the minted token/house
+      //   let BASE_URL = "https://gateway.ipfs.io/ipfs/";
+      //   let TOKEN_ENDPOINT = await houseTokenInstance.methods.getHouseByOwner(user).call();
+      //   let urlToken = BASE_URL + TOKEN_ENDPOINT;
+
+      //   var houseData = await fetch(urlToken).then(function (res) {
+      //     res.json().then(function (data) {
+      //       $("#portfolioDisplay").append(
+      //         `<tr>
+      //                   <th scope="row" class="notbold">House ID: ${id}</th>
+      //                   <td><img width=200px src=${data[id].image}></td>
+      //                   <td>Address: ${data[id].attributes.address}
+      //                       <br>Beds: ${data[id].attributes.bedrooms}
+      //                       &nbsp;/&nbsp; Baths: ${data[id].attributes.bathrooms}
+      //                       <br>Year Built: ${data[id].attributes.yearBuilt}</td>
+      //                   <td>House Size: ${data[id].attributes.houseSize}
+      //                       &nbsp;/&nbsp; Lot Size: ${data[id].attributes.lotSize}
+      //                       <br>Parcel Number: ${data[id].attributes.parcelNumber}
+      //                       <br>Property Type: ${data[id].attributes.propertyType}</td>
+      //                   <td>Additional Info: ${data[id].attributes.propertyLink}
+      //                       <br>Video: ${data[id].attributes.videoLink}
+      //                       <br>Value: ${data[id].attributes.marketValue}
+      //                       &nbsp;/&nbsp; Income: ${data[id].attributes.currentIncome}</td>
+      //               </tr>`
+      //       )
+      //     });
+      //   });
+      //   console.log("getHouseData: ", houseData);
+      // }));
+    
+    // function getHouseData(id) {
+    //   fetch(urlToken).then(function (res) {
+    //     res.json().then(function (data) {
+    //       $("#portfolioDisplay").append(
+    //         `<tr>
+    //                     <th scope="row" class="notbold">House ID: ${id}</th>
+    //                     <td><img width=200px src=${data[id].image}></td>
+    //                     <td>Address: ${data[id].attributes.address}
+    //                         <br>Beds: ${data[id].attributes.bedrooms}
+    //                         &nbsp;/&nbsp; Baths: ${data[id].attributes.bathrooms}
+    //                         <br>Year Built: ${data[id].attributes.yearBuilt}</td>
+    //                     <td>House Size: ${data[id].attributes.houseSize}
+    //                         &nbsp;/&nbsp; Lot Size: ${data[id].attributes.lotSize}
+    //                         <br>Parcel Number: ${data[id].attributes.parcelNumber}
+    //                         <br>Property Type: ${data[id].attributes.propertyType}</td>
+    //                     <td>Additional Info: ${data[id].attributes.propertyLink}
+    //                         <br>Video: ${data[id].attributes.videoLink}
+    //                         <br>Value: ${data[id].attributes.marketValue}
+    //                         &nbsp;/&nbsp; Income: ${data[id].attributes.currentIncome}</td>
+    //                 </tr>`
+    //       )
+    //     });
+    //   });
+    //   console.log("getHouseData: ", res.json());
+    // }
+  
+    // function houseBox(id, isMarketplace, price, owner, token) {
+    
+    //   var houseDiv = `<div class="col-lg-4 pointer fit-content" id="portfolioDisplay${id}">
+    //                   <div class="featureBox houseDiv">
+  
+    //                   <div class="image">
+    //                       <div
+    //                   </div>
+  
+    //                       <div class="house" onclick="selectHouse(${id})">
+    //                           <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+                          
+    //                           <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
+    //                           <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
+    //                           <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
+    //                       </div >
+    //                   </div>
+    //                   </div>`
+  
+  
+    //   if (!isMarketplace) {
+    //       $("#houseDiv").append(houseDiv);
+    //       $(`#buyBtn${id}`).hide();
+    //       $(`#buyEscrowBtn${id}`).hide();
+    //       $(`#cancelBtn${id}`).hide();
+    //       $(`#selectSaleBtn${id}`).show();
+    //   }
+    //   else {
+    //       $("#houseDivSale").append(houseDiv);
+    //       $(`#selectSaleBtn${id}`).hide();
+  
+    //       if (owner === user) {
+    //           $(`#buyBtn${id}`).hide();
+    //           $(`#buyEscrowBtn${id}`).hide();
+    //           $(`#cancelBtn${id}`).show();
+    //       }
+    //       else {
+    //           $(`#buyBtn${id}`).show();
+    //           $(`#buyEscrowBtn${id}`).show();
+    //           $(`#cancelBtn${id}`).hide();
+    //       }
+    //   }
+    // }
     
     const addDeedToIpfs = async () => {
       $("#deedUpload").html("Uploading");
@@ -221,12 +331,6 @@
       console.log(e.target.files[0]);
       hashDeed(e.target.files[0]);
     });
-    
-    
-    //   $("#upload").click(() => {
-    //     addFileToIpfs();
-    //     console.log("data hash: " + ipfsFileHash);
-    // });
     
     $("#deedUpload").click(() => addDeedToIpfs());
     

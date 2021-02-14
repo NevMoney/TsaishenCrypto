@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x0B60A309049F8FB0D935355393270b19F1214383";
-var houseTokenAddress = "0x936334c4BAE3250108dd6acfDe199d133CB738BE";
-var marketplaceAddress = "0x3B2973DF8a47427f2F0880D08e6e848C788030e8";
+var tsaishenUsersAddress = "0x7E7E082A1Cd803e1B10a33d4433BFDA73C14C263";
+var houseTokenAddress = "0x4F87ef9752D988F509c830f7Ee2d9E35E2D7F9Ff";
+var marketplaceAddress = "0xd41EE9D0193DbE8dd0028B3F23bA336Ef1c0951E";
 const contractOwnerAddress = "0xEa1e80dA4436cc1fEB81f59Fd748BA72501FfdC4";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
@@ -105,15 +105,35 @@ $(document).ready(async () => {
     .on("error", console.error);
 });
 
-async function getUserHomes() {
+// async function getHouses() {
+//   var arrayId;
+//   var home;
+
+//   try {
+//     arrayId = await houseTokenInstance.methods.getHouseByOwner(user).call();
+//     console.log("getHouses arrayId:", arrayId);
+//   } catch (err) {
+//     console.log(err);
+//   }
+//   for (i = 0; i < arrayId.length; i++){
+//     home = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
+//     // appendCryptoHouse(home[0], i);
+//   }
+//   console.log("getHouses home:", home);
+// }
+
+// gives correct array and house info -- renamed to avoid functionCall confusion
+async function getHouses() {
   var arrayId;
   var house;
 
   try {
     arrayId = await usersInstance.methods.getUserHomes(user).call();
+    console.log("getUserHomes arrayId ", arrayId);
     for (i = 0; i < arrayId.length; i++){
       house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
-      appendCrypotoHouse(arrayId[i], house.uri, false);
+      // appendCrypotoHouse(arrayId[i], house.uri, false);
+      console.log("getUserHomes house ", house);
     }
   }
   catch (err) {

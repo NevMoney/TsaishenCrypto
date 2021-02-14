@@ -43,6 +43,8 @@ $("#portfolioLink").on("click", function () {
 
     $("#portfolioLink").addClass("active");
     $("#portfolio-container").show();
+
+    getHouses();
 });
 
 $(".blockLink").on("click", function () {
