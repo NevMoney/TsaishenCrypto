@@ -2,10 +2,10 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x3d2161F092d911CCDFF8fF1F72DBc9c9B4dEB776";
-var houseTokenAddress = "0x0Fba4535B6EA64E4b5b58E082F566c755597efF6";
-var marketplaceAddress = "0x7366346234A4D2808ea2d1b33205D1F772636f04";
-const contractOwnerAddress = "0xEa1e80dA4436cc1fEB81f59Fd748BA72501FfdC4";
+var tsaishenUsersAddress = "0xC814f10f67D6DC36D28A182933515c94b6a836EE";
+var houseTokenAddress = "0x890875a35eD4BF46D4eccF49eadf07F46F5aaEFc";
+var marketplaceAddress = "0x4fB8A175d9aDF877031B008d851e4Dd4Da2743dB";
+const contractOwnerAddress = "0x9F78E1b7509D84A365710d72F9e99c7240fFB896";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
 const ethereumButton = document.querySelector('.enableEthereumButton');
@@ -69,7 +69,7 @@ $(document).ready(async () => {
     let houseUri = event.returnValues.uri;
     $("#houseUploadedMsg").css("display", "block");
     $("#houseUploadedMsg").text("Congratulations! You have successfully uploaded your real property onto the blockchain. The registered owner wallet address is "
-      + owner + " and your house token ID is " + houseId + "house URI: " + houseUri);
+      + owner + " and your house token ID is " + houseId + " house URI: " + houseUri);
   })
     .on("error", console.error);
   
@@ -158,20 +158,19 @@ async function getHouses() {
           
           $("#portfolioDisplay").append(
             `<tr>
-                <th scope="row" class="notbold">House ID: ${id}</th>
-                <td><img width=200px src=${imageUrl}></td>
-                <td>Address: ${address}
-                    <br>Beds: ${beds}
-                    &nbsp;/&nbsp; Baths: ${baths}
-                    <br>Year Built: ${year}</td>
-                <td>House Size: ${house}
-                    &nbsp;/&nbsp; Lot Size: ${size}
-                    <br>Parcel Number: ${parcel}
-                    <br>Property Type: ${type}</td>
-                <td>Additional Info: ${link}
-                    <br>Video: ${video}
-                    <br>Value: ${value}
-                    &nbsp;/&nbsp; Income: ${income}</td>
+              <td><img width=250px src=${imageUrl}></td>
+              <td>Address: ${address}
+                  <br>Beds: ${beds}
+                  &nbsp;/&nbsp; Baths: ${baths}
+                  <br>Year Built: ${year}</td>
+              <td>House Size: ${house}
+                  <br>Lot Size: ${size}
+                  <br>Parcel Number: ${parcel}
+              <td>${type}</td>
+              <td>Value: $${value}
+                <br>Monthly Income: $${income}</td>
+              <td>${link}</td>
+              <td>${video}</td>
             </tr>`
           )
         });
@@ -186,43 +185,43 @@ async function getHouses() {
 }
 
 
-function houseBox(id, url, isMarketplace, price, owner, token) {
-  var houseDiv = `<div class="col-lg-4 fit-content" id="portfolioDisplay${id}">
+// function houseBox(id, url, isMarketplace, price, owner, token) {
+//   var houseDiv = `<div class="col-lg-4 fit-content" id="portfolioDisplay${id}">
 
-                      <div class="house" onclick="selectHouse(${id})">
-                          <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+//                       <div class="house" onclick="selectHouse(${id})">
+//                           <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
                       
-                          <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
-                          <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
-                          <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
-                      </div >
-                  </div>
-                  </div>`
+//                           <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
+//                           <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
+//                           <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
+//                       </div >
+//                   </div>
+//                   </div>`
 
 
-  if (!isMarketplace) {
-      $("#houseDiv").append(houseDiv);
-      $(`#buyBtn${id}`).hide();
-      $(`#buyEscrowBtn${id}`).hide();
-      $(`#cancelBtn${id}`).hide();
-      $(`#selectSaleBtn${id}`).show();
-  }
-  else {
-      $("#houseDivSale").append(houseDiv);
-      $(`#selectSaleBtn${id}`).hide();
+//   if (!isMarketplace) {
+//       $("#houseDiv").append(houseDiv);
+//       $(`#buyBtn${id}`).hide();
+//       $(`#buyEscrowBtn${id}`).hide();
+//       $(`#cancelBtn${id}`).hide();
+//       $(`#selectSaleBtn${id}`).show();
+//   }
+//   else {
+//       $("#houseDivSale").append(houseDiv);
+//       $(`#selectSaleBtn${id}`).hide();
 
-      if (owner === user) {
-          $(`#buyBtn${id}`).hide();
-          $(`#buyEscrowBtn${id}`).hide();
-          $(`#cancelBtn${id}`).show();
-      }
-      else {
-          $(`#buyBtn${id}`).show();
-          $(`#buyEscrowBtn${id}`).show();
-          $(`#cancelBtn${id}`).hide();
-      }
-  }
-}
+//       if (owner === user) {
+//           $(`#buyBtn${id}`).hide();
+//           $(`#buyEscrowBtn${id}`).hide();
+//           $(`#cancelBtn${id}`).show();
+//       }
+//       else {
+//           $(`#buyBtn${id}`).show();
+//           $(`#buyEscrowBtn${id}`).show();
+//           $(`#cancelBtn${id}`).hide();
+//       }
+//   }
+// }
 
 async function checkOffer(id) {
   try {
