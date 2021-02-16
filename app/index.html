@@ -1003,10 +1003,14 @@
             </div>
             <div class="row g-2">
               <div class="col-md-2"><br>
+                <label for="county" class="form-label font-size-lg mb-2 mb-md-4">Property County</label>
+                  <input type="text" class="form-control" id="county" placeholder="Maricopa">
+              </div>
+              <div class="col-md-2"><br>
                 <label for="value" class="form-label font-size-lg mb-2 mb-md-4">Current Market Value</label>
                 <div class="input-group">
                   <span class="input-group-addon font-size-lg"><i class="fas fa-dollar-sign"></i> </span>
-                  <input type="number" class="form-control" id="marketValue" placeholder="$150,000" >
+                  <input type="number" class="form-control" id="marketValue" placeholder="$150,000">
                 </div>
               </div>
               <div class="col-md-2"><br>
@@ -1165,7 +1169,7 @@
           <h1 class="display-2 font-weight-bold text-center">
             Your Assets
           </h1><br>
-          <p class="font-size-lg mb-2 mb-md-8 text-center">
+          <p class="font-size-lg mb-2 mb-md-6 text-center">
             All of your properties in one place.
           </p>
           <p class="font-size-lg text-muted mb-4 mb-md-2 text-center">
@@ -1179,22 +1183,23 @@
         </div>
         <br>
         <div class="portfolio-bottom">
-          <table class="table">
-            <thread>
-              <tr>
-                
-                <th scope="col">Image</th>
-                <th scope="col">House Basics</th>
-                <th scope="col">Additional Info</th>
-                <th scope="col">Property Type</th>
-                <th scope="col">Value & Income</th>
-                <th scope="col">Public Site</th>
-                <th scope="col">Video Tour</th>
-              </tr>
-            </thread>
-            <tbody id="portfolioDisplay"></tbody>
-          </table>
-            
+          <div class="table-responsive">
+            <table class="table table-hover table-responsive{-sm|-md|-lg|-xl}">
+              <thead class="thead-dark">
+                <tr>
+                  
+                  <th scope="col">Image</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">The Basics</th>
+                  <th scope="col">Additional Info</th>
+                  <th scope="col">Financials</th>
+                  <th scope="col">External Links</th>
+                  <th scope="col">Buttons</th>
+                </tr>
+              </thead>
+              <tbody id="portfolioDisplay"></tbody>
+            </table>
+          </div>
             <div id="houseDiv" class="row"></div>
         </div>
         
@@ -2342,7 +2347,7 @@
             <!-- Headin -->
             <h1 id="bigHearts" class="display-2 mb-md-6">
               Small team. Big hearts. <br>
-              One <span class="text-info"><b><u>GIANT</u></b></span> goal.
+              One <span class="text-info"><b><u>GIANT</u></b></span> goal:
             </h1>
             <h5 class="display-4">
               <span class="text-success">Help you do real estate YOUR way!</span>

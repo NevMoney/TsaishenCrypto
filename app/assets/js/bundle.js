@@ -12,7 +12,6 @@
       let ipfsHash;
       let ipfsFileHash;
       let ipfsDeed;
-      let id;
     
       function hashFile(file) {
         console.log(file);
@@ -74,6 +73,11 @@
               key: "address",
               trait_type: "Address",
               value: $("#address").val()
+            },
+            {
+              key: "county",
+              trait_type: "County",
+              value: $("#county").val()
             },
             {
               key: "bedrooms",

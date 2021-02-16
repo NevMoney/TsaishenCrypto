@@ -136,22 +136,23 @@ async function getHouses() {
           // $("#loading").hide();
           
           address = data.attributes[0].value;
-          beds = new Intl.NumberFormat().format(data.attributes[1].value);
-          baths = new Intl.NumberFormat().format(data.attributes[2].value);
-          year = data.attributes[3].value;
-          house = data.attributes[4].value;
-          size = data.attributes[5].value;
-          parcel = data.attributes[6].value; //showing up as undefined
-          value = new Intl.NumberFormat().format(data.attributes[7].value);
-          income = new Intl.NumberFormat().format(data.attributes[8].value);
-          type = data.attributes[9].value;
-          link = data.attributes[10].value;
-          video = data.attributes[11].value;
+          county = data.attributes[1].value;
+          beds = new Intl.NumberFormat().format(data.attributes[2].value);
+          baths = new Intl.NumberFormat().format(data.attributes[3].value);
+          year = data.attributes[4].value;
+          house = data.attributes[5].value;
+          size = data.attributes[6].value;
+          parcel = data.attributes[7].value; //showing up as undefined
+          value = new Intl.NumberFormat().format(data.attributes[8].value);
+          income = new Intl.NumberFormat().format(data.attributes[9].value);
+          type = data.attributes[10].value;
+          link = data.attributes[11].value;
+          video = data.attributes[12].value;
           fileName = data.name;
           imageUrl = data.image;
           localLink = data.external_url;
           description = data.description;
-          console.log("pic:", imageUrl, "about:", description, "address:", address, "beds:", beds,
+          console.log("pic:", imageUrl, "about:", description, "address:", address, "county:", county, "beds:", beds,
             "bath:", baths, "year built:", year, "house sqft:", house, "lot size:", size,
             "parcel no:", parcel, "current value:", value, "current income:", income,
             "property type:", type, "more info:", link, "video tour:", video);
@@ -159,18 +160,21 @@ async function getHouses() {
           $("#portfolioDisplay").append(
             `<tr>
               <td><img width=250px src=${imageUrl}></td>
-              <td>Address: ${address}
-                  <br>Beds: ${beds}
-                  &nbsp;/&nbsp; Baths: ${baths}
-                  <br>Year Built: ${year}</td>
-              <td>House Size: ${house}
-                  <br>Lot Size: ${size}
-                  <br>Parcel Number: ${parcel}
-              <td>${type}</td>
-              <td>Value: $${value}
-                <br>Monthly Income: $${income}</td>
-              <td>${link}</td>
-              <td>${video}</td>
+              <td>${description}</td>
+              <td><strong>Address:</strong> ${address}
+                <br><strong>Beds:</strong> ${beds}
+                <br><strong>Baths:</strong> ${baths}
+                <br><strong>Year Built:</strong> ${year}</td>
+              <td><strong>House Size:</strong> ${house}
+                <br><strong>Lot Size:</strong> ${size}
+                <br><strong>Parcel:</strong> ${parcel}
+                <br><strong>Type:</strong> ${type}
+                <br><strong>County:</strong> ${county}</td>
+              <td><strong>Value:</strong> $${value}
+                <br><strong>Monthly Income:</strong> $${income}</td>
+              <td><strong>Public Link:</strong> <a href=${link} target="_blank" rel="noopener noreferrer">${link}</a>
+                <br><strong>Video:</strong> <a href=${video} target="_blank" rel="noopener noreferrer">${video}</a></td>
+              <td>Buttons GO HERE</td>
             </tr>`
           )
         });
@@ -185,43 +189,43 @@ async function getHouses() {
 }
 
 
-// function houseBox(id, url, isMarketplace, price, owner, token) {
-//   var houseDiv = `<div class="col-lg-4 fit-content" id="portfolioDisplay${id}">
+function houseBox(id, url, isMarketplace, price, owner, token) {
+  var houseDiv = `<div class="col-lg-4 fit-content" id="portfolioDisplay${id}">
 
-//                       <div class="house" onclick="selectHouse(${id})">
-//                           <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+                      <div class="house" onclick="selectHouse(${id})">
+                          <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
                       
-//                           <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
-//                           <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
-//                           <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
-//                       </div >
-//                   </div>
-//                   </div>`
+                          <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
+                          <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
+                          <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
+                      </div >
+                  </div>
+                  </div>`
 
 
-//   if (!isMarketplace) {
-//       $("#houseDiv").append(houseDiv);
-//       $(`#buyBtn${id}`).hide();
-//       $(`#buyEscrowBtn${id}`).hide();
-//       $(`#cancelBtn${id}`).hide();
-//       $(`#selectSaleBtn${id}`).show();
-//   }
-//   else {
-//       $("#houseDivSale").append(houseDiv);
-//       $(`#selectSaleBtn${id}`).hide();
+  if (!isMarketplace) {
+      $("#houseDiv").append(houseDiv);
+      $(`#buyBtn${id}`).hide();
+      $(`#buyEscrowBtn${id}`).hide();
+      $(`#cancelBtn${id}`).hide();
+      $(`#selectSaleBtn${id}`).show();
+  }
+  else {
+      $("#houseDivSale").append(houseDiv);
+      $(`#selectSaleBtn${id}`).hide();
 
-//       if (owner === user) {
-//           $(`#buyBtn${id}`).hide();
-//           $(`#buyEscrowBtn${id}`).hide();
-//           $(`#cancelBtn${id}`).show();
-//       }
-//       else {
-//           $(`#buyBtn${id}`).show();
-//           $(`#buyEscrowBtn${id}`).show();
-//           $(`#cancelBtn${id}`).hide();
-//       }
-//   }
-// }
+      if (owner === user) {
+          $(`#buyBtn${id}`).hide();
+          $(`#buyEscrowBtn${id}`).hide();
+          $(`#cancelBtn${id}`).show();
+      }
+      else {
+          $(`#buyBtn${id}`).show();
+          $(`#buyEscrowBtn${id}`).show();
+          $(`#cancelBtn${id}`).hide();
+      }
+  }
+}
 
 async function checkOffer(id) {
   try {
