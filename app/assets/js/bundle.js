@@ -19,6 +19,7 @@
         $("#fileUpload").hide(file.name);
         $("#fileName").show();
         $("#fileName>h5").html(`File Name: ${file.name}`);
+        console.log("modified date", file.lastModifiedDate);
   
         var reader = new FileReader();
         reader.readAsArrayBuffer(file);
@@ -28,6 +29,13 @@
           const hash = window.web3.utils.sha3(buffer);
           //console.log("hash", hash);
         };
+      }
+
+      function validateCheckbox() {
+        if ($("#certification").checked) {
+          return true;
+        }
+        return false;
       }
     
       function hashDeed(deed) {

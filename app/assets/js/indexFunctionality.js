@@ -243,12 +243,12 @@ function goToInventory() {
 }
 
 //NOT WORKING!!!
-function validateCheckbox(){
-    if($("#certification").checked){
-        return true;
-    }
-    return false;
-}
+// function validateCheckbox(){
+//     if($("#certification").checked){
+//         return true;
+//     }
+//     return false;
+// }
 
 var saleId;
 var salePrice;
