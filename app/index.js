@@ -2,10 +2,10 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xC814f10f67D6DC36D28A182933515c94b6a836EE";
-var houseTokenAddress = "0x890875a35eD4BF46D4eccF49eadf07F46F5aaEFc";
-var marketplaceAddress = "0x4fB8A175d9aDF877031B008d851e4Dd4Da2743dB";
-const contractOwnerAddress = "0x9F78E1b7509D84A365710d72F9e99c7240fFB896";
+var tsaishenUsersAddress = "0xE95A564F24b046C0b725643A3eE33fbB3bad3396";
+var houseTokenAddress = "0xfAf2DB5a1D636E0a1bDf653F19F46633FD463f3E";
+var marketplaceAddress = "0x95ca282aafAE71572Da6182846a05FB0d375d7b6";
+const contractOwnerAddress = "0x0BD027Dee897b44b98C8359305dA897E82A2305e";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
 const ethereumButton = document.querySelector('.enableEthereumButton');
@@ -100,18 +100,17 @@ $(document).ready(async () => {
   usersInstance.events.userAdded().on("data", (event) => {
     $("#newUserMsg").css("display", "block");
     $("#newUserMsg").text("Welcome to Tsaishen Crypto House! You are registered with account: " + user +
-    ". Give blockchain miners a few minutes to complete the transaction before you can see it in your Portfolio page.");
+    ". Head on over to Portfolio page to view details.");
   })
     .on("error", console.error);
 });
 
-function appendCryptoHouse(id, url, isMarketplace, price, owner) {
-  // box div to display element into HTML
-  houseBox(id, url, isMarketplace, price, owner);
-  getHouses;
-  // renderBlockchainHouse(id);
-  // $("#houseImport" + id).html();
-}
+// function appendCryptoHouse(id, url, isMarketplace, price, owner) {
+//   // box div to display element into HTML
+//   houseBox(id, url, isMarketplace, price, owner);
+//   // getHouses();
+//   $("#houseDiv" + id).html();
+// }
 
 // get array of houses and house info by user
 async function getHouses() {
@@ -126,8 +125,6 @@ async function getHouses() {
     for (i = 0; i < arrayId.length; i++){
       house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
       console.log("house info ", house);
-      
-      let id = arrayId[i];
 
       fetch(house.uri).then(function (res) {
         res.json().then(function (data) {
@@ -135,6 +132,7 @@ async function getHouses() {
 
           // $("#loading").hide();
           
+
           address = data.attributes[0].value;
           county = data.attributes[1].value;
           beds = new Intl.NumberFormat().format(data.attributes[2].value);
@@ -157,9 +155,19 @@ async function getHouses() {
             "parcel no:", parcel, "current value:", value, "current income:", income,
             "property type:", type, "more info:", link, "video tour:", video);
           
+          var button = `<div class="row fit-content" id="portfolioDisplay${arrayId[i]}">
+                          <div>
+                            <div class="house" onclick="selectHouse(${arrayId[i]})">
+                                <button class="btn btn-success" id="selectSaleBtn${arrayId[i]}" onclick="selectHouseForSale(${arrayId[i]})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+                                <button class="btn btn-danger" id="cancelBtn${arrayId[i]}" onclick="cancelSale(${arrayId[i]})">Cancel Sale</button>
+                            </div >
+                          </div>
+                        </div>`
+          
           $("#portfolioDisplay").append(
             `<tr>
-              <td><img width=250px src=${imageUrl}></td>
+              <td><img width=250px src=${imageUrl}>
+                <br><br>${button}</div></td>
               <td>${description}</td>
               <td><strong>Address:</strong> ${address}
                 <br><strong>Beds:</strong> ${beds}
@@ -174,13 +182,13 @@ async function getHouses() {
                 <br><strong>Monthly Income:</strong> $${income}</td>
               <td><strong>Public Link:</strong> <a href=${link} target="_blank" rel="noopener noreferrer">${link}</a>
                 <br><strong>Video:</strong> <a href=${video} target="_blank" rel="noopener noreferrer">${video}</a></td>
-              <td>Buttons GO HERE</td>
             </tr>`
           )
         });
       });
       // append the blockchain house to Portfolio (house.value, house.income)
-      // appendCrypotoHouse(arrayId[i], house.uri, false);
+      // appendCryptoHouse(arrayId[i], house.uri, false);
+      
     }
   }
   catch (err) {
@@ -188,10 +196,9 @@ async function getHouses() {
   }
 }
 
-
-function houseBox(id, url, isMarketplace, price, owner, token) {
-  var houseDiv = `<div class="col-lg-4 fit-content" id="portfolioDisplay${id}">
-
+function houseBox(id, isMarketplace, price, owner, token) {
+  var houseDiv = `<div class="col fit-content" id="portfolioDisplay${id}">
+                    <div>
                       <div class="house" onclick="selectHouse(${id})">
                           <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
                       
@@ -199,7 +206,7 @@ function houseBox(id, url, isMarketplace, price, owner, token) {
                           <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
                           <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
                       </div >
-                  </div>
+                    </div>
                   </div>`
 
 

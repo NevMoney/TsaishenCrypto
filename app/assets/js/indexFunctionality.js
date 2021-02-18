@@ -3,7 +3,7 @@ $(document).ready(async () => {
     $("#deed-container").hide();
     $("#upload-container").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -14,7 +14,7 @@ $(".marketLink").on("click", function () {
     $("#deed-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -42,9 +42,10 @@ $("#portfolioLink").on("click", function () {
     $("#homeLink").removeClass("active");
 
     $("#portfolioLink").addClass("active");
-    $("#portfolio-container").show();
+    $("#portfolio").show();
 
     getHouses();
+    // appendCryptoHouse();
 });
 
 $(".blockLink").on("click", function () {
@@ -52,7 +53,7 @@ $(".blockLink").on("click", function () {
     $("#deed-container").hide();
     $("#homePage").hide();
     $("#upload-container").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -70,7 +71,7 @@ $("#homeLink").on("click", function () {
     $("#deed-container").hide();
     $("#upload-container").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -89,7 +90,7 @@ $(".uploadLinkBtn").on("click", function () {
     $("#deed-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -104,7 +105,7 @@ $(".deedLinkBtn").on("click", function () {
     $("#upload-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -117,7 +118,7 @@ $(".learnMoreBtn").on("click", function () {
     $("#upload-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#deed-container").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -130,7 +131,7 @@ $("#pricingBtn").on("click", function () {
     $("#upload-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#deed-container").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -143,7 +144,7 @@ $("#aboutLink").on("click", function () {
     $("#upload-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#deed-container").hide();
     $("#learnMore").hide();
     $("#escrowPage").hide();
@@ -156,7 +157,7 @@ $(".escrowLink").on("click", function () {
     $("#upload-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#deed-container").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
@@ -224,7 +225,7 @@ function goToInventory() {
     $("#deed-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
