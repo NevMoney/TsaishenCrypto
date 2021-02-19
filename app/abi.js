@@ -1530,19 +1530,19 @@ var abi = {
           {
             "indexed": false,
             "internalType": "string",
-            "name": "",
+            "name": "TxType",
             "type": "string"
           },
           {
             "indexed": false,
             "internalType": "address",
-            "name": "",
+            "name": "actor",
             "type": "address"
           },
           {
             "indexed": false,
             "internalType": "uint256",
-            "name": "",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1904,7 +1904,7 @@ var abi = {
       },
       {
         "inputs": [],
-        "name": "getAllTokenOnSale",
+        "name": "getAllTokensOnSale",
         "outputs": [
           {
             "internalType": "uint256[]",

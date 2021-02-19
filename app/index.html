@@ -1191,7 +1191,7 @@
                   <th scope="col">External Links</th>
                 </tr>
               </thead>
-             
+              <div id="houseDiv"></div>
               <tbody id="portfolioDisplay"></tbody>
             </table>
           </div>
@@ -2818,7 +2818,7 @@
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Let's sell this house!</h5>
+              <h5 class="modal-title h3" id="saleModalLabel">Let's sell this house!</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -2827,18 +2827,23 @@
               <div class="container-fluid">
                 <div class="row">
                   <div class="col-md-12">
-                    
                     <div class="row justify-content-center" align="center" id="sellBox">
-                      <div class="col-lg-3 p-1">
-                        <input class="form-control" id="housePrice" placeholder="Enter Amount">
+                      <div class="col-lg-6 p-1">
                         <div class="input-group-append">
-                          <!-- NEED TO CHANGE CURRENCY to input -->
+                          <input class="form-control" id="housePrice" placeholder="Enter Amount">
                           <span class="input-group-text form-inline" id="basic-addon2"><b>USD</b></span>
                         </div>
                       </div>
-                      <div class="col-lg-2 p-1">
+                      <div class="col-lg-4 p-1">
                         <button class="btn btn-warning light-b-shadow" id="sellBtn"><b>List For Sale</b></button>
                       </div>
+                      <div class="col-lg-10">
+                        <br>
+                        <p class="font-size-sm text-muted text-center"><i><u>Please note:</u> listing house will incur blockchain network fees.
+                          Tsaishen does not receive any of the fee proceeds, they go to miners to ensure safety of the network.</i>
+                        </p>
+                      </div>
+                      
                     </div>
                   </div>
                 </div>

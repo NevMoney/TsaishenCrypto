@@ -19,7 +19,7 @@
         $("#fileUpload").hide(file.name);
         $("#fileName").show();
         $("#fileName>h5").html(`File Name: ${file.name}`);
-        console.log("modified date", file.lastModifiedDate);
+        // console.log("modified date", file.lastModifiedDate);
   
         var reader = new FileReader();
         reader.readAsArrayBuffer(file);
@@ -155,16 +155,16 @@
 
         var value = $("#marketValue").val();
         var income = $("#currentIncome").val();
-        console.log("value: ", value);
-        console.log("income: ", income);
+        // console.log("value: ", value);
+        // console.log("income: ", income);
       
         const receipt =
           await houseTokenInstance.methods
             .createHouse(value, income, ipfsFileHash)
             .send({ from: user, value: amount });
         console.log("uploadHouse: ", receipt);
-        console.log("uploadHouse ID: ", receipt.events.Transfer.returnValues.tokenId);
-        console.log("uploadHouse uri: ", receipt.events.Minted.returnValues.uri);
+        // console.log("uploadHouse ID: ", receipt.events.Transfer.returnValues.tokenId);
+        // console.log("uploadHouse uri: ", receipt.events.Minted.returnValues.uri);
 
         id = receipt.events.Transfer.returnValues.tokenId;
 
@@ -176,7 +176,7 @@
           "</a>";
         $("#ipfsResult").html(ipfsLink);
 
-        console.log("data hash: " + ipfsFileHash);
+        // console.log("data hash: " + ipfsFileHash);
       
       }));
       

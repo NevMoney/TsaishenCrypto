@@ -35,7 +35,7 @@ interface AggregatorV3Interface {
 
 contract Marketplace is ReentrancyGuard, TsaishenEscrow {
 
-    event MarketTransaction (string, address, uint);
+    event MarketTransaction (string TxType, address actor, uint tokenId);
 
     HouseToken private _houseToken;
     TsaishenUsers private _tsaishenUsers;
@@ -114,7 +114,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         offer.active); 
     }
 
-    function getAllTokenOnSale() public view returns(uint256[] memory listOfOffers) {
+    function getAllTokensOnSale() public view returns(uint256[] memory listOfOffers) {
         uint256 forSaleList = offers.length;//this gives us the length of the offers array
 
         if(forSaleList == 0) {

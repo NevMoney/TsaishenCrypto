@@ -187,7 +187,7 @@ contract("Positive tests", (accounts) => {
             await sellHouse(houseTokenInstance, marketplaceInstance, user1, 0);
         });
         it("should Get all tokens on sale", async () => {
-            let res = await marketplaceInstance.getAllTokenOnSale();
+            let res = await marketplaceInstance.getAllTokensOnSale();
             assert.equal(res.length, 1, "only 1 house on sale");
         });
         it("Should list house 1 of user2", async () => {
@@ -204,7 +204,7 @@ contract("Positive tests", (accounts) => {
             assert.equal(ev[2], 2, "incorrect tokenID");
         });
         it("Should get all tokens on sale", async () => {
-            let res = await marketplaceInstance.getAllTokenOnSale();
+            let res = await marketplaceInstance.getAllTokensOnSale();
             assert.equal(res.length, 3, "only 1 house on sale");
         });
         it("Should list house 2 of user1", async () => {

@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xE95A564F24b046C0b725643A3eE33fbB3bad3396";
-var houseTokenAddress = "0xfAf2DB5a1D636E0a1bDf653F19F46633FD463f3E";
-var marketplaceAddress = "0x95ca282aafAE71572Da6182846a05FB0d375d7b6";
+var tsaishenUsersAddress = "0xd2b4cAE89c20c2ACc63AC41488D2CbF6971AD984";
+var houseTokenAddress = "0xE6630EB2e877F2C4AB04b1Ce721D2DC8029c2f22";
+var marketplaceAddress = "0x0c1eE53775f362F200796e8036a3Ce75B5DC78e8";
 const contractOwnerAddress = "0x0BD027Dee897b44b98C8359305dA897E82A2305e";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 
@@ -53,14 +53,14 @@ $(document).ready(async () => {
   houseTokenInstance = await new web3.eth.Contract(abi.HouseToken, houseTokenAddress, { from: creatorAddress });
   marketplaceInstance = await new web3.eth.Contract(abi.Marketplace, marketplaceAddress, { from: address[1] });
 
-  console.log("users ", usersInstance);
-  console.log("house ", houseTokenInstance);
-  console.log("marketplace ", marketplaceInstance);
+  // console.log("users ", usersInstance);
+  // console.log("house ", houseTokenInstance);
+  // console.log("marketplace ", marketplaceInstance);
 
   await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
   await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send();
-  console.log("Marketplace: ", marketplaceAddress);
-  console.log("HouseToken: ", houseTokenAddress);
+  // console.log("Marketplace: ", marketplaceAddress);
+  // console.log("HouseToken: ", houseTokenAddress);
 
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
@@ -76,6 +76,7 @@ $(document).ready(async () => {
   marketplaceInstance.events.MarketTransaction().on("data", (event) => {
     var eventType = event.returnValues["TxType"].toString();
     var tokenId = event.returnValues["tokenId"];
+    var actor = event.returnValues["actor"];
     if (eventType == "House listed") {
       alert("Congrats! You have listed the following property for sale: " + tokenId);
     }
@@ -105,12 +106,12 @@ $(document).ready(async () => {
     .on("error", console.error);
 });
 
-// function appendCryptoHouse(id, url, isMarketplace, price, owner) {
-//   // box div to display element into HTML
-//   houseBox(id, url, isMarketplace, price, owner);
-//   // getHouses();
-//   $("#houseDiv" + id).html();
-// }
+function appendCryptoHouse(id, url, isMarketplace, price, seller) {
+  // box div to display element into HTML
+  houseBox(id, url, isMarketplace, price, seller);
+  renderCryptoHouse(id, url);
+  // $("#houseDiv" + id).html();
+}
 
 // get array of houses and house info by user
 async function getHouses() {
@@ -120,75 +121,19 @@ async function getHouses() {
   try {
     // first get array of all user homes
     arrayId = await usersInstance.methods.getUserHomes(user).call();
-    console.log("ID array ", arrayId);
+    // console.log("ID array ", arrayId);
     // loop through the array and get house info(value, income, uri)
     for (i = 0; i < arrayId.length; i++){
       house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
-      console.log("house info ", house);
-
-      fetch(house.uri).then(function (res) {
-        res.json().then(function (data) {
-          console.log("JSON file: ", data);
-
-          // $("#loading").hide();
-          
-
-          address = data.attributes[0].value;
-          county = data.attributes[1].value;
-          beds = new Intl.NumberFormat().format(data.attributes[2].value);
-          baths = new Intl.NumberFormat().format(data.attributes[3].value);
-          year = data.attributes[4].value;
-          house = data.attributes[5].value;
-          size = data.attributes[6].value;
-          parcel = data.attributes[7].value; //showing up as undefined
-          value = new Intl.NumberFormat().format(data.attributes[8].value);
-          income = new Intl.NumberFormat().format(data.attributes[9].value);
-          type = data.attributes[10].value;
-          link = data.attributes[11].value;
-          video = data.attributes[12].value;
-          fileName = data.name;
-          imageUrl = data.image;
-          localLink = data.external_url;
-          description = data.description;
-          console.log("pic:", imageUrl, "about:", description, "address:", address, "county:", county, "beds:", beds,
-            "bath:", baths, "year built:", year, "house sqft:", house, "lot size:", size,
-            "parcel no:", parcel, "current value:", value, "current income:", income,
-            "property type:", type, "more info:", link, "video tour:", video);
-          
-          var button = `<div class="row fit-content" id="portfolioDisplay${arrayId[i]}">
-                          <div>
-                            <div class="house" onclick="selectHouse(${arrayId[i]})">
-                                <button class="btn btn-success" id="selectSaleBtn${arrayId[i]}" onclick="selectHouseForSale(${arrayId[i]})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
-                                <button class="btn btn-danger" id="cancelBtn${arrayId[i]}" onclick="cancelSale(${arrayId[i]})">Cancel Sale</button>
-                            </div >
-                          </div>
-                        </div>`
-          
-          $("#portfolioDisplay").append(
-            `<tr>
-              <td><img width=250px src=${imageUrl}>
-                <br><br>${button}</div></td>
-              <td>${description}</td>
-              <td><strong>Address:</strong> ${address}
-                <br><strong>Beds:</strong> ${beds}
-                <br><strong>Baths:</strong> ${baths}
-                <br><strong>Year Built:</strong> ${year}</td>
-              <td><strong>House Size:</strong> ${house}
-                <br><strong>Lot Size:</strong> ${size}
-                <br><strong>Parcel:</strong> ${parcel}
-                <br><strong>Type:</strong> ${type}
-                <br><strong>County:</strong> ${county}</td>
-              <td><strong>Value:</strong> $${value}
-                <br><strong>Monthly Income:</strong> $${income}</td>
-              <td><strong>Public Link:</strong> <a href=${link} target="_blank" rel="noopener noreferrer">${link}</a>
-                <br><strong>Video:</strong> <a href=${video} target="_blank" rel="noopener noreferrer">${video}</a></td>
-            </tr>`
-          )
-        });
-      });
-      // append the blockchain house to Portfolio (house.value, house.income)
-      // appendCryptoHouse(arrayId[i], house.uri, false);
       
+      let id = arrayId[i];
+      console.log("id", id);
+      console.log("house info ", house);
+      let url = house.uri;
+      console.log(url);
+      
+      // append the blockchain house to Portfolio (house.value, house.income)
+      appendCryptoHouse(id, url);
     }
   }
   catch (err) {
@@ -196,8 +141,69 @@ async function getHouses() {
   }
 }
 
+// get data from JSON and render display
+function renderCryptoHouse(id, url) {
+  fetch(url).then(function (res) {
+    res.json().then(function (data) {
+      console.log("JSON file: ", data);
+
+      // $("#loading").hide();
+      
+      address = data.attributes[0].value;
+      county = data.attributes[1].value;
+      beds = new Intl.NumberFormat().format(data.attributes[2].value);
+      baths = new Intl.NumberFormat().format(data.attributes[3].value);
+      year = data.attributes[4].value;
+      house = data.attributes[5].value;
+      size = data.attributes[6].value;
+      parcel = data.attributes[7].value; //showing up as undefined
+      value = new Intl.NumberFormat().format(data.attributes[8].value);
+      income = new Intl.NumberFormat().format(data.attributes[9].value);
+      type = data.attributes[10].value;
+      link = data.attributes[11].value;
+      video = data.attributes[12].value;
+      fileName = data.name;
+      imageUrl = data.image;
+      localLink = data.external_url;
+      description = data.description;
+      // console.log("pic:", imageUrl, "about:", description, "address:", address, "county:", county, "beds:", beds,
+      //   "bath:", baths, "year built:", year, "house sqft:", house, "lot size:", size,
+      //   "parcel no:", parcel, "current value:", value, "current income:", income,
+      //   "property type:", type, "more info:", link, "video tour:", video);
+      
+      var button = `<div class="row fit-content" id="portfolioDisplay${id}">
+                      <div>
+                        <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+                        <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
+                      </div>
+                    </div>`
+      
+      $("#portfolioDisplay").append(
+        `<tr>
+          <td><img width=250px src=${imageUrl}>
+            <br><br>${button}</div></td>
+          <td>${description}</td>
+          <td><strong>Address:</strong> ${address}
+            <br><strong>Beds:</strong> ${beds}
+            <br><strong>Baths:</strong> ${baths}
+            <br><strong>Year Built:</strong> ${year}</td>
+          <td><strong>House Size:</strong> ${house}
+            <br><strong>Lot Size:</strong> ${size}
+            <br><strong>Parcel:</strong> ${parcel}
+            <br><strong>Type:</strong> ${type}
+            <br><strong>County:</strong> ${county}</td>
+          <td><strong>Value:</strong> $${value}
+            <br><strong>Monthly Income:</strong> $${income}</td>
+          <td><strong>Public Link:</strong> <a href=${link} target="_blank" rel="noopener noreferrer">${link}</a>
+            <br><strong>Video:</strong> <a href=${video} target="_blank" rel="noopener noreferrer">${video}</a></td>
+        </tr>`
+      )
+    });
+  });
+}
+
 function houseBox(id, isMarketplace, price, owner, token) {
-  var houseDiv = `<div class="col fit-content" id="portfolioDisplay${id}">
+  var button = `<div class="col fit-content" id="portfolioDisplay${id}">
                     <div>
                       <div class="house" onclick="selectHouse(${id})">
                           <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
@@ -211,14 +217,14 @@ function houseBox(id, isMarketplace, price, owner, token) {
 
 
   if (!isMarketplace) {
-      $("#houseDiv").append(houseDiv);
+      $("#portfolioDisplay").append(button);
       $(`#buyBtn${id}`).hide();
       $(`#buyEscrowBtn${id}`).hide();
       $(`#cancelBtn${id}`).hide();
       $(`#selectSaleBtn${id}`).show();
   }
   else {
-      $("#houseDivSale").append(houseDiv);
+      $("#houseDivSale").append(button);
       $(`#selectSaleBtn${id}`).hide();
 
       if (owner === user) {
@@ -241,7 +247,7 @@ async function checkOffer(id) {
     var seller = x.seller;
     var onSale = x.active;
 
-    price = web.utils.fromWei(price);
+    price = web3.utils.fromWei(price);
     var offer = { seller: seller, price: price, onSale: onSale };
     return offer;
   }
@@ -270,26 +276,31 @@ async function getInventory() {
 
 async function appendHouse(id, price, seller) {
   var house = await houseTokenInstance.methods.getHouse(id).call();
-  appendCryptoHouse(house[0], id, house.uri, true, price, seller);
+  appendCryptoHouse(id, house.uri, true, price, seller);
 }
 
-async function sellHouse(id) {
-  const offer = await checkOffer(id);
+// async function checkOraclePrice() {
+//   var price = $("#housePrice").val();
+//   let ETHprice = await marketplaceInstance.methods.getOracleUsdPrice(address(0)).call();
+// }
 
-  if (offer.onSale) return alert("House is already listed for sale.");
+async function sellCryptoHouse(id) {
+  const offer = await checkOffer(id);
+  if (offer.onSale) return alert("This house is already listed for sale.");
 
   var price = $("#housePrice").val();
   var amount = web3.utils.toWei(price);
   const isApproved = await houseTokenInstance.methods.isApprovedForAll(user, marketplaceAddress).call();
+  //console.log(isApproved);
   try {
     if (!isApproved) {
       await houseTokenInstance.methods
         .setApprovalForAll(marketplaceAddress, true)
-        .send().on("receipt", function (receipt) {
+        .send({ from: user }).on("receipt", function (receipt) {
       console.log("operator approval: ", receipt);
       });
     }
-    await marketplaceInstance.methods.setOffer(amount, id).send();
+    await marketplaceInstance.methods.sellHouse(amount, id).send({ from: user });
     goToInventory();
   }
   catch (err) {

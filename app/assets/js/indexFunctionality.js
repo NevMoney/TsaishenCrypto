@@ -259,7 +259,7 @@ function selectHouseForSale(id) {
 }
 
 $("#sellBtn").on("click", function () {
-    sellHouse(saleId).then(() => {
+    sellCryptoHouse(saleId).then(() => {
         $("#sellHouseModal").modal("hide");
     });
 });
