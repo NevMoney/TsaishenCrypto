@@ -108,8 +108,9 @@ $(document).ready(async () => {
 
 function appendCryptoHouse(id, url, isMarketplace, price, seller) {
   // box div to display element into HTML
-  houseBox(id, url, isMarketplace, price, seller);
-  renderCryptoHouse(id, url);
+  getHouses();
+  houseButtons(id, url, isMarketplace, price, seller);
+  // renderCryptoHouse(id, url);
   // $("#houseDiv" + id).html();
 }
 
@@ -128,12 +129,13 @@ async function getHouses() {
       
       let id = arrayId[i];
       console.log("id", id);
-      console.log("house info ", house);
+      // console.log("house info ", house);
       let url = house.uri;
-      console.log(url);
+      // console.log(url);
       
       // append the blockchain house to Portfolio (house.value, house.income)
-      appendCryptoHouse(id, url);
+      // appendCryptoHouse(id, url);
+      renderCryptoHouse(id, url);
     }
   }
   catch (err) {
@@ -171,17 +173,23 @@ function renderCryptoHouse(id, url) {
       //   "parcel no:", parcel, "current value:", value, "current income:", income,
       //   "property type:", type, "more info:", link, "video tour:", video);
       
-      var button = `<div class="row fit-content" id="portfolioDisplay${id}">
-                      <div>
-                        <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
-                        <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
-                      </div>
-                    </div>`
+      // var button = `<div class="row fit-content" id="portfolioDisplay${id}">
+      //                 <div>
+      //                   <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+      //                   <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
+      //                 </div>
+      //               </div>`
       
-      $("#portfolioDisplay").append(
+      var button = houseButtons(id);
+      button;
+
+      // $(".portfolioDisplay").empty(); //calling this empties but it also removes first house
+      // without it, clicking on links just keeps adding houses BUT it also shows both
+
+      $(".portfolioDisplay").append(
         `<tr>
           <td><img width=250px src=${imageUrl}>
-            <br><br>${button}</div></td>
+            <br><br>$ {button}</div></td>
           <td>${description}</td>
           <td><strong>Address:</strong> ${address}
             <br><strong>Beds:</strong> ${beds}
@@ -202,7 +210,7 @@ function renderCryptoHouse(id, url) {
   });
 }
 
-function houseBox(id, isMarketplace, price, owner, token) {
+function houseButtons(id, isMarketplace, price, owner, token) {
   var button = `<div class="col fit-content" id="portfolioDisplay${id}">
                     <div>
                       <div class="house" onclick="selectHouse(${id})">
@@ -215,7 +223,7 @@ function houseBox(id, isMarketplace, price, owner, token) {
                     </div>
                   </div>`
 
-
+  //not really working yet
   if (!isMarketplace) {
       $("#portfolioDisplay").append(button);
       $(`#buyBtn${id}`).hide();

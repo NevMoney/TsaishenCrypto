@@ -25,6 +25,8 @@ $(".marketLink").on("click", function () {
   
     $("#marketLink").addClass("active");
     $("#market-container").show();
+
+    appendCryptoHouse();
 });
   
 $("#portfolioLink").on("click", function () {
@@ -44,8 +46,8 @@ $("#portfolioLink").on("click", function () {
     $("#portfolioLink").addClass("active");
     $("#portfolio").show();
 
-    getHouses();
-    // appendCryptoHouse();
+    // getHouses();
+    appendCryptoHouse();
 });
 
 $(".blockLink").on("click", function () {
@@ -239,6 +241,7 @@ function goToInventory() {
 
     $("#houseDiv").empty();
     $("#houseDivSale").empty();
+    $(".portfolioDisplay").empty();
 
     getInventory();
 }
