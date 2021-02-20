@@ -217,7 +217,7 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner, token) {
         $("#houseDisplay").append(button);
         $(`#buyBtn${id}`).hide();
         $(`#buyEscrowBtn${id}`).hide();
-        $(`#cancelBtn${id}`).hide();
+        $(`#cancelBtn${id}`).show();
         $(`#selectSaleBtn${id}`).show();
       }
       else {
@@ -238,46 +238,6 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner, token) {
     });
   });
 }
-
-// function houseButtons(id, url, isMarketplace, price, owner, token) {
-//   console.log(id, url, isMarketplace, price, owner, token);
-
-//   // var button = `<div class="col fit-content" id="portfolioDisplay${id}">
-//   //                   <div>
-                      
-//   //                         <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
-                      
-//   //                         <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
-//   //                         <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
-//   //                         <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
-                      
-//   //                   </div>
-//   //                 </div>`
-
-//   //not really working yet
-//   // if (!isMarketplace) {
-//   //     $("#houseDiv").append(button);
-//   //     $(`#buyBtn${id}`).hide();
-//   //     $(`#buyEscrowBtn${id}`).hide();
-//   //     $(`#cancelBtn${id}`).hide();
-//   //     $(`#selectSaleBtn${id}`).show();
-//   // }
-//   // else {
-//   //     $("#houseDivSale").append(button);
-//   //     $(`#selectSaleBtn${id}`).hide();
-
-//   //     if (owner === user) {
-//   //         $(`#buyBtn${id}`).hide();
-//   //         $(`#buyEscrowBtn${id}`).hide();
-//   //         $(`#cancelBtn${id}`).show();
-//   //     }
-//   //     else {
-//   //         $(`#buyBtn${id}`).show();
-//   //         $(`#buyEscrowBtn${id}`).show();
-//   //         $(`#cancelBtn${id}`).hide();
-//   //     }
-//   // }
-// }
 
 async function checkOffer(id) {
   try {
@@ -351,8 +311,8 @@ async function sellCryptoHouse(id) {
   }
 }
 
-async function removeOffer() {
-  await marketplaceInstance.methods.removeOffer(id).send();
+async function removeOffer(id) {
+  await marketplaceInstance.methods.removeOffer(id).send({ from: user });
   goToInventory();
 }
 
