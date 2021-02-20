@@ -169,13 +169,13 @@ function renderCryptoHouse(id, url, isMarketplace, price, seller) {
       //   "parcel no:", parcel, "current value:", value, "current income:", income,
       //   "property type:", type, "more info:", link, "video tour:", video);           
 
-      var button = `<div class="col fit-content">
+      var button = `<div class="row">
                       
-                          <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+                        <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
                       
-                          <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy $ ${price}</button>
-                          <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price})">Escrow Buy $ ${price}</button>
-                          <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
+                        <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy $ ${price}</button>
+                        <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price})">Escrow Buy $ ${price}</button>
+                        <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
                       
                   </div>`
 
@@ -197,7 +197,8 @@ function renderCryptoHouse(id, url, isMarketplace, price, seller) {
             <br><strong>Monthly Income:</strong> $${income}</td>
           <td><strong>Public Link:</strong> <a href=${link} target="_blank" rel="noopener noreferrer">${link}</a>
             <br><strong>Video:</strong> <a href=${video} target="_blank" rel="noopener noreferrer">${video}</a></td>
-        </tr>`
+        </tr>
+        `
       )
       // if property is in marketplace, display buttons as follows:
       if (isMarketplace) {
@@ -209,10 +210,6 @@ function renderCryptoHouse(id, url, isMarketplace, price, seller) {
           $(`#cancelBtn${id}`).hide();
         }
       }
-      // else {
-      //   $(`#buyBtn${id}`).hide();
-      //   $(`#buyEscrowBtn${id}`).hide();
-      // }
     });
   });
 }
