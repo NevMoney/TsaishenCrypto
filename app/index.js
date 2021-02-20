@@ -132,6 +132,7 @@ async function getHouses() {
       
       // renderCryptoHouse(id, url);
       appendCryptoHouse(id, url);
+      // getInventory(id, url);
     }
   }
   catch (err) {
@@ -140,10 +141,11 @@ async function getHouses() {
 }
 
 // get data from JSON and render display
-function renderCryptoHouse(id, url, isMarketplace, price, seller) {
+function renderCryptoHouse(id, url, isMarketplace, price, owner, token) {
   fetch(url).then(function (res) {
     res.json().then(function (data) {
       console.log("JSON file: ", data);
+      console.log("buttonLogic", id, url, isMarketplace, price, owner, token);
 
       // $("#loading").hide();
       
@@ -173,8 +175,8 @@ function renderCryptoHouse(id, url, isMarketplace, price, seller) {
                       
                         <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
                       
-                        <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy $ ${price}</button>
-                        <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price})">Escrow Buy $ ${price}</button>
+                        <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy House: $${price}</button>
+                        <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price})">Buy with Escrow: $${price}</button>
                         <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
                       
                   </div>`
@@ -200,59 +202,82 @@ function renderCryptoHouse(id, url, isMarketplace, price, seller) {
         </tr>
         `
       )
-      // if property is in marketplace, display buttons as follows:
-      if (isMarketplace) {
-        $(`#selectSaleBtn${id}`).hide();
-        if (seller === user) {
-          $(`#buyBtn${id}`).hide();
-          $(`#buyEscrowBtn${id}`).hide();
-        } else {
-          $(`#cancelBtn${id}`).hide();
-        }
+      // // if property is in marketplace -- THIS WORKS
+      // if (isMarketplace) {
+      //   $(`#selectSaleBtn${id}`).hide();
+      //   if (seller === user) {
+      //     $(`#buyBtn${id}`).hide();
+      //     $(`#buyEscrowBtn${id}`).hide();
+      //   } else {
+      //     $(`#cancelBtn${id}`).hide();
+      //   }
+      // }
+
+      if (!isMarketplace) {
+        $("#houseDisplay").append(button);
+        $(`#buyBtn${id}`).hide();
+        $(`#buyEscrowBtn${id}`).hide();
+        $(`#cancelBtn${id}`).hide();
+        $(`#selectSaleBtn${id}`).show();
+      }
+      else {
+          $("#houseSale").append(button);
+          $(`#selectSaleBtn${id}`).hide();
+    
+          if (owner === user) {
+              $(`#buyBtn${id}`).hide();
+              $(`#buyEscrowBtn${id}`).hide();
+              $(`#cancelBtn${id}`).show();
+          }
+          else {
+              $(`#buyBtn${id}`).show();
+              $(`#buyEscrowBtn${id}`).show();
+              $(`#cancelBtn${id}`).hide();
+          }
       }
     });
   });
 }
 
-function houseButtons(id, url, isMarketplace, price, owner, token) {
-  console.log(id, url, isMarketplace, price, owner, token);
+// function houseButtons(id, url, isMarketplace, price, owner, token) {
+//   console.log(id, url, isMarketplace, price, owner, token);
 
-  // var button = `<div class="col fit-content" id="portfolioDisplay${id}">
-  //                   <div>
+//   // var button = `<div class="col fit-content" id="portfolioDisplay${id}">
+//   //                   <div>
                       
-  //                         <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+//   //                         <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
                       
-  //                         <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
-  //                         <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
-  //                         <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
+//   //                         <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
+//   //                         <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
+//   //                         <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
                       
-  //                   </div>
-  //                 </div>`
+//   //                   </div>
+//   //                 </div>`
 
-  //not really working yet
-  if (!isMarketplace) {
-      $("#houseDiv").append(button);
-      $(`#buyBtn${id}`).hide();
-      $(`#buyEscrowBtn${id}`).hide();
-      $(`#cancelBtn${id}`).hide();
-      $(`#selectSaleBtn${id}`).show();
-  }
-  else {
-      $("#houseDivSale").append(button);
-      $(`#selectSaleBtn${id}`).hide();
+//   //not really working yet
+//   // if (!isMarketplace) {
+//   //     $("#houseDiv").append(button);
+//   //     $(`#buyBtn${id}`).hide();
+//   //     $(`#buyEscrowBtn${id}`).hide();
+//   //     $(`#cancelBtn${id}`).hide();
+//   //     $(`#selectSaleBtn${id}`).show();
+//   // }
+//   // else {
+//   //     $("#houseDivSale").append(button);
+//   //     $(`#selectSaleBtn${id}`).hide();
 
-      if (owner === user) {
-          $(`#buyBtn${id}`).hide();
-          $(`#buyEscrowBtn${id}`).hide();
-          $(`#cancelBtn${id}`).show();
-      }
-      else {
-          $(`#buyBtn${id}`).show();
-          $(`#buyEscrowBtn${id}`).show();
-          $(`#cancelBtn${id}`).hide();
-      }
-  }
-}
+//   //     if (owner === user) {
+//   //         $(`#buyBtn${id}`).hide();
+//   //         $(`#buyEscrowBtn${id}`).hide();
+//   //         $(`#cancelBtn${id}`).show();
+//   //     }
+//   //     else {
+//   //         $(`#buyBtn${id}`).show();
+//   //         $(`#buyEscrowBtn${id}`).show();
+//   //         $(`#cancelBtn${id}`).hide();
+//   //     }
+//   // }
+// }
 
 async function checkOffer(id) {
   try {
@@ -279,7 +304,10 @@ async function getInventory() {
         const offer = await checkOffer(arrayId[i]);
         console.log("getInventory", offer, arrayId[i]);
 
-        if (offer.onSale) appendHouse(arrayId[i], offer.price, offer.seller);
+        if (offer.onSale) {
+          appendHouse(arrayId[i], offer.price, offer.seller);
+        }
+        
       }
     }
   }
@@ -289,6 +317,7 @@ async function getInventory() {
 }
 
 async function appendHouse(id, price, seller) {
+  console.log("appendHouse ID", id, "aH price", price, "aH seller", seller);
   var house = await houseTokenInstance.methods.getHouse(id).call();
   appendCryptoHouse(id, house.uri, true, price, seller);
 }
