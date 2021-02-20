@@ -44,12 +44,11 @@ $("#portfolioLink").on("click", function () {
     $("#portfolioLink").addClass("active");
     $("#portfolio").show();
 
-    // $("#houseDiv").empty();
-    // $("#houseDivSale").empty();
-    // $(".portfolioDisplay").empty();
+    $("#houseDiv").empty();
+    $("#houseDivSale").empty();
+    $(".portfolioDisplay").empty();
 
-    // getHouses();
-    appendCryptoHouse();
+    getHouses();   
 });
 
 $(".blockLink").on("click", function () {
@@ -290,16 +289,4 @@ function selectHouseToBuyWUsdc(id) {
 function cancelSale(id) {
     saleId = id;
     removeOffer(id);
-}
-
-function createHouseDiv() {
-    var divTag = document.createElement("div");
-    divTag.id = "houseDiv";
-    divTag.className = "row";
-}
-
-function createSaleDiv() {
-    var divTag = document.createElement("div");
-    divTag.id = "houseDivSale";
-    divTag.className = "row";
 }

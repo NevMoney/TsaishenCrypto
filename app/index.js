@@ -107,8 +107,9 @@ $(document).ready(async () => {
 });
 
 function appendCryptoHouse(id, url, isMarketplace, price, seller) {
-  getHouses();
-  houseButtons(id, url, isMarketplace, price, seller);
+  // getHouses();
+  renderCryptoHouse(id, url, isMarketplace, price, seller)
+  // houseButtons(id, url, isMarketplace, price, seller);
 }
 
 // get array of houses and house info by user
@@ -129,7 +130,8 @@ async function getHouses() {
       let url = house.uri;
       // console.log(url);
       
-      renderCryptoHouse(id, url);
+      // renderCryptoHouse(id, url);
+      appendCryptoHouse(id, url);
     }
   }
   catch (err) {
@@ -138,7 +140,7 @@ async function getHouses() {
 }
 
 // get data from JSON and render display
-function renderCryptoHouse(id, url) {
+function renderCryptoHouse(id, url, isMarketplace, price, seller) {
   fetch(url).then(function (res) {
     res.json().then(function (data) {
       console.log("JSON file: ", data);
@@ -165,12 +167,22 @@ function renderCryptoHouse(id, url) {
       // console.log("pic:", imageUrl, "about:", description, "address:", address, "county:", county, "beds:", beds,
       //   "bath:", baths, "year built:", year, "house sqft:", house, "lot size:", size,
       //   "parcel no:", parcel, "current value:", value, "current income:", income,
-      //   "property type:", type, "more info:", link, "video tour:", video);
+      //   "property type:", type, "more info:", link, "video tour:", video);           
+
+      var button = `<div class="col fit-content">
+                      
+                          <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+                      
+                          <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy $ ${price}</button>
+                          <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price})">Escrow Buy $ ${price}</button>
+                          <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
+                      
+                  </div>`
 
       $(".portfolioDisplay").append(
         `<tr>
           <td><img width=250px src=${imageUrl}>
-            <br><br>$ {button}</td>
+            <br><br>${button}</td>
           <td>${description}</td>
           <td><strong>Address:</strong> ${address}
             <br><strong>Beds:</strong> ${beds}
@@ -187,28 +199,38 @@ function renderCryptoHouse(id, url) {
             <br><strong>Video:</strong> <a href=${video} target="_blank" rel="noopener noreferrer">${video}</a></td>
         </tr>`
       )
+      // if property is in marketplace, display buttons as follows:
+      if (isMarketplace) {
+        $(`#selectSaleBtn${id}`).hide();
+        if (seller === user) {
+          $(`#buyBtn${id}`).hide();
+          $(`#buyEscrowBtn${id}`).hide();
+        } else {
+          $(`#cancelBtn${id}`).hide();
+        }
+      }
+      // else {
+      //   $(`#buyBtn${id}`).hide();
+      //   $(`#buyEscrowBtn${id}`).hide();
+      // }
     });
   });
 }
 
 function houseButtons(id, url, isMarketplace, price, owner, token) {
-  console.log(id);
-  console.log(url);
-  console.log(isMarketplace);
-  console.log(price);
-  console.log(owner);
-  console.log(token);
-  var button = `<div class="col fit-content" id="portfolioDisplay${id}">
-                    <div>
+  console.log(id, url, isMarketplace, price, owner, token);
+
+  // var button = `<div class="col fit-content" id="portfolioDisplay${id}">
+  //                   <div>
                       
-                          <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+  //                         <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
                       
-                          <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
-                          <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
-                          <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
+  //                         <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy ${price, token}</button>
+  //                         <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price, token})">Escrow Buy ${price}</button>
+  //                         <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
                       
-                    </div>
-                  </div>`
+  //                   </div>
+  //                 </div>`
 
   //not really working yet
   if (!isMarketplace) {
