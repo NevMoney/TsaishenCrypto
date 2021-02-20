@@ -25,8 +25,6 @@ $(".marketLink").on("click", function () {
   
     $("#marketLink").addClass("active");
     $("#market-container").show();
-
-    appendCryptoHouse();
 });
   
 $("#portfolioLink").on("click", function () {
@@ -45,6 +43,10 @@ $("#portfolioLink").on("click", function () {
 
     $("#portfolioLink").addClass("active");
     $("#portfolio").show();
+
+    // $("#houseDiv").empty();
+    // $("#houseDivSale").empty();
+    // $(".portfolioDisplay").empty();
 
     // getHouses();
     appendCryptoHouse();
@@ -246,6 +248,8 @@ function goToInventory() {
     getInventory();
 }
 
+$(".marketLink").click(goToInventory);
+
 //NOT WORKING!!!
 // function validateCheckbox(){
 //     if($("#certification").checked){
@@ -286,4 +290,16 @@ function selectHouseToBuyWUsdc(id) {
 function cancelSale(id) {
     saleId = id;
     removeOffer(id);
+}
+
+function createHouseDiv() {
+    var divTag = document.createElement("div");
+    divTag.id = "houseDiv";
+    divTag.className = "row";
+}
+
+function createSaleDiv() {
+    var divTag = document.createElement("div");
+    divTag.id = "houseDivSale";
+    divTag.className = "row";
 }
