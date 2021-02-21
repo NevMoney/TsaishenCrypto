@@ -282,11 +282,6 @@ async function appendHouse(id, price, seller) {
   appendCryptoHouse(id, house.uri, true, price, seller);
 }
 
-// async function checkOraclePrice() {
-//   var price = $("#housePrice").val();
-//   let ETHprice = await marketplaceInstance.methods.getOracleUsdPrice(address(0)).call();
-// }
-
 async function sellCryptoHouse(id) {
   const offer = await checkOffer(id);
   if (offer.onSale) return alert("This house is already listed for sale.");
@@ -314,6 +309,193 @@ async function sellCryptoHouse(id) {
 async function removeOffer(id) {
   await marketplaceInstance.methods.removeOffer(id).send({ from: user });
   goToInventory();
+}
+
+// JS function from Chainlink to get oracle prices
+// const web3 = new Web3("https://kovan.infura.io/v3/<infura_project_id>");
+// const aggregatorV3InterfaceABI = [
+//   {
+//     "inputs": [
+    
+//     ], "name": "decimals",
+//     "outputs":
+//       [
+//       {
+//         "internalType": "uint8",
+//         "name": "",
+//         "type": "uint8"
+//       }
+//     ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs":
+//       [
+    
+//     ],
+//     "name": "description",
+//     "outputs":
+//       [
+//         {
+//           "internalType": "string",
+//           "name": "",
+//           "type": "string"
+//         }
+//       ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs":
+//       [
+//         {
+//           "internalType": "uint80",
+//           "name": "_roundId",
+//           "type": "uint80"
+//         }
+//       ],
+//     "name": "getRoundData",
+//     "outputs":
+//       [
+//         {
+//           "internalType": "uint80",
+//           "name": "roundId",
+//           "type": "uint80"
+//         },
+//         {
+//           "internalType": "int256",
+//           "name": "answer",
+//           "type": "int256"
+//         },
+//         {
+//           "internalType": "uint256",
+//           "name": "startedAt",
+//           "type": "uint256"
+//         },
+//         {
+//           "internalType": "uint256",
+//           "name": "updatedAt",
+//           "type": "uint256"
+//         },
+//         {
+//           "internalType": "uint80",
+//           "name": "answeredInRound",
+//           "type": "uint80"
+//         }
+//       ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs":
+//       [
+
+//       ],
+//     "name": "latestRoundData",
+//     "outputs":
+//       [
+//         {
+//           "internalType": "uint80",
+//           "name": "roundId",
+//           "type": "uint80"
+//         },
+//         {
+//           "internalType": "int256",
+//           "name": "answer",
+//           "type": "int256"
+//         },
+//         {
+//           "internalType": "uint256",
+//           "name": "startedAt",
+//           "type": "uint256"
+//         },
+//         {
+//           "internalType": "uint256",
+//           "name": "updatedAt",
+//           "type": "uint256"
+//         },
+//         {
+//           "internalType": "uint80",
+//           "name": "answeredInRound",
+//           "type": "uint80"
+//         }
+//       ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "inputs":[
+
+//       ],
+//     "name": "version",
+//     "outputs":
+//       [
+//         {
+//           "internalType": "uint256",
+//           "name": "",
+//           "type": "uint256"
+//         }
+//       ],
+//     "stateMutability": "view",
+//     "type": "function"
+//   }
+// ];
+// const addr = "0x9326BFA02ADD2366b30bacB125260Af641031331";
+// const priceFeed = new web3.eth.Contract(aggregatorV3InterfaceABI, addr);
+// priceFeed.methods.latestRoundData().call()
+//     .then((roundData) => {
+//         // Do something with roundData
+//         console.log("Latest Round Data", roundData)
+//     });
+
+
+async function ethPrice(price) {
+  // get ETH pricing from oracles - returns object
+  let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(0).call();
+  // console.log(oracleObject);
+  console.log(Object.values(oracleObject));
+  let ETHprice, priceTime;
+  // convert object to array and assign variables
+  [ETHprice, priceTime] = Object.values(oracleObject);
+  // console.log(ETHprice);
+  // convert price
+  // LATEST TEST PRICE FROM CHAINLINK 191068577326 //testing on feb 20 @6:41 PM
+  // let conversion = 191068577326 / 100000000;//returned 7.85058 ETH which is correct
+  let conversion = ETHprice / 100000000;
+  let priceInEth = (price / conversion);
+  return priceInEth;
+  // console.log(priceInEth);
+}
+
+async function usdcPrice() {
+  let USDCprice = web3.utils.toChecksumAddress(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
+  USDCprice = await marketplaceInstance.methods.getOracleUsdPrice(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).call();
+  console.log(USDCprice);
+}
+
+async function daiPrice() {
+  let DAIprice = await marketplaceInstance.methods.getOracleUsdPrice(0x6B175474E89094C44Da98b954EedeAC495271d0F).call();
+  console.log(DAIprice);
+}
+
+async function selectHouseToBuy(id) {
+  const offer = await checkOffer(id);
+  console.log("buying House", offer);
+  console.log(id, offer.price);
+  var eth = await ethPrice(offer.price);
+  console.log("buying house eth", eth);
+  // var amount = web3.utils.toWei(price);
+  // var usdc = usdcPrice();
+  // var dai = daiPrice();
+  // var priceInEth = (amount / eth).toFixed(4);
+  // var priceInUsdc = parseFloat((price / usdc).toFixed(4));
+  // var priceInDai = parseFloat((price / dai).toFixed(4));
+  // console.log(amount)
+  // console.log("ETH price", priceInEth);
+  // console.log("USDC price", priceInUsdc);
+  // console.log("DAI price", priceInDai);
+  // console.log(amount);
 }
 
 async function buyHome (id, price) {
