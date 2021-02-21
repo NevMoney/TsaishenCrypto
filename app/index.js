@@ -2,12 +2,13 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xd2b4cAE89c20c2ACc63AC41488D2CbF6971AD984";
-var houseTokenAddress = "0xE6630EB2e877F2C4AB04b1Ce721D2DC8029c2f22";
-var marketplaceAddress = "0x0c1eE53775f362F200796e8036a3Ce75B5DC78e8";
-const contractOwnerAddress = "0x0BD027Dee897b44b98C8359305dA897E82A2305e";
+var tsaishenUsersAddress = "0x3d7b49d7EB3C0B27835b697c480a369B93E5f20D";
+var houseTokenAddress = "0x189a4b473D0EE0d1A3bF40904F9E0c6908a63587";
+var marketplaceAddress = "0xaf31b1dce7Ce247e2533404B873Bd53124C61930";
+const contractOwnerAddress = "0x5C060154bB1BC8E37dE8d75828a80C29F739f8d2";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
+const ethAddress = "0x0000000000000000000000000000000000000000";
 const daiAddress = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 const usdcAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
@@ -30,6 +31,10 @@ async function getAccount() {
   const accounts = await ethereum.request({ method: "eth_requestAccounts" });
   const account = accounts[0];
   showAccount.innerHTML = account;
+  ethereum.on("accountsChanged", (_accounts) => {
+    showAccount.innerHTML = _accounts;
+    user = web3.utils.toChecksumAddress(_accounts[0]);
+  });
 }
 
 //Executed when page finish loading
@@ -62,8 +67,8 @@ $(document).ready(async () => {
 
   await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
   await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send();
-  // console.log("Marketplace: ", marketplaceAddress);
-  // console.log("HouseToken: ", houseTokenAddress);
+  console.log("Marketplace: ", marketplaceAddress);
+  console.log("HouseToken: ", houseTokenAddress);
 
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
@@ -178,11 +183,18 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner, token) {
                       
                         <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
                       
-                        <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectHouseToBuy(${id})">Buy House: $${price}</button>
-                        <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${price})">Buy with Escrow: $${price}</button>
+                        <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectToken(${id})" data-toggle="dropdown">Buy House: $${price}</button>
+                          <div class="tokenPrices dropdown-menu dropdown-menu-md">                             
+                            <h4 class="btn btn-dark-soft light-b-shadow onclick="selectHouseToBuy(${id, price})" id="ethereumToken${id}"><img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880"> <span id="showEthPrice${id}"></span> ETH</h4>
+                            <h4 class="btn btn-dark-soft light-b-shadow onclick="selectHouseToBuy(${id, price})" id="daiToken${id}"><img src="https://assets.coingecko.com/coins/images/9956/small/dai-multi-collateral-mcd.png?1574218774"> <span id="showDaiPrice${id}"></span> DAI</h4>
+                            <h4 class="btn btn-dark-soft light-b-shadow onclick="selectHouseToBuy(${id, price})" id="usdcToken${id}"><img src="https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389"> <span id="showUsdcPrice${id}"></span> USDC</h4>
+                          </div>
+                        <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${id})">Buy with Escrow: $${price}</button>
                         <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
                       
                   </div>`
+      // NOT WORKING
+      $(".tokenPrices").empty();
 
       $(".portfolioDisplay").append(
         `<tr>
@@ -455,68 +467,100 @@ async function removeOffer(id) {
 //     });
 
 
-// async function ethPrice(price) {
-//   // get ETH pricing from oracles - returns object
-//   let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(0).call();
-//   // console.log(Object.values(oracleObject));
-//   let ETHprice, priceTime;
-//   // convert to array and assign variables
-//   // [ETHprice, priceTime] = Object.values(oracleObject);
-//   // // console.log(ETHprice); // LATEST TEST PRICE FROM CHAINLINK 191068577326 //testing on feb 20 @6:41 PM
-//   // // let conversion = 191068577326 / 100000000;//returned 7.85058 ETH which is correct
-//   // let conversion = ETHprice / 100000000;
-//   // let priceInEth = (price / conversion);
-//   // console.log(priceInEth, priceTime);
-//   // return priceInEth, priceTime;
-//   return oracleObject;
-// }
-
-async function usdcPrice() {
-  let USDCprice = web3.utils.toChecksumAddress(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
-  USDCprice = await marketplaceInstance.methods.getOracleUsdPrice(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).call();
-  console.log(USDCprice);
+async function ethPrice(price) {
+  // get ETH pricing from oracles - returns object
+  let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(ethAddress).call();
+  // console.log(Object.values(oracleObject));
+  let ETHprice, priceTime;
+  // convert to array and assign variables
+  [ETHprice, priceTime] = Object.values(oracleObject);
+  // // console.log(ETHprice); // LATEST TEST PRICE FROM CHAINLINK 191068577326 //testing on feb 20 @6:41 PM
+  // // let conversion = 191068577326 / 100000000;//returned 7.85058 ETH which is correct
+  let conversion = ETHprice / 100000000;
+  let priceInEth = (price / conversion);
+  console.log(priceInEth, priceTime);
+  return priceInEth;
+  // return oracleObject;
 }
 
-async function daiPrice() {
-  let DAIprice = await marketplaceInstance.methods.getOracleUsdPrice(0x6B175474E89094C44Da98b954EedeAC495271d0F).call();
-  console.log(DAIprice);
+async function usdcPrice(price) {
+  let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(usdcAddress).call();
+  let USDCprice, priceTime;
+  [USDCprice, priceTime] = Object.values(oracleObject);
+  let conversion = USDCprice / 100000000;
+  let priceInUsdc = (price / conversion);
+  console.log(priceInUsdc, priceTime);
+  return priceInUsdc;
 }
 
-async function selectHouseToBuy(id) {
+async function daiPrice(price) {
+  let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(daiAddress).call();
+  let DAIprice, priceTime;
+  [DAIprice, priceTime] = Object.values(oracleObject);
+  let conversion = DAIprice / 100000000;
+  let priceInDai = (price / conversion);
+  console.log(priceInDai, priceTime);
+  return priceInDai;
+}
+
+// instead of running specific function for each token, here's one to do it all
+async function getRecentTokenPrice(price, token) {
+  console.log("tokenAdd", token);
+  let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(token).call();
+  let recentPrice, priceTime;
+  [recentPrice, priceTime] = Object.values(oracleObject);
+  let conversion = recentPrice / 100000000;
+  let priceInCrypto = (price / conversion);
+  console.log(priceInCrypto, priceTime);
+  return priceInCrypto;
+}
+
+async function selectHouseToBuy(id, price, token) {
   const offer = await checkOffer(id);
   // console.log("buying House", offer);
   // console.log(id, offer.price);
-  var ethOracle = await marketplaceInstance.methods.getOracleUsdPrice(0).call();
-  console.log("buying house eth", ethOracle);
-  [ETHprice, priceTime] = Object.values(ethOracle);
-  let conversion = ETHprice / 100000000;
-  // let conversion = (191068577326 / 100000000);
-  let priceInEth = (offer.price / conversion).toString();
-  console.log("priceInEth", priceInEth);
-  console.log("price", offer.price);
-  var amount = web3.utils.toWei(priceInEth, "ether");
+  // var ethOracle = await marketplaceInstance.methods.getOracleUsdPrice(ethAddress).call();
+  // console.log("buying house eth", ethOracle);
+  // [ETHprice, priceTime] = Object.values(ethOracle);
+  // let conversion = ETHprice / 100000000;
+  // // let conversion = (191068577326 / 100000000);
+  // let priceInEth = (offer.price / conversion).toString();
+  // console.log("priceInEth", priceInEth);
+  // console.log("price", offer.price);
+  var amount = web3.utils.toWei(price);
   console.log("amount", amount);
-  try {
-    await marketplaceInstance.methods.buyHouse(0, id).send({ value: amount, from: user });
-  }
-  catch (err) {
-    console.log(err);
-  }
-  // var usdc = usdcPrice();
-  // var dai = daiPrice();
-  // var priceInEth = (amount / eth).toFixed(4);
-  // var priceInUsdc = parseFloat((price / usdc).toFixed(4));
-  // var priceInDai = parseFloat((price / dai).toFixed(4));
-  // console.log(amount)
-  // console.log("ETH price", priceInEth);
-  // console.log("USDC price", priceInUsdc);
-  // console.log("DAI price", priceInDai);
-  // console.log(amount);
+  console.log("token", token);
+  // try {
+  //   // MM throws error on this function - changed from amount to amount.toString and added gas and priceInWei -->
+  //   // error didn't show when MM fired up but ultimately tx failed with the same error: RuntimeError code 32603
+  //   await marketplaceInstance.methods.buyHouse(ethAddress, id).send({ from: user, value: amount });
+  // }
+  // catch (err) {
+  //   console.log(err);
+  // }
 }
 
-async function selectToken(id, price) {
-  await checkOffer(id);
-  let ETH = 0;
+async function selectToken(id) {
+  let offer = await checkOffer(id);
+ 
+  let ethOracle = await getRecentTokenPrice(offer.price, ethAddress);
+  $(`#showEthPrice${id}`).append(ethOracle);
+  
+  let daiOracle = await getRecentTokenPrice(offer.price, daiAddress);
+  $(`#showDaiPrice${id}`).append(daiOracle);
+
+  let usdcOracle = await getRecentTokenPrice(offer.price, usdcAddress);
+  $(`#showUsdcPrice${id}`).append(usdcOracle);
+  
+    if ($("#ethereumToken").click(function () {
+      return ethAddress;
+    }));
+    else if ($("#daiToken").click(function () {
+      return daiAddress;
+    }));
+    else if ($("#usdcToken").click(function () {
+      return usdcAddress;
+    }));
 }
 
 async function buyHome (id, price) {
