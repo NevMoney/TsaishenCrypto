@@ -2823,8 +2823,9 @@
                       </div>
                       <div class="col-lg-10">
                         <br>
-                        <p class="font-size-sm text-muted text-center"><i><u>Please note:</u> listing house will incur blockchain network fees.
-                          Tsaishen does not receive any of the fee proceeds, they go to miners to ensure safety of the network.</i>
+                        <p class="font-size-sm text-muted text-center"><i><u>Please note:</u> listing the house will incur blockchain network fees. Additionally,
+                          cancellations or changes also incur network fees. Tsaishen does not receive any of these fees, they go to miners to ensure safety 
+                          of the network.</i>
                         </p>
                       </div>
                       
@@ -2833,6 +2834,59 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buy House Modal -->
+      <div class="modal fade bd-example-modal-lg" id="buyHouseModal" tabindex="-1" role="dialog" aria-labelledby="myLargeBuyModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+
+            <div class="modal-header">
+              <h5 class="modal-title h3" id="buyModalLabel">Let's buy this house!</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <div class="container-fluid">
+               
+                  <div class="col-md-12 justify-content-center" align="center">
+                    <input class="form-control" id="buyerInput" placeholder="Say something...">
+                    <div class="table table-responsive" id="finalizingSaleModalDisplay"></div>
+
+                    <div class="row">
+                      <div class="col-md-6 justify-content-left">
+                        <button class="btn btn-success-soft light-b-shadow" id="buyBtn"><b>Buy House</b>
+                          <span class="displaySelectedCurrencyPrice"></span>
+                        </button>
+                        <span id="buyInfo" class="text-primary-desat font-weight-bold font-size-md" title="Direct Transfer"
+                            data-content="Only use with trusted parties as your funds will be sent to them immediatelly."
+                            data-placement="left" data-toggle="popover">&#9432;</span>
+                      </div>
+                      <div class="col-md-6 justify-content-right">
+                        <button class="btn btn-success light-b-shadow" id="escrowBuyBtn"><b>Escrow Buy</b>
+                          <span class="displaySelectedCurrencyPrice"></span>
+                        </button>
+                        <span id="escrowInfo" class="text-primary-desat font-weight-bold font-size-md" title="Tsaishen Escrow"
+                            data-content="Offers additional protection for buyers to ensure deed is shared before funds are sent."
+                            data-placement="left" data-toggle="popover">&#9432;</span>
+                      </div>
+                    </div>
+                                        
+                    <hr>
+                    <p class="font-size-sm text-muted text-center"><i><u>Please note:</u> your crypto wallet must have the above amount plus extra EHT for network fees. 
+                      Tsaishen does not receive any of the network fees. <b>Tsaishen Escrow</b> protects both parties and charges a minimal fee, which is taken from the 
+                      seller proceeds and only if sale was successful.</i>
+                    </p>
+                    
+                  </div>
+               
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

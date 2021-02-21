@@ -259,6 +259,7 @@ $(".marketLink").click(goToInventory);
 
 var saleId;
 var salePrice;
+var saleToken;
     
 function selectHouseForSale(id) {
     saleId = id;
@@ -270,21 +271,19 @@ $("#sellBtn").on("click", function () {
     });
 });
 
-function selectHouseToBuyWEth(id) {
+function selectHouseToBuy(id, price, token) {
     saleId = id;
-    checkOffer(saleId).then((offer) => {
-        salePrice = offer.price;
-        buyHomeInETH(saleId, salePrice);
-    });
+    salePrice = price;
+    saleToken = token;
+    console.log("selectHouseToBuy", saleId, salePrice, saleToken);
+    displayPurchase(saleId, salePrice, saleToken);
 }
 
-function selectHouseToBuyWUsdc(id) {
-    saleId = id;
-    checkOffer(saleId).then((offer) => {
-        salePrice = offer.price;
-        buyHomeInUDSC(saleId, salePrice);
-    });
-}
+// $("#buyBtn").on("click", function () {
+//     displayPurchase(saleId, salePrice, saleToken).then(() => {
+//         $("#buyHouseModal").modal("hide");
+//     });
+// });
 
 function cancelSale(id) {
     saleId = id;

@@ -152,7 +152,7 @@ async function getHouses() {
 function renderCryptoHouse(id, url, isMarketplace, price, owner, token) {
   fetch(url).then(function (res) {
     res.json().then(function (data) {
-      console.log("JSON file: ", data);
+      // console.log("JSON file: ", data);
       console.log("buttonLogic", id, url, isMarketplace, price, owner, token);
 
       // $("#loading").hide();
@@ -179,20 +179,18 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner, token) {
       //   "parcel no:", parcel, "current value:", value, "current income:", income,
       //   "property type:", type, "more info:", link, "video tour:", video);           
 
-      var button = `<div class="row">
+      var button = `<div class="row">     
+                      <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
+                      <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
                       
-                        <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
-                      
-                        <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectToken(${id})" data-toggle="dropdown">Buy House: $${price}</button>
-                          <div class="tokenPrices dropdown-menu dropdown-menu-md">                             
-                            <h4 class="btn btn-dark-soft light-b-shadow onclick="selectHouseToBuy(${id, price})" id="ethereumToken${id}"><img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880"> <span id="showEthPrice${id}"></span> ETH</h4>
-                            <h4 class="btn btn-dark-soft light-b-shadow onclick="selectHouseToBuy(${id, price})" id="daiToken${id}"><img src="https://assets.coingecko.com/coins/images/9956/small/dai-multi-collateral-mcd.png?1574218774"> <span id="showDaiPrice${id}"></span> DAI</h4>
-                            <h4 class="btn btn-dark-soft light-b-shadow onclick="selectHouseToBuy(${id, price})" id="usdcToken${id}"><img src="https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389"> <span id="showUsdcPrice${id}"></span> USDC</h4>
-                          </div>
-                        <button class="btn btn-warning light-b-shadow" id="buyEscrowBtn${id}" onclick="selectHouseToBuyWEscrow(${id})">Buy with Escrow: $${price}</button>
-                        <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
-                      
-                  </div>`
+                      <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectToken(${id})" data-toggle="dropdown">Buy House: $${price}</button>
+                        <div class="tokenPrices dropdown-menu dropdown-menu-md">
+                          <h4>Currently accepting:</h4><br>                             
+                          <h4 class="btn btn-dark-soft light-b-shadow" onclick="selectHouseToBuy(${id, price, token})" data-toggle="modal" data-target="#buyHouseModal" id="ethereumToken${id}"><img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880"> <span id="showEthPrice${id}"></span> ETH</h4>
+                          <h4 class="btn btn-dark-soft light-b-shadow" onclick="selectHouseToBuy(${id, price, token})" data-toggle="modal" data-target="#buyHouseModal" id="daiToken${id}"><img src="https://assets.coingecko.com/coins/images/9956/small/dai-multi-collateral-mcd.png?1574218774"> <span id="showDaiPrice${id}"></span> DAI</h4>
+                          <h4 class="btn btn-dark-soft light-b-shadow" onclick="selectHouseToBuy(${id, price, token})" data-toggle="modal" data-target="#buyHouseModal" id="usdcToken${id}"><img src="https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389"> <span id="showUsdcPrice${id}"></span> USDC</h4>
+                        </div>
+                    </div>`
       // NOT WORKING
       $(".tokenPrices").empty();
 
@@ -217,16 +215,6 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner, token) {
         </tr>
         `
       )
-      // // if property is in marketplace -- THIS WORKS
-      // if (isMarketplace) {
-      //   $(`#selectSaleBtn${id}`).hide();
-      //   if (seller === user) {
-      //     $(`#buyBtn${id}`).hide();
-      //     $(`#buyEscrowBtn${id}`).hide();
-      //   } else {
-      //     $(`#cancelBtn${id}`).hide();
-      //   }
-      // }
 
       if (!isMarketplace) {
         $("#houseDisplay").append(button);
@@ -273,11 +261,11 @@ async function checkOffer(id) {
 async function getInventory() {
   try {
     var arrayId = await marketplaceInstance.methods.getAllTokensOnSale().call();
-    console.log("getInventory array: ", arrayId);
+    // console.log("getInventory array: ", arrayId);
     for (i = 0; i < arrayId.length; i++){
       if (arrayId[i] != 0) {
         const offer = await checkOffer(arrayId[i]);
-        console.log("getInventory", offer, arrayId[i]);
+        // console.log("getInventory", offer, arrayId[i]);
 
         if (offer.onSale) {
           appendHouse(arrayId[i], offer.price, offer.seller);
@@ -328,194 +316,18 @@ async function removeOffer(id) {
   goToInventory();
 }
 
-// JS function from Chainlink to get oracle prices
-// const web3 = new Web3("https://kovan.infura.io/v3/<infura_project_id>");
-// const aggregatorV3InterfaceABI = [
-//   {
-//     "inputs": [
-    
-//     ], "name": "decimals",
-//     "outputs":
-//       [
-//       {
-//         "internalType": "uint8",
-//         "name": "",
-//         "type": "uint8"
-//       }
-//     ],
-//     "stateMutability": "view",
-//     "type": "function"
-//   },
-//   {
-//     "inputs":
-//       [
-    
-//     ],
-//     "name": "description",
-//     "outputs":
-//       [
-//         {
-//           "internalType": "string",
-//           "name": "",
-//           "type": "string"
-//         }
-//       ],
-//     "stateMutability": "view",
-//     "type": "function"
-//   },
-//   {
-//     "inputs":
-//       [
-//         {
-//           "internalType": "uint80",
-//           "name": "_roundId",
-//           "type": "uint80"
-//         }
-//       ],
-//     "name": "getRoundData",
-//     "outputs":
-//       [
-//         {
-//           "internalType": "uint80",
-//           "name": "roundId",
-//           "type": "uint80"
-//         },
-//         {
-//           "internalType": "int256",
-//           "name": "answer",
-//           "type": "int256"
-//         },
-//         {
-//           "internalType": "uint256",
-//           "name": "startedAt",
-//           "type": "uint256"
-//         },
-//         {
-//           "internalType": "uint256",
-//           "name": "updatedAt",
-//           "type": "uint256"
-//         },
-//         {
-//           "internalType": "uint80",
-//           "name": "answeredInRound",
-//           "type": "uint80"
-//         }
-//       ],
-//     "stateMutability": "view",
-//     "type": "function"
-//   },
-//   {
-//     "inputs":
-//       [
-
-//       ],
-//     "name": "latestRoundData",
-//     "outputs":
-//       [
-//         {
-//           "internalType": "uint80",
-//           "name": "roundId",
-//           "type": "uint80"
-//         },
-//         {
-//           "internalType": "int256",
-//           "name": "answer",
-//           "type": "int256"
-//         },
-//         {
-//           "internalType": "uint256",
-//           "name": "startedAt",
-//           "type": "uint256"
-//         },
-//         {
-//           "internalType": "uint256",
-//           "name": "updatedAt",
-//           "type": "uint256"
-//         },
-//         {
-//           "internalType": "uint80",
-//           "name": "answeredInRound",
-//           "type": "uint80"
-//         }
-//       ],
-//     "stateMutability": "view",
-//     "type": "function"
-//   },
-//   {
-//     "inputs":[
-
-//       ],
-//     "name": "version",
-//     "outputs":
-//       [
-//         {
-//           "internalType": "uint256",
-//           "name": "",
-//           "type": "uint256"
-//         }
-//       ],
-//     "stateMutability": "view",
-//     "type": "function"
-//   }
-// ];
-// const addr = "0x9326BFA02ADD2366b30bacB125260Af641031331";
-// const priceFeed = new web3.eth.Contract(aggregatorV3InterfaceABI, addr);
-// priceFeed.methods.latestRoundData().call()
-//     .then((roundData) => {
-//         // Do something with roundData
-//         console.log("Latest Round Data", roundData)
-//     });
-
-
-async function ethPrice(price) {
-  // get ETH pricing from oracles - returns object
-  let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(ethAddress).call();
-  // console.log(Object.values(oracleObject));
-  let ETHprice, priceTime;
-  // convert to array and assign variables
-  [ETHprice, priceTime] = Object.values(oracleObject);
-  // // console.log(ETHprice); // LATEST TEST PRICE FROM CHAINLINK 191068577326 //testing on feb 20 @6:41 PM
-  // // let conversion = 191068577326 / 100000000;//returned 7.85058 ETH which is correct
-  let conversion = ETHprice / 100000000;
-  let priceInEth = (price / conversion);
-  console.log(priceInEth, priceTime);
-  return priceInEth;
-  // return oracleObject;
-}
-
-async function usdcPrice(price) {
-  let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(usdcAddress).call();
-  let USDCprice, priceTime;
-  [USDCprice, priceTime] = Object.values(oracleObject);
-  let conversion = USDCprice / 100000000;
-  let priceInUsdc = (price / conversion);
-  console.log(priceInUsdc, priceTime);
-  return priceInUsdc;
-}
-
-async function daiPrice(price) {
-  let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(daiAddress).call();
-  let DAIprice, priceTime;
-  [DAIprice, priceTime] = Object.values(oracleObject);
-  let conversion = DAIprice / 100000000;
-  let priceInDai = (price / conversion);
-  console.log(priceInDai, priceTime);
-  return priceInDai;
-}
-
-// instead of running specific function for each token, here's one to do it all
-async function getRecentTokenPrice(price, token) {
-  console.log("tokenAdd", token);
+async function getRecentTokenPrice(id, price, token) {
+  console.log("getRecentTokenPriceID", id, "recentTokenPrice", price, "tokenAdd", token);
   let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(token).call();
   let recentPrice, priceTime;
   [recentPrice, priceTime] = Object.values(oracleObject);
   let conversion = recentPrice / 100000000;
   let priceInCrypto = (price / conversion);
-  console.log(priceInCrypto, priceTime);
+  // console.log(priceInCrypto, priceTime);
   return priceInCrypto;
 }
 
-async function selectHouseToBuy(id, price, token) {
+async function buyCryptoHouse(id, price, token) {
   const offer = await checkOffer(id);
   // console.log("buying House", offer);
   // console.log(id, offer.price);
@@ -543,24 +355,30 @@ async function selectHouseToBuy(id, price, token) {
 async function selectToken(id) {
   let offer = await checkOffer(id);
  
-  let ethOracle = await getRecentTokenPrice(offer.price, ethAddress);
+  let ethOracle = await getRecentTokenPrice(id, offer.price, ethAddress);
   $(`#showEthPrice${id}`).append(ethOracle);
+  console.log("ethOracle", ethOracle);
   
-  let daiOracle = await getRecentTokenPrice(offer.price, daiAddress);
+  let daiOracle = await getRecentTokenPrice(id, offer.price, daiAddress);
   $(`#showDaiPrice${id}`).append(daiOracle);
+  console.log("daiOracle", daiOracle);
 
-  let usdcOracle = await getRecentTokenPrice(offer.price, usdcAddress);
+  let usdcOracle = await getRecentTokenPrice(id, offer.price, usdcAddress);
   $(`#showUsdcPrice${id}`).append(usdcOracle);
+  console.log("usdcOracle", usdcOracle);
   
-    if ($("#ethereumToken").click(function () {
-      return ethAddress;
-    }));
-    else if ($("#daiToken").click(function () {
-      return daiAddress;
-    }));
-    else if ($("#usdcToken").click(function () {
-      return usdcAddress;
-    }));
+  if ($(`#ethereumToken${id}`).click(function () {
+    $(".displaySelectedCurrencyPrice").append(ethOracle, " ETH");
+    selectHouseToBuy(id, ethOracle, ethAddress);
+  }));
+  else if ($(`#daiToken${id}`).click(function () {
+    $(".displaySelectedCurrencyPrice").append(daiOracle, " DAI");
+    selectHouseToBuy(id, daiOracle, daiAddress);
+  }));
+  else if ($(`#usdcToken${id}`).click(function () {
+    $(".displaySelectedCurrencyPrice").append(usdcOracle, " USDC");
+    selectHouseToBuy(id, usdcOracle, usdcAddress);
+  }));
 }
 
 async function buyHome (id, price) {
@@ -582,6 +400,25 @@ async function buyHome (id, price) {
   catch (err) {
     console.log(err);
   }
+}
+
+async function displayPurchase(id, price, token) {
+  house = await houseTokenInstance.methods.getHouse(id).call();
+  console.log(house.uri);
+  fetch(house.uri).then(function (res) {
+    res.json().then(function (data) {
+      imageUrl = data.image;
+      value = new Intl.NumberFormat().format(data.attributes[8].value);
+      income = new Intl.NumberFormat().format(data.attributes[9].value);
+      $("#finalizingSaleModalDisplay").append(
+        `<tr>
+          <td><img width=350px src=${imageUrl}><br>
+          <strong>Property Value:</strong> $${value}<br>
+          <strong>Monthly Income:</strong> $${income}</td>
+        </tr>`
+      );
+    });
+  });
 }
 
 // async function deedConfirm(id){}
