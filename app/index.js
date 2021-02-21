@@ -7,6 +7,9 @@ var houseTokenAddress = "0xE6630EB2e877F2C4AB04b1Ce721D2DC8029c2f22";
 var marketplaceAddress = "0x0c1eE53775f362F200796e8036a3Ce75B5DC78e8";
 const contractOwnerAddress = "0x0BD027Dee897b44b98C8359305dA897E82A2305e";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
+// approved token addresses
+const daiAddress = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
+const usdcAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
 const ethereumButton = document.querySelector('.enableEthereumButton');
 const showAccount = document.querySelector('.showAccount');
@@ -483,16 +486,18 @@ async function selectHouseToBuy(id) {
   const offer = await checkOffer(id);
   // console.log("buying House", offer);
   // console.log(id, offer.price);
-  var ethOracle = await await marketplaceInstance.methods.getOracleUsdPrice(0).call();
+  var ethOracle = await marketplaceInstance.methods.getOracleUsdPrice(0).call();
   console.log("buying house eth", ethOracle);
   [ETHprice, priceTime] = Object.values(ethOracle);
   let conversion = ETHprice / 100000000;
   // let conversion = (191068577326 / 100000000);
-  let priceInEth = parseFloat((offer.price / conversion).toFixed(6));
-  console.log(priceInEth);
-  // var amount = web3.utils.toWei(priceInEth, "ether");
+  let priceInEth = (offer.price / conversion).toString();
+  console.log("priceInEth", priceInEth);
+  console.log("price", offer.price);
+  var amount = web3.utils.toWei(priceInEth, "ether");
+  console.log("amount", amount);
   try {
-    await marketplaceInstance.methods.buyHouse(0, id).send({ value: priceInEth, from: user });
+    await marketplaceInstance.methods.buyHouse(0, id).send({ value: amount, from: user });
   }
   catch (err) {
     console.log(err);
@@ -507,6 +512,11 @@ async function selectHouseToBuy(id) {
   // console.log("USDC price", priceInUsdc);
   // console.log("DAI price", priceInDai);
   // console.log(amount);
+}
+
+async function selectToken(id, price) {
+  await checkOffer(id);
+  let ETH = 0;
 }
 
 async function buyHome (id, price) {
