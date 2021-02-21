@@ -307,6 +307,8 @@ async function sellCryptoHouse(id) {
 }
 
 async function removeOffer(id) {
+  const offer = await checkOffer(id);
+  if (!offer.onSale) return alert("Nothing to cancel. This house is not listed.");
   await marketplaceInstance.methods.removeOffer(id).send({ from: user });
   goToInventory();
 }
@@ -450,23 +452,21 @@ async function removeOffer(id) {
 //     });
 
 
-async function ethPrice(price) {
-  // get ETH pricing from oracles - returns object
-  let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(0).call();
-  // console.log(oracleObject);
-  console.log(Object.values(oracleObject));
-  let ETHprice, priceTime;
-  // convert object to array and assign variables
-  [ETHprice, priceTime] = Object.values(oracleObject);
-  // console.log(ETHprice);
-  // convert price
-  // LATEST TEST PRICE FROM CHAINLINK 191068577326 //testing on feb 20 @6:41 PM
-  // let conversion = 191068577326 / 100000000;//returned 7.85058 ETH which is correct
-  let conversion = ETHprice / 100000000;
-  let priceInEth = (price / conversion);
-  return priceInEth;
-  // console.log(priceInEth);
-}
+// async function ethPrice(price) {
+//   // get ETH pricing from oracles - returns object
+//   let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(0).call();
+//   // console.log(Object.values(oracleObject));
+//   let ETHprice, priceTime;
+//   // convert to array and assign variables
+//   // [ETHprice, priceTime] = Object.values(oracleObject);
+//   // // console.log(ETHprice); // LATEST TEST PRICE FROM CHAINLINK 191068577326 //testing on feb 20 @6:41 PM
+//   // // let conversion = 191068577326 / 100000000;//returned 7.85058 ETH which is correct
+//   // let conversion = ETHprice / 100000000;
+//   // let priceInEth = (price / conversion);
+//   // console.log(priceInEth, priceTime);
+//   // return priceInEth, priceTime;
+//   return oracleObject;
+// }
 
 async function usdcPrice() {
   let USDCprice = web3.utils.toChecksumAddress(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
@@ -481,11 +481,22 @@ async function daiPrice() {
 
 async function selectHouseToBuy(id) {
   const offer = await checkOffer(id);
-  console.log("buying House", offer);
-  console.log(id, offer.price);
-  var eth = await ethPrice(offer.price);
-  console.log("buying house eth", eth);
-  // var amount = web3.utils.toWei(price);
+  // console.log("buying House", offer);
+  // console.log(id, offer.price);
+  var ethOracle = await await marketplaceInstance.methods.getOracleUsdPrice(0).call();
+  console.log("buying house eth", ethOracle);
+  [ETHprice, priceTime] = Object.values(ethOracle);
+  let conversion = ETHprice / 100000000;
+  // let conversion = (191068577326 / 100000000);
+  let priceInEth = parseFloat((offer.price / conversion).toFixed(6));
+  console.log(priceInEth);
+  // var amount = web3.utils.toWei(priceInEth, "ether");
+  try {
+    await marketplaceInstance.methods.buyHouse(0, id).send({ value: priceInEth, from: user });
+  }
+  catch (err) {
+    console.log(err);
+  }
   // var usdc = usdcPrice();
   // var dai = daiPrice();
   // var priceInEth = (amount / eth).toFixed(4);
