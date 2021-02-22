@@ -331,25 +331,15 @@ async function buyCryptoHouse(id, price, token) {
   const offer = await checkOffer(id);
   // console.log("buying House", offer);
   // console.log(id, offer.price);
-  // var ethOracle = await marketplaceInstance.methods.getOracleUsdPrice(ethAddress).call();
-  // console.log("buying house eth", ethOracle);
-  // [ETHprice, priceTime] = Object.values(ethOracle);
-  // let conversion = ETHprice / 100000000;
-  // // let conversion = (191068577326 / 100000000);
-  // let priceInEth = (offer.price / conversion).toString();
-  // console.log("priceInEth", priceInEth);
-  // console.log("price", offer.price);
-  var amount = web3.utils.toWei(price);
+  var amount = web3.utils.toWei(price.toString());
   console.log("amount", amount);
   console.log("token", token);
-  // try {
-  //   // MM throws error on this function - changed from amount to amount.toString and added gas and priceInWei -->
-  //   // error didn't show when MM fired up but ultimately tx failed with the same error: RuntimeError code 32603
-  //   await marketplaceInstance.methods.buyHouse(ethAddress, id).send({ from: user, value: amount });
-  // }
-  // catch (err) {
-  //   console.log(err);
-  // }
+  try {
+    await marketplaceInstance.methods.buyHouse(ethAddress, id).send({ from: user, value: amount });
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
 
 async function selectToken(id) {

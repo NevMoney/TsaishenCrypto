@@ -279,11 +279,17 @@ function selectHouseToBuy(id, price, token) {
     displayPurchase(saleId, salePrice, saleToken);
 }
 
-// $("#buyBtn").on("click", function () {
-//     displayPurchase(saleId, salePrice, saleToken).then(() => {
-//         $("#buyHouseModal").modal("hide");
-//     });
-// });
+$("#buyBtn").on("click", function () {
+    buyCryptoHouse(saleId, salePrice, saleToken).then(() => {
+        $("#buyHouseModal").modal("hide");
+    });
+});
+
+$("#escrowBuyBtn").on("click", function () {
+    escrwoBuyCryptoHouse(saleId, salePrice, saleToken).then(() => {
+        $("#buyHouseModal").modal("hide");
+    });
+});
 
 function cancelSale(id) {
     saleId = id;
