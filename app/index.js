@@ -331,7 +331,7 @@ async function buyCryptoHouse(id, price, token) {
   const offer = await checkOffer(id);
   // console.log("buying House", offer);
   // console.log(id, offer.price);
-  var amount = web3.utils.toWei(price.toString());
+  var amount = web3.utils.toWei(price.toString(), "");
   console.log("amount", amount);
   console.log("token", token);
   try {
@@ -356,6 +356,8 @@ async function selectToken(id) {
   let usdcOracle = await getRecentTokenPrice(id, offer.price, usdcAddress);
   $(`#showUsdcPrice${id}`).append(usdcOracle);
   console.log("usdcOracle", usdcOracle);
+
+  $(".displaySelectedCurrencyPrice").empty();
   
   if ($(`#ethereumToken${id}`).click(function () {
     $(".displaySelectedCurrencyPrice").append(ethOracle, " ETH");
@@ -371,26 +373,26 @@ async function selectToken(id) {
   }));
 }
 
-async function buyHome (id, price) {
-  await checkOffer(id);
-  var amount = web3.utils.toWei(price, "ether");
-  var buy = await marketplaceInstance.methods.buyHouse(id).send({ value: amount });
-  var escrowBuy = await marketplaceInstance.methods
-    .buyHouseWithEscrow(id)
-    .send({ value: amount });
+// async function buyHome (id, price) {
+//   await checkOffer(id);
+//   var amount = web3.utils.toWei(price, "ether");
+//   var buy = await marketplaceInstance.methods.buyHouse(id).send({ value: amount });
+//   var escrowBuy = await marketplaceInstance.methods
+//     .buyHouseWithEscrow(id)
+//     .send({ value: amount });
 
-  try {
-    if ($("#buyBtn").on("click", function () {
-      buy;
-    }));
-    else if ($("#buyEscrowBtn").on("click", function () {
-      escrowBuy;
-    }));
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
+//   try {
+//     if ($("#buyBtn").on("click", function () {
+//       buy;
+//     }));
+//     else if ($("#buyEscrowBtn").on("click", function () {
+//       escrowBuy;
+//     }));
+//   }
+//   catch (err) {
+//     console.log(err);
+//   }
+// }
 
 async function displayPurchase(id, price, token) {
   house = await houseTokenInstance.methods.getHouse(id).call();

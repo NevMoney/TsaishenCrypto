@@ -276,6 +276,9 @@ function selectHouseToBuy(id, price, token) {
     salePrice = price;
     saleToken = token;
     console.log("selectHouseToBuy", saleId, salePrice, saleToken);
+
+    $("#finalizingSaleModalDisplay").empty();
+
     displayPurchase(saleId, salePrice, saleToken);
 }
 
