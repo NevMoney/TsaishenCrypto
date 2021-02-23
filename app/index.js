@@ -39,11 +39,8 @@ async function getAccount() {
 
 //Executed when page finish loading
 $(document).ready(async () => {
-  // this allows the website to use the metamask account
   const accounts = await ethereum.enable();
-
   web3 = new Web3(ethereum);
-
   toWei = (amount) => web3.utils.toWei(String(amount));
   fromWei = (amount) => Number(web3.utils.fromWei(amount)).toFixed(4);
 
@@ -54,16 +51,12 @@ $(document).ready(async () => {
     user = web3.utils.toChecksumAddress(_accounts[0]);
   });
 
-  // User will be the first item in the accounts array
   user = web3.utils.toChecksumAddress(accounts[0]);
 
   usersInstance = await new web3.eth.Contract(abi.TsaishenUsers, tsaishenUsersAddress, { from: user });
   houseTokenInstance = await new web3.eth.Contract(abi.HouseToken, houseTokenAddress, { from: creatorAddress });
   marketplaceInstance = await new web3.eth.Contract(abi.Marketplace, marketplaceAddress, { from: address[1] });
-
-  // console.log("users ", usersInstance);
-  // console.log("house ", houseTokenInstance);
-  // console.log("marketplace ", marketplaceInstance);
+  // console.log("users ", usersInstance, "house ", houseTokenInstance, "marketplace ", marketplaceInstance);
 
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
@@ -405,6 +398,70 @@ async function ownerInitializeContracts() {
   await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send();
   console.log("Marketplace: ", marketplaceAddress);
   console.log("HouseToken: ", houseTokenAddress);
+}
+
+async function getAllTsaishenUsers() {
+  let userList = await usersInstance.methods.getAllUsers().call();
+  console.log("user array", userList); 
+
+  for (i = 0; i < userList.length; i++) {
+    let list = userList[i].toString();
+    list = list.substr(26);
+    let begin = "0x";
+    let tUserAdd = begin.concat(list);
+    // console.log("user address" + i + ":", tUserAdd);
+
+    let tsaishenUserInfo = await usersInstance.methods.getUserInfo(tUserAdd).call();
+
+    let userAddress = userList[i];
+    let owner = tsaishenUserInfo.houseOwner;
+    let borrowed = tsaishenUserInfo.borrower;
+    let lended = tsaishenUserInfo.lender;
+    let rewarded = tsaishenUserInfo.reward;
+    let properties = tsaishenUserInfo.houses;
+
+    // console.log("tUser address", userAddress);
+    // console.log("owner", owner);
+    // console.log("borrowed", borrowed);
+    // console.log("lended", lended);
+    // console.log("rewarded", rewarded);
+    // console.log("properties", properties);
+    displayTsaishenUsers(userAddress, owner, borrowed, lended, rewarded, properties);
+  }
+}
+
+async function displayTsaishenUsers(userAddress, owner, borrowed, lended, rewarded, properties) {
+  userAddress = userAddress.substr(26);
+  let start = "0x";
+  let address = start.concat(userAddress);
+  console.log("address", address);
+  // for (i = 0; i < properties.length; i++){
+  //   house = await houseTokenInstance.methods.getHouse(properties).call();
+  //   console.log("displayUsers URL", house.uri);
+  //   fetch(house.uri).then(function (res) {
+  //     res.json().then(function (data) {
+  //       imageUrl = data.image;
+  //       value = new Intl.NumberFormat().format(data.attributes[8].value);
+  //       income = new Intl.NumberFormat().format(data.attributes[9].value);  
+  //     });
+  //   });
+  //   let property = 
+  //         `<tr>
+  //           <td><img width=350px src=${imageUrl}><br>
+  //           <strong>Property Value:</strong> $${value}<br>
+  //           <strong>Monthly Income:</strong> $${income}</td>
+  //         </tr>`
+  // }
+  $("#userDisplayTable").append(
+      `<tr>
+        <td>${address}</td>
+        <td>${owner}</td>
+        <td>${borrowed}</td>
+        <td>${lended}</td>
+        <td>${rewarded}</td>
+        <td>${properties}</td>
+      </tr>`
+  );
 }
 
 // async function deedConfirm(id){}

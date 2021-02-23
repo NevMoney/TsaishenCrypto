@@ -49,9 +49,11 @@ $("#portfolioLink").on("click", function () {
     $(".portfolioDisplay").empty();
 
     if (user === contractOwnerAddress) {
+        $(".contractOwner").show();
         $("#initializeBtn").show();
     } else {
         $("#initializeBtn").hide();
+        $(".contractOwner").hide();
     }
 
     getHouses();   

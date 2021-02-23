@@ -1169,16 +1169,18 @@
           In one handy place.
         </p>
         <p class="font-size-lg text-muted mb-4 mb-md-2 text-center">
-          Don't see your assets? Please check the following:<br><br>
+          If you don't see your assets, please check the following:<br><br>
           
           Connected to blockchain? &#127968; 
           Uploaded a property? &#127968; 
           Given sufficient time for the block production? &#127968; 
-          Using the same account you did to upload? 
+          Using the same account you used to upload? 
         </p>
-        <br>
-        <div class="contractOwner text-lg-left text-center">
-          <div class="btn btn-dark mr-1 lift" id="initializeBtn" onclick="ownerInitializeContracts()">Owner Initialize Contracts</div>
+        <div class="contractOwner container text-lg-left text-center py-md-11">
+          <h3 class="display-4 mb-2 mb-md-6 text-center">Contract Owner Playground</h3>
+          <div class="btn btn-dark mr-1 lift" id="initializeBtn" onclick="ownerInitializeContracts()">Initialize Contracts</div>
+          <div class="btn btn-dark mr-1 lift" id="getAllUsersBtn" onclick="getAllTsaishenUsers()">Get Tsaishen Users</div>
+          <div class="table table-responsive" id="userDisplayTable"></div>
         </div> 
         <div class="houseDisplay text-lg-left">
           <div class="portfolioDisplay table table-responsive" id="houseDiv"></div>
