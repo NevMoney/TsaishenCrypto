@@ -65,11 +65,6 @@ $(document).ready(async () => {
   // console.log("house ", houseTokenInstance);
   // console.log("marketplace ", marketplaceInstance);
 
-  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
-  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send();
-  console.log("Marketplace: ", marketplaceAddress);
-  console.log("HouseToken: ", houseTokenAddress);
-
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
     let owner = event.returnValues._owner;
@@ -403,6 +398,13 @@ async function displayPurchase(id, price, token) {
       );
     });
   });
+}
+
+async function ownerInitializeContracts() {
+  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
+  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send();
+  console.log("Marketplace: ", marketplaceAddress);
+  console.log("HouseToken: ", houseTokenAddress);
 }
 
 // async function deedConfirm(id){}

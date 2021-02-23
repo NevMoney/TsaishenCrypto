@@ -48,6 +48,12 @@ $("#portfolioLink").on("click", function () {
     $("#houseDivSale").empty();
     $(".portfolioDisplay").empty();
 
+    if (user === contractOwnerAddress) {
+        $("#initializeBtn").show();
+    } else {
+        $("#initializeBtn").hide();
+    }
+
     getHouses();   
 });
 
