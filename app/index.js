@@ -2,10 +2,10 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x3d7b49d7EB3C0B27835b697c480a369B93E5f20D";
-var houseTokenAddress = "0x189a4b473D0EE0d1A3bF40904F9E0c6908a63587";
-var marketplaceAddress = "0xaf31b1dce7Ce247e2533404B873Bd53124C61930";
-const contractOwnerAddress = "0x5C060154bB1BC8E37dE8d75828a80C29F739f8d2";
+var tsaishenUsersAddress = "0xCdC09514C5FB30B5A5e8e9de58105Cd9c8a1f3d5";
+var houseTokenAddress = "0x16CFE18965b32DBf482Cc27F134D2de42bFa43b7";
+var marketplaceAddress = "0xe1E543342E59876577FBdB9E1a9e6a2abCdc466a";
+const contractOwnerAddress = "0x22Ff2a94661193978D5425F977C024E7be930B82";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
 const ethAddress = "0x0000000000000000000000000000000000000000";
@@ -149,11 +149,11 @@ async function getHouses() {
 }
 
 // get data from JSON and render display
-function renderCryptoHouse(id, url, isMarketplace, price, owner, token) {
+function renderCryptoHouse(id, url, isMarketplace, price, owner) {
   fetch(url).then(function (res) {
     res.json().then(function (data) {
       // console.log("JSON file: ", data);
-      console.log("buttonLogic", id, url, isMarketplace, price, owner, token);
+      console.log("renderCryptoHouse", id, url, isMarketplace, price, owner);
 
       // $("#loading").hide();
       
@@ -186,9 +186,9 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner, token) {
                       <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectToken(${id})" data-toggle="dropdown">Buy House: $${price}</button>
                         <div class="tokenPrices dropdown-menu dropdown-menu-md">
                           <h4>Currently accepting:</h4><br>                             
-                          <h4 class="btn btn-dark-soft light-b-shadow" onclick="selectHouseToBuy(${id, price, token})" data-toggle="modal" data-target="#buyHouseModal" id="ethereumToken${id}"><img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880"> <span id="showEthPrice${id}"></span> ETH</h4>
-                          <h4 class="btn btn-dark-soft light-b-shadow" onclick="selectHouseToBuy(${id, price, token})" data-toggle="modal" data-target="#buyHouseModal" id="daiToken${id}"><img src="https://assets.coingecko.com/coins/images/9956/small/dai-multi-collateral-mcd.png?1574218774"> <span id="showDaiPrice${id}"></span> DAI</h4>
-                          <h4 class="btn btn-dark-soft light-b-shadow" onclick="selectHouseToBuy(${id, price, token})" data-toggle="modal" data-target="#buyHouseModal" id="usdcToken${id}"><img src="https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389"> <span id="showUsdcPrice${id}"></span> USDC</h4>
+                          <h4 class="btn btn-dark-soft light-b-shadow" data-toggle="modal" data-target="#buyHouseModal" id="ethereumToken${id}"><img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880"> <span id="showEthPrice${id}"></span> ETH</h4>
+                          <h4 class="btn btn-dark-soft light-b-shadow" data-toggle="modal" data-target="#buyHouseModal" id="daiToken${id}"><img src="https://assets.coingecko.com/coins/images/9956/small/dai-multi-collateral-mcd.png?1574218774"> <span id="showDaiPrice${id}"></span> DAI</h4>
+                          <h4 class="btn btn-dark-soft light-b-shadow" data-toggle="modal" data-target="#buyHouseModal" id="usdcToken${id}"><img src="https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389"> <span id="showUsdcPrice${id}"></span> USDC</h4>
                         </div>
                     </div>`
       // NOT WORKING
@@ -280,7 +280,7 @@ async function getInventory() {
 }
 
 async function appendHouse(id, price, seller) {
-  console.log("appendHouse ID", id, "aH price", price, "aH seller", seller);
+  // console.log("appendHouse ID", id, "aH price", price, "aH seller", seller);
   var house = await houseTokenInstance.methods.getHouse(id).call();
   appendCryptoHouse(id, house.uri, true, price, seller);
 }
@@ -323,7 +323,7 @@ async function getRecentTokenPrice(id, price, token) {
   [recentPrice, priceTime] = Object.values(oracleObject);
   let conversion = recentPrice / 100000000;
   let priceInCrypto = (price / conversion);
-  // console.log(priceInCrypto, priceTime);
+  // console.log("token price and time: ", priceInCrypto, priceTime);
   return priceInCrypto;
 }
 
@@ -332,10 +332,10 @@ async function buyCryptoHouse(id, price, token) {
   // console.log("buying House", offer);
   // console.log(id, offer.price);
   var amount = web3.utils.toWei(price.toString(), "");
-  console.log("amount", amount);
-  console.log("token", token);
+  console.log("buy amount", amount);
+  console.log("buy token address", token);
   try {
-    await marketplaceInstance.methods.buyHouse(ethAddress, id).send({ from: user, value: amount });
+    await marketplaceInstance.methods.buyHouse(token, id).send({ from: user, value: amount });
   }
   catch (err) {
     console.log(err);
@@ -346,63 +346,55 @@ async function selectToken(id) {
   let offer = await checkOffer(id);
  
   let ethOracle = await getRecentTokenPrice(id, offer.price, ethAddress);
+  $(`#showEthPrice${id}`).empty();
   $(`#showEthPrice${id}`).append(ethOracle);
-  console.log("ethOracle", ethOracle);
+  // console.log("ethOracle", ethOracle);
   
   let daiOracle = await getRecentTokenPrice(id, offer.price, daiAddress);
+  $(`#showDaiPrice${id}`).empty();
   $(`#showDaiPrice${id}`).append(daiOracle);
-  console.log("daiOracle", daiOracle);
+  // console.log("daiOracle", daiOracle);
 
   let usdcOracle = await getRecentTokenPrice(id, offer.price, usdcAddress);
+  $(`#showUsdcPrice${id}`).empty();
   $(`#showUsdcPrice${id}`).append(usdcOracle);
-  console.log("usdcOracle", usdcOracle);
+  // console.log("usdcOracle", usdcOracle);
 
-  $(".displaySelectedCurrencyPrice").empty();
+  let ethAmount = web3.utils.fromWei(ethOracle.toString());
+  let daiAmount = web3.utils.fromWei(daiOracle.toString());
+  let usdcAmount = web3.utils.fromWei(usdcOracle.toString());
+  console.log("ethAmount", ethAmount, "daiAmount", daiAmount, "usdcAmount", usdcAmount);
   
   if ($(`#ethereumToken${id}`).click(function () {
+    console.log("eth btn clicked");
+    $(".displaySelectedCurrencyPrice").empty();
     $(".displaySelectedCurrencyPrice").append(ethOracle, " ETH");
-    selectHouseToBuy(id, ethOracle, ethAddress);
+    selectHouseToBuy(id, ethAmount, ethAddress);
   }));
-  else if ($(`#daiToken${id}`).click(function () {
+  if ($(`#daiToken${id}`).click(function () {
+    console.log("dai btn clicked");
+    $(".displaySelectedCurrencyPrice").empty();
     $(".displaySelectedCurrencyPrice").append(daiOracle, " DAI");
-    selectHouseToBuy(id, daiOracle, daiAddress);
+    selectHouseToBuy(id, daiAmount, daiAddress);
   }));
-  else if ($(`#usdcToken${id}`).click(function () {
+  if ($(`#usdcToken${id}`).click(function () {
+    console.log("usdcs btn clicked");
+    $(".displaySelectedCurrencyPrice").empty();
     $(".displaySelectedCurrencyPrice").append(usdcOracle, " USDC");
-    selectHouseToBuy(id, usdcOracle, usdcAddress);
+    selectHouseToBuy(id, usdcAmount, usdcAddress);
   }));
 }
 
-// async function buyHome (id, price) {
-//   await checkOffer(id);
-//   var amount = web3.utils.toWei(price, "ether");
-//   var buy = await marketplaceInstance.methods.buyHouse(id).send({ value: amount });
-//   var escrowBuy = await marketplaceInstance.methods
-//     .buyHouseWithEscrow(id)
-//     .send({ value: amount });
-
-//   try {
-//     if ($("#buyBtn").on("click", function () {
-//       buy;
-//     }));
-//     else if ($("#buyEscrowBtn").on("click", function () {
-//       escrowBuy;
-//     }));
-//   }
-//   catch (err) {
-//     console.log(err);
-//   }
-// }
-
 async function displayPurchase(id, price, token) {
   house = await houseTokenInstance.methods.getHouse(id).call();
-  console.log(house.uri);
+  console.log("displayPurchase", house.uri);
   fetch(house.uri).then(function (res) {
     res.json().then(function (data) {
       imageUrl = data.image;
       value = new Intl.NumberFormat().format(data.attributes[8].value);
       income = new Intl.NumberFormat().format(data.attributes[9].value);
-      $("#finalizingSaleModalDisplay").append(
+      $("#buyModalDisplay").empty();
+      $(".finalizingPurchaseDisplay").append(
         `<tr>
           <td><img width=350px src=${imageUrl}><br>
           <strong>Property Value:</strong> $${value}<br>
