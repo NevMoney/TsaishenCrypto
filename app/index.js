@@ -54,8 +54,8 @@ $(document).ready(async () => {
   user = web3.utils.toChecksumAddress(accounts[0]);
 
   usersInstance = await new web3.eth.Contract(abi.TsaishenUsers, tsaishenUsersAddress, { from: user });
-  houseTokenInstance = await new web3.eth.Contract(abi.HouseToken, houseTokenAddress, { from: creatorAddress });
-  marketplaceInstance = await new web3.eth.Contract(abi.Marketplace, marketplaceAddress, { from: address[1] });
+  houseTokenInstance = await new web3.eth.Contract(abi.HouseToken, houseTokenAddress, { from: user });
+  marketplaceInstance = await new web3.eth.Contract(abi.Marketplace, marketplaceAddress, { from: user });
   // console.log("users ", usersInstance, "house ", houseTokenInstance, "marketplace ", marketplaceInstance);
 
   // we'll put events here for notifications
