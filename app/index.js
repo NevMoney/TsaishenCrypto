@@ -179,8 +179,6 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
                           <h4 class="btn btn-dark-soft light-b-shadow" data-toggle="modal" data-target="#buyHouseModal" id="usdcToken${id}"><img src="https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389"> <span id="showUsdcPrice${id}"></span> USDC</h4>
                         </div>
                     </div>`
-      // NOT WORKING
-      $(".tokenPrices").empty();
 
       $(".portfolioDisplay").append(
         `<tr>
@@ -435,32 +433,36 @@ async function displayTsaishenUsers(userAddress, owner, borrowed, lended, reward
   let start = "0x";
   let address = start.concat(userAddress);
   console.log("address", address);
-  // for (i = 0; i < properties.length; i++){
-  //   house = await houseTokenInstance.methods.getHouse(properties).call();
-  //   console.log("displayUsers URL", house.uri);
-  //   fetch(house.uri).then(function (res) {
-  //     res.json().then(function (data) {
-  //       imageUrl = data.image;
-  //       value = new Intl.NumberFormat().format(data.attributes[8].value);
-  //       income = new Intl.NumberFormat().format(data.attributes[9].value);  
-  //     });
-  //   });
-  //   let property = 
+  console.log("properties", properties);
+
+  // let property = 
   //         `<tr>
-  //           <td><img width=350px src=${imageUrl}><br>
+  //           <td><img width=150px src=${imageUrl}><br>
   //           <strong>Property Value:</strong> $${value}<br>
   //           <strong>Monthly Income:</strong> $${income}</td>
   //         </tr>`
-  // }
+  
   $("#userDisplayTable").append(
-      `<tr>
-        <td>${address}</td>
-        <td>${owner}</td>
-        <td>${borrowed}</td>
-        <td>${lended}</td>
-        <td>${rewarded}</td>
-        <td>${properties}</td>
-      </tr>`
+      `<table class="table table-responsive">
+        <thead class="thead-dark">
+          <th scope="col">Address</th>
+          <th scope="col">Owner?</th>
+          <th scope="col">Borrower?</th>
+          <th scope="col">Lender?</th>
+          <th scope="col">Reward?</th>
+          <th scope="col">Properties</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${address}</td>
+            <td>${owner}</td>
+            <td>${borrowed}</td>
+            <td>${lended}</td>
+            <td>${rewarded}</td>
+            <td onclick="displayPurchase(${properties})" data-toggle="modal" data-target="#buyHouseModal">${properties}</td>
+          </tr>
+        </tbody>
+      </table>`
   );
 }
 
