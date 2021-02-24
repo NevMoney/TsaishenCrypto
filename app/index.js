@@ -453,6 +453,64 @@ async function displayTsaishenUsers(userAddress, owner, borrowed, lended, reward
   );
 }
 
+async function getEscrowInfo() {
+  let userList = await usersInstance.methods.getAllUsers().call();
+
+  for (i = 0; i < userList.length; i++) {
+    let list = userList[i].toString();
+    list = list.substr(26);
+    let begin = "0x";
+    let tUserAdd = begin.concat(list);
+    let tsaishenUserInfo = await usersInstance.methods.getUserInfo(tUserAdd).call();
+    console.log("users object" + i +":", tsaishenUserInfo);
+    let homeArray = tsaishenUserInfo.houses;
+    console.log("homes array" + i +":", homeArray);
+    for (n = 0; n < homeArray.length; n++){
+      let homes = homeArray[n].toString();
+      homes = homes.substr(26);
+      console.log("homes" + n +":", homes);
+      // let id = web3.utils.fromWei(homes[n].toString());
+      // console.log("ID:", id);
+      let escrow = await marketplaceInstance.methods.escrowInfo(homes).call();
+      console.log("escrow Array" + n +":", escrow);
+      console.log("seller", escrow.seller, "buyer", escrow.buyer, "state", escrow.state, "amount", escrow.amount, "timelock", escrow.timelock);
+    
+      displayEscrows(homes, escrow.seller, escrow.buyer, escrow.state, escrow.amount, escrow.timelock);
+    }
+  }
+}
+
+async function displayEscrows(houseId, seller, buyer, state, amount, timelock) {
+  if (amount > 0) {
+    $("#escrowDisplayTable").append(
+      `<table class="table table-responsive">
+        <thead class="thead-dark">
+        <th scope="col">House ID</th>
+          <th scope="col">Seller</th>
+          <th scope="col">Buyer</th>
+          <th scope="col">State</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Timelock</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${houseId}</td>
+            <td>${seller}</td>
+            <td>${buyer}</td>
+            <td>${state}</td>
+            <td>${amount}</td>
+            <td>${timelock}</td>
+          </tr>
+        </tbody>
+      </table>`
+  );
+  } else {
+    $("#escrowDisplayTable").css("display", "block");
+    $("#escrowDisplayTable").text("No houses in escrow.");
+  }
+  
+}
+
 // async function deedConfirm(id){}
 
 // async function checkDeposit(id){}

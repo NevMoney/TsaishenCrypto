@@ -309,3 +309,9 @@ $("#getAllUsersBtn").on("click", function () {
         $("#getAllUsersBtn").hide();
     });
 });
+
+$("#getEscrowInfoBtn").on("click", function () {
+    getEscrowInfo().then(() => {
+        $("#getEscrowInfoBtn").hide();
+    });
+});
