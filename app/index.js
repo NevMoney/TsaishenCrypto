@@ -418,12 +418,6 @@ async function getAllTsaishenUsers() {
     let rewarded = tsaishenUserInfo.reward;
     let properties = tsaishenUserInfo.houses;
 
-    // console.log("tUser address", userAddress);
-    // console.log("owner", owner);
-    // console.log("borrowed", borrowed);
-    // console.log("lended", lended);
-    // console.log("rewarded", rewarded);
-    // console.log("properties", properties);
     displayTsaishenUsers(userAddress, owner, borrowed, lended, rewarded, properties);
   }
 }
@@ -434,13 +428,6 @@ async function displayTsaishenUsers(userAddress, owner, borrowed, lended, reward
   let address = start.concat(userAddress);
   console.log("address", address);
   console.log("properties", properties);
-
-  // let property = 
-  //         `<tr>
-  //           <td><img width=150px src=${imageUrl}><br>
-  //           <strong>Property Value:</strong> $${value}<br>
-  //           <strong>Monthly Income:</strong> $${income}</td>
-  //         </tr>`
   
   $("#userDisplayTable").append(
       `<table class="table table-responsive">
