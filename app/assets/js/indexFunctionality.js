@@ -50,9 +50,7 @@ $("#portfolioLink").on("click", function () {
 
     if (user === contractOwnerAddress) {
         $(".contractOwner").show();
-        $("#initializeBtn").show();
     } else {
-        $("#initializeBtn").hide();
         $(".contractOwner").hide();
     }
 
@@ -305,3 +303,9 @@ function cancelSale(id) {
     saleId = id;
     removeOffer(id);
 }
+
+$("#getAllUsersBtn").on("click", function () {
+    getAllTsaishenUsers().then(() => {
+        $("#getAllUsersBtn").hide();
+    });
+});

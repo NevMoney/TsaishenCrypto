@@ -446,7 +446,7 @@ async function displayTsaishenUsers(userAddress, owner, borrowed, lended, reward
             <td>${borrowed}</td>
             <td>${lended}</td>
             <td>${rewarded}</td>
-            <td onclick="displayPurchase(${properties})" data-toggle="modal" data-target="#buyHouseModal">${properties}</td>
+            <td class="btn" onclick="displayPurchase(${properties})" data-toggle="modal" data-target="#buyHouseModal">${properties}</td>
           </tr>
         </tbody>
       </table>`
