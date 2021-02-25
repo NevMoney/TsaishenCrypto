@@ -4,18 +4,22 @@ const Marketplace = artifacts.require("Marketplace");
 const TsaishenToken = artifacts.require("TsaishenToken");
 const truffleAssert = require('truffle-assertions');
 
+const {
+    time
+  } = require('@openzeppelin/test-helpers');
+
 var acceptableAmount = web3.utils.toWei('1', 'ether');
 var name = "Tsaishen Real Estate";
 var symbol = "HOUS";
 var decimals = 18;
-var baseURI = "ipfs://";
+var baseURI = "https://gateway.ipfs.io/ipfs/";
 var housePrice = 100000000;
 
-function sleep(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
+// function sleep(ms) {
+//     return new Promise((resolve) => {
+//       setTimeout(resolve, ms);
+//     });
+//   }
 
 async function createHouse(houseTokenInstance, _user, tokenURI, tokenID, _totalSupply, _userBalance) {
     let tokenReceipt = await houseTokenInstance.createHouse(1, 1, tokenURI, { value: acceptableAmount, from: _user })
@@ -24,6 +28,7 @@ async function createHouse(houseTokenInstance, _user, tokenURI, tokenID, _totalS
     assert.equal(event1.tokenId.toNumber(), tokenID, "token id is incorrect");
     assert.equal(event1.from, "0x0000000000000000000000000000000000000000", "creation account is incorrect");
     assert.equal(event1.to, _user, "to account is incorrect");
+    
     let event2 = tokenReceipt.logs[1].args;
     assert.equal(event2.id.toNumber(), tokenID, "token id is incorrect");
     assert.equal(event2._owner, _user, "owner is incorrect");
@@ -36,7 +41,8 @@ async function checkDetails(houseTokenInstance, _user, tokenURI, tokenID, _total
     var userBalance = await houseTokenInstance.balanceOf(_user);
     var houseDetails = await houseTokenInstance.getHouse(tokenID);
     var owns = await houseTokenInstance.ownsHouse(_user);
-    var contractBalance = await web3.eth.getBalance(HouseToken.address);
+    var contractBalance = await web3.eth.getBalance(houseTokenInstance.address);
+    
     assert.equal(contractBalance, _contractBalance * acceptableAmount, "Incorrect balance in contract");
     assert.equal(houseDetails[0].toNumber(), 1, "incorrect value");
     assert.equal(houseDetails[1].toNumber(), 1, "incorrect income");
@@ -47,9 +53,11 @@ async function checkDetails(houseTokenInstance, _user, tokenURI, tokenID, _total
 }
 
 async function sellHouse(houseTokenInstance, marketplaceInstance, _user, tokenID) {
-    await houseTokenInstance.setApprovalForAll(Marketplace.address, true, { from: _user });
+    await houseTokenInstance.setApprovalForAll(marketplaceInstance.address, true, { from: _user });
+    
     let res = await marketplaceInstance.sellHouse(10, tokenID, { from: _user });
     let ev = res.logs[0].args;
+    
     assert.equal(ev[0], "House listed", "incorrect event");
     assert.equal(ev[1], _user, "incorrect sender");
     assert.equal(ev[2], tokenID, "incorrect tokenID");
@@ -57,6 +65,7 @@ async function sellHouse(houseTokenInstance, marketplaceInstance, _user, tokenID
 
 async function checkHouseOffer(marketplaceInstance, tokenID, _user) {
     let res = await marketplaceInstance.getOffer(tokenID);
+    
     assert.equal(res.price, 10, "price should be 10");
     assert.equal(res.income, 1, "income should be 1");
     assert.equal(res.seller, _user, "Seller of the house not matching");
@@ -64,17 +73,18 @@ async function checkHouseOffer(marketplaceInstance, tokenID, _user) {
 
 async function approveMarketPlace(marketplaceInstance, tsaishenTokenInstance,tokenID, _user) {
     var offer = await marketplaceInstance.getOffer(tokenID);
-    var oraclePrice = await marketplaceInstance.getOracleUsdPrice(TsaishenToken.address);
+    var oraclePrice = await marketplaceInstance.getOracleUsdPrice(tsaishenTokenInstance.address);
     var b = (offer.price * housePrice) / oraclePrice[0];
-    await tsaishenTokenInstance.approve(Marketplace.address, web3.utils.toWei(b.toString(), 'ether'), { from: _user });
+    
+    await tsaishenTokenInstance.approve(marketplaceInstance.address, web3.utils.toWei(b.toString(), 'ether'), { from: _user });
 }
 
 contract("Positive tests", (accounts) => {
 
+    var usersInstance;
     var houseTokenInstance;
-    var usersIntance;
+    var marketplaceInstance;
     var tsaishenTokenInstance;
-    var marketplaceInstance
     var owner = accounts[0];
     var feeRecipient = accounts[1];
     var user1 = accounts[2];
@@ -82,20 +92,25 @@ contract("Positive tests", (accounts) => {
     var user3 = accounts[4];
 
     before(async () => {
-        marketplaceInstance = await Marketplace.deployed();
-        houseTokenInstance = await HouseToken.deployed();
-        usersIntance = await TsaishenUsers.deployed();
-        tsaishenTokenInstance = await TsaishenToken.deployed();
+        // Deploy Contracts
+        usersInstance = await TsaishenUsers.new();
+        houseTokenInstance = await HouseToken.new(usersInstance.address, owner);
+        marketplaceInstance = await Marketplace.new(usersInstance.address, houseTokenInstance.address, owner);
+        tsaishenTokenInstance = await TsaishenToken.new();
+        
         var tokenBalance = await tsaishenTokenInstance.balanceOf(owner);
-        await marketplaceInstance.addOracle(TsaishenToken.address, '0x0000000000000000000000000000000000000001')
-        await usersIntance.setHouseTokenAddress(HouseToken.address);
-        await usersIntance.setMarketplaceAddress(Marketplace.address);
-        console.log(web3.utils.fromWei(tokenBalance, 'ether'));
+        
+        await marketplaceInstance.addOracle(tsaishenTokenInstance.address, '0x0000000000000000000000000000000000000001')
+        await usersInstance.setHouseTokenAddress(houseTokenInstance.address);
+        await usersInstance.setMarketplaceAddress(marketplaceInstance.address);
+        console.log("TT balance", web3.utils.fromWei(tokenBalance, 'ether'));
+        
         await tsaishenTokenInstance.transfer(user3, acceptableAmount);
         tokenBalance = await tsaishenTokenInstance.balanceOf(owner);
-        console.log(web3.utils.fromWei(tokenBalance, 'ether'));
+        console.log("TT owner balance", web3.utils.fromWei(tokenBalance, 'ether'));
+        
         tokenBalance = await tsaishenTokenInstance.balanceOf(user1);
-        console.log(web3.utils.fromWei(tokenBalance, 'ether'));
+        console.log("TT user1 balance", web3.utils.fromWei(tokenBalance, 'ether'));
     });
 
     describe("HouseToken::Deployment", () => {
@@ -146,11 +161,20 @@ contract("Positive tests", (accounts) => {
         });
         it("should withdraw all from contract", async () => {
             var initialOwnerBalance = await web3.eth.getBalance(owner);
-            var contractBalance = await web3.eth.getBalance(HouseToken.address);
-            console.log("congract balance: ", contractBalance);
-            // let res = await houseTokenInstance.withdrawAll(); //showing "invalid opcode"
+            var contractBalance = await web3.eth.getBalance(houseTokenInstance.address);
+            console.log("contract balance: ", contractBalance);
+            
+            /** ?????
+             * NOT WORKING
+             * Worked for Wafflemakr on a call
+             * no changes to the code/contract have been made
+             * ?????
+            */
+            // let res = await houseTokenInstance.withdrawAll();
+
             var finalOwnerBalance = await web3.eth.getBalance(owner);
             console.log("final owner balance: ", finalOwnerBalance);
+            
             // var gasUsed = res.receipt.gasUsed;
             // var tx = await web3.eth.getTransaction(res.tx);
             // var gasPrice = tx.gasPrice;
@@ -161,7 +185,7 @@ contract("Positive tests", (accounts) => {
 
     describe("TsaishenUsers::UserInfo", () => {
         it("Correct Details for User 1", async () => {
-            let x = await usersIntance.getUserInfo(user1);
+            let x = await usersInstance.getUserInfo(user1);
             assert.isTrue(x[0]);
             assert.isFalse(x[1]);
             assert.isFalse(x[2]);
@@ -177,7 +201,7 @@ contract("Positive tests", (accounts) => {
             assert.equal(owner, accounts[0], "incorrect owner account");
         });
         it("should get correct Oracle price", async () => {
-            let orcPrice = await marketplaceInstance.getOracleUsdPrice(TsaishenToken.address);
+            let orcPrice = await marketplaceInstance.getOracleUsdPrice(tsaishenTokenInstance.address);
             assert.equal(orcPrice[0], 10000000000, "incorrect oracle price");
         });
     });
@@ -221,8 +245,8 @@ contract("Positive tests", (accounts) => {
     describe("Marketplace::Buy Houses", () => {
         it("Should buy house 0 for user3 directly", async () => {
             await approveMarketPlace(marketplaceInstance,tsaishenTokenInstance, 0, user3);
-            let res = await marketplaceInstance.buyHouse(TsaishenToken.address, 0, { from: user3 });
-            let x = await usersIntance.getUserInfo(user3);
+            let res = await marketplaceInstance.buyHouse(tsaishenTokenInstance.address, 0, { from: user3 });
+            let x = await usersInstance.getUserInfo(user3);
             assert.isTrue(x.houseOwner);
             assert.isFalse(x.borrower);
             assert.isFalse(x.lender);
@@ -231,14 +255,14 @@ contract("Positive tests", (accounts) => {
         });
         it("Should put money in escrow for house 1 from user3", async () => {
             await approveMarketPlace(marketplaceInstance,tsaishenTokenInstance, 1, user3);
-            let res = await marketplaceInstance.buyHouseWithEscrow(TsaishenToken.address, 1, {from: user3});
-            let marketBalance = await tsaishenTokenInstance.balanceOf(Marketplace.address);
+            let res = await marketplaceInstance.buyHouseWithEscrow(tsaishenTokenInstance.address, 1, {from: user3});
+            let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
             assert.equal(web3.utils.fromWei(marketBalance,'ether'),0.1,"market balance should be 0.1");
         });
         it("Should put money in escrow for house 2 from user3", async () => {
             await approveMarketPlace(marketplaceInstance,tsaishenTokenInstance, 2, user3);
-            let res = await marketplaceInstance.buyHouseWithEscrow(TsaishenToken.address,2, {from: user3});
-            let marketBalance = await tsaishenTokenInstance.balanceOf(Marketplace.address);
+            let res = await marketplaceInstance.buyHouseWithEscrow(tsaishenTokenInstance.address,2, {from: user3});
+            let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
             assert.equal(web3.utils.fromWei(marketBalance,'ether'),0.2,"market balance should be 0.2");
         });
         it("Should NOT refund the money in escrow before timeout", async()=>{
@@ -246,12 +270,14 @@ contract("Positive tests", (accounts) => {
             // await marketplaceInstance.permitRefunds(1);
         });
         it("Should refund money in escrow for house 1 to user3", async() => {
-            console.log("Wait for 1 minute");
-            await sleep(60000);
+            console.log("Skip forward 10 days...");
+            // await sleep(60000);
+            await time.advanceBlock();
+            await time.increase(864000);
             await marketplaceInstance.refundEscrow(1);
             let userBalance = await tsaishenTokenInstance.balanceOf(user3);
             assert.equal(web3.utils.fromWei(userBalance,'ether'),0.8,"user balance should be 0.8");
-            let marketBalance = await tsaishenTokenInstance.balanceOf(Marketplace.address);
+            let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
             assert.equal(web3.utils.fromWei(marketBalance,'ether'),0.1,"market balance should be 0.1");
         });
         it("should not refund money in escrow for house 1 to user3 now", async() => {
@@ -261,7 +287,7 @@ contract("Positive tests", (accounts) => {
             await marketplaceInstance.finalizeEscrowTransaction(2);
             let userBalance = await tsaishenTokenInstance.balanceOf(user3);
             assert.equal(web3.utils.fromWei(userBalance,'ether'),0.8,"user balance should be 0.8");
-            let marketBalance = await tsaishenTokenInstance.balanceOf(Marketplace.address);
+            let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
             assert.equal(web3.utils.fromWei(marketBalance,'ether'),0,"market balance should be 0");
         });
         it("should check token amount for each account", async()=>{
@@ -273,26 +299,26 @@ contract("Positive tests", (accounts) => {
             assert.equal(web3.utils.fromWei(userBalance,'ether'),0,"user balance should be 0");
             userBalance = await tsaishenTokenInstance.balanceOf(feeRecipient);
             assert.equal(web3.utils.fromWei(userBalance,'ether'),0,"user balance should be 0");
-            let marketBalance = await tsaishenTokenInstance.balanceOf(Marketplace.address);
+            let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
             assert.equal(web3.utils.fromWei(marketBalance,'ether'),0,"market balance should be 0");
         })
     });
 
     describe("TsaishenUsers::UserInfo", () => {
         it("should get correct Details for User 1", async () => {
-            await usersIntance.deleteHouseFromUser(user1,0);
-            let x = await usersIntance.getUserInfo(user1);
+            await usersInstance.deleteHouseFromUser(user1,0);
+            let x = await usersInstance.getUserInfo(user1);
             console.log(x);
             assert.isFalse(x.houseOwner);
             assert.equal(x.houses.length, 0, "should be 0");
         });
         it("should get correct Details for User 2", async () => {
-            let x = await usersIntance.getUserInfo(user2);
+            let x = await usersInstance.getUserInfo(user2);
             assert.isTrue(x.houseOwner);
             assert.equal(x.houses.length, 1, "should be 1");
         });
         it("should get correct Details for User 3", async () => {
-            let x = await usersIntance.getUserInfo(user3);
+            let x = await usersInstance.getUserInfo(user3);
             assert.isTrue(x.houseOwner);
             assert.equal(x.houses.length, 2, "should be 2");
         });
@@ -300,25 +326,29 @@ contract("Positive tests", (accounts) => {
 });
 
 contract("Reverted tests", (accounts) => {
+    
+    var usersInstance;
     var houseTokenInstance;
-    var usersIntance;
+    var marketplaceInstance;
     var tsaishenTokenInstance;
-    var marketplaceInstance
+    
     var owner = accounts[0];
     var creator = accounts[1];
     var user1 = accounts[2];
     var user2 = accounts[3];
 
     before(async () => {
-        marketplaceInstance = await Marketplace.deployed();
-        houseTokenInstance = await HouseToken.deployed();
-        usersIntance = await TsaishenUsers.deployed();
-        tsaishenTokenInstance = await TsaishenToken.deployed();
-        await marketplaceInstance.addOracle(TsaishenToken.address, '0x0000000000000000000000000000000000000001')
-        await usersIntance.setHouseTokenAddress(HouseToken.address);
-        await usersIntance.setMarketplaceAddress(Marketplace.address)
-        console.log(Marketplace.address);
-        console.log("House Token address: " + HouseToken.address);
+        
+        usersInstance = await TsaishenUsers.new();
+        houseTokenInstance = await HouseToken.new(usersInstance.address, owner);
+        marketplaceInstance = await Marketplace.new(usersInstance.address, houseTokenInstance.address, owner);
+        tsaishenTokenInstance = await TsaishenToken.new();
+
+        await marketplaceInstance.addOracle(tsaishenTokenInstance.address, '0x0000000000000000000000000000000000000001')
+        await usersInstance.setHouseTokenAddress(houseTokenInstance.address);
+        await usersInstance.setMarketplaceAddress(marketplaceInstance.address)
+        console.log(marketplaceInstance.address);
+        console.log("House Token address: " + houseTokenInstance.address);
     });
 
     describe("HouseToken", () => {

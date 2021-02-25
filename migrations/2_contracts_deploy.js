@@ -5,6 +5,8 @@ const Marketplace = artifacts.require("Marketplace");
 // const TsaishenToken = artifacts.require("TsaishenToken");
 
 module.exports = async function (deployer, network, accounts) {
+    if (network === "development") return;
+    
     console.log("network used", network);
     console.log("account used", accounts);
 
