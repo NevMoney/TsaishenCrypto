@@ -4,6 +4,8 @@ const Marketplace = artifacts.require("Marketplace");
 const TsaishenToken = artifacts.require("TsaishenToken");
 const truffleAssert = require('truffle-assertions');
 
+// BEFORE running test.js --> uncoment line 9 in migrations2
+
 const {
     time, 
     BN

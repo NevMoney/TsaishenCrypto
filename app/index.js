@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xCdC09514C5FB30B5A5e8e9de58105Cd9c8a1f3d5";
-var houseTokenAddress = "0x16CFE18965b32DBf482Cc27F134D2de42bFa43b7";
-var marketplaceAddress = "0xe1E543342E59876577FBdB9E1a9e6a2abCdc466a";
+var tsaishenUsersAddress = "0xf46D7Db2BFD9a80494d19d9a72eE67617d0e47d8";
+var houseTokenAddress = "0x54DB4552f671B5583b8cA97F84d00716689EE343";
+var marketplaceAddress = "0xd67F7237B2436FDD38a351D273Fb832b93492eD9";
 const contractOwnerAddress = "0x22Ff2a94661193978D5425F977C024E7be930B82";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -56,7 +56,12 @@ $(document).ready(async () => {
   usersInstance = await new web3.eth.Contract(abi.TsaishenUsers, tsaishenUsersAddress, { from: user });
   houseTokenInstance = await new web3.eth.Contract(abi.HouseToken, houseTokenAddress, { from: user });
   marketplaceInstance = await new web3.eth.Contract(abi.Marketplace, marketplaceAddress, { from: user });
-  // console.log("users ", usersInstance, "house ", houseTokenInstance, "marketplace ", marketplaceInstance);
+  console.log("users ", usersInstance, "house ", houseTokenInstance, "marketplace ", marketplaceInstance);
+
+  // await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
+  // await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send();
+  // console.log("Marketplace: ", marketplaceAddress);
+  // console.log("HouseToken: ", houseTokenAddress);
 
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
@@ -392,8 +397,8 @@ async function displayPurchase(id, price, token) {
 }
 
 async function ownerInitializeContracts() {
-  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
-  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send();
+  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send({ gas: '30000' }); 
+  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send({ gas: '30000' });
   console.log("Marketplace: ", marketplaceAddress);
   console.log("HouseToken: ", houseTokenAddress);
 }
