@@ -35,7 +35,7 @@ interface AggregatorV3Interface {
 
 contract Marketplace is ReentrancyGuard, TsaishenEscrow {
 
-    event MarketTransaction (string TxType, address actor, uint tokenId);
+    event MarketTransaction (string TxType, address actor, uint256 tokenId);
 
     HouseToken private _houseToken;
     TsaishenUsers private _tsaishenUsers;
@@ -290,13 +290,11 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     // buyer notices error in documents and requests change/review
     function buyerReviewRequest(uint256 tokenId) public {
         require(msg.sender == escrowById[tokenId].buyer, "Mp: Buyer only.");
-        Offer storage offer = offerDetails[tokenId];
-
+    
         // allow 3 days for seller to update documents
-        _resetState(tokenId);
         _extendTimelock(tokenId);
 
-        emit MarketTransaction("3-day document update request issued.", offer.seller, tokenId);
+        emit MarketTransaction("3-day document update request issued.", escrowById[tokenId].buyer, tokenId);
     }
 
     function finalizeEscrowTransaction(uint256 tokenId) public onlyOwner {

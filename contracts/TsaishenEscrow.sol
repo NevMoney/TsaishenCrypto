@@ -106,6 +106,11 @@ contract TsaishenEscrow is Ownable{
         }
     }
 
+    // this extends escrow by 3 days
+    function _extendTimelock(uint256 _tokenId) internal {
+        escrowById[_tokenId].timelock = now.add(3 days);
+    }
+
     function _enableRefunds(uint256 _tokenId) internal {
         require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
         require(escrowById[_tokenId].state == State.Active, "TE: Must be active.");
@@ -159,10 +164,6 @@ contract TsaishenEscrow is Ownable{
     }
 
     // -- onlyOwner --
-    function _extendTimelock(uint256 _tokenId) internal onlyOwner {
-        escrowById[_tokenId].timelock = 3 days;
-    }
-
     function _cancelTimelock(uint256 _tokenId) internal onlyOwner {
         escrowById[_tokenId].timelock = 0;
     } 

@@ -10,6 +10,7 @@ const {
   } = require('@openzeppelin/test-helpers');
 
 var acceptableAmount = web3.utils.toWei('1', 'ether');
+var cancellationFee = web3.utils.toWei('2', 'ether');
 var name = "Tsaishen Real Estate";
 var symbol = "HOUS";
 var decimals = 18;
@@ -113,22 +114,18 @@ contract("Positive tests", (accounts) => {
             let x = await houseTokenInstance.name();
             assert.equal(x, name, "incorrect name");
         });
-
         it("Correct Symbol", async () => {
             let x = await houseTokenInstance.symbol();
             assert.equal(x, symbol, "incorrect symbol");
         });
-
         it("Total Supply should be zero", async () => {
             let x = await houseTokenInstance.totalSupply();
             assert.equal(x, 0, "incorrect supply");
         });
-
         it("Correct URI", async () => {
             let x = await houseTokenInstance.baseURI();
             assert.equal(x, baseURI, "incorrect baseURI");
         });
-
         it("Should make first account an owner of HouseToken", async () => {
             let owner = await houseTokenInstance.owner();
             assert.equal(owner, accounts[0], "incorrect owner account");
@@ -250,16 +247,26 @@ contract("Positive tests", (accounts) => {
         });
         it("Should get all tokens on sale", async () => {
             let res = await marketplaceInstance.getAllTokensOnSale();
-            assert.equal(res.length, 3, "only 1 house on sale");
+            assert.equal(res.length, 3, "3 house on sale");
         });
         it("Should list house 2 of user1", async () => {
             await sellHouse(houseTokenInstance, marketplaceInstance, user1, 2);
+        });
+        it("Should list house 2 of user2", async () => {
+            await sellHouse(houseTokenInstance, marketplaceInstance, user2, 3);
         });
         it("Should check Offer on house 1", async () => {
             await checkHouseOffer(marketplaceInstance, 1, user2);
         });
         it("Should check Offer on house 2", async () => {
             await checkHouseOffer(marketplaceInstance, 2, user1);
+        });
+        it("Should check Offer on house 3", async () => {
+            await checkHouseOffer(marketplaceInstance, 3, user2);
+        });
+        it("Should get all tokens on sale", async () => {
+            let res = await marketplaceInstance.getAllTokensOnSale();
+            assert.equal(res.length, 5, "5 house on sale");
         });
     });
 
@@ -286,16 +293,16 @@ contract("Positive tests", (accounts) => {
             let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
             assert.equal(web3.utils.fromWei(marketBalance,'ether'),0.2,"market balance should be 0.2");
         });
-        it("Should NOT refund the money in escrow before timeout", async () => {
+        it("Should NOT refund the money in house1 escrow before timeout", async () => {
             var info = await marketplaceInstance.escrowInfo(1);
             // console.log("house1 escrow info: ", info);
             var i = info.timelock.toString();
             var x = await time.latest();
             console.log("timelock", i); 
-            console.log(x.toString()); 
+            console.log("current time", x.toString()); 
             await truffleAssert.reverts(marketplaceInstance.refundEscrow(1), "Timelocked."); 
         });
-        it("Should refund money in escrow for house 1 to user3", async() => {
+        it("Should refund money in escrow for house1 to user3", async() => {
             console.log("Skip forward 10 days...");
             await time.advanceBlock();
             await time.increase(864000);
@@ -305,28 +312,53 @@ contract("Positive tests", (accounts) => {
             let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
             assert.equal(web3.utils.fromWei(marketBalance,'ether'),0.1,"market balance should be 0.1");
         });
-        it("Should NOT refund money in escrow for house 1 to user3 now", async() => {
+        it("Should NOT refund money in escrow for house1 to user3 now", async() => {
             await truffleAssert.reverts(marketplaceInstance.refundEscrow(1),"Must be active.");
+        });
+        it("Should put money in escrow for house3 from user3", async () => {
+            await approveMarketPlace(marketplaceInstance,tsaishenTokenInstance, 3, user3);
+            await marketplaceInstance.buyHouseWithEscrow(tsaishenTokenInstance.address, 3, {from: user3});
+            let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
+            assert.equal(web3.utils.fromWei(marketBalance,'ether'),0.2,"market balance should be 0.2");
         });
         it("Should send money in escrow for house 2 to user1", async() => {
             await marketplaceInstance.finalizeEscrowTransaction(2);
             let userBalance = await tsaishenTokenInstance.balanceOf(user3);
-            assert.equal(web3.utils.fromWei(userBalance,'ether'),0.8,"user balance should be 0.8");
+            assert.equal(web3.utils.fromWei(userBalance,'ether'),0.7,"user balance should be 0.7");
             let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
-            assert.equal(web3.utils.fromWei(marketBalance,'ether'),0,"market balance should be 0");
+            assert.equal(web3.utils.fromWei(marketBalance,'ether'),0.1,"market balance should be 0.1");
         });
-        it("Should check token amount for each account", async()=>{
+        it("Should check token amount for each account", async () => {
             let userBalance = await tsaishenTokenInstance.balanceOf(user3);
-            assert.equal(web3.utils.fromWei(userBalance,'ether'),0.8,"user balance should be 0.8");
+            assert.equal(web3.utils.fromWei(userBalance, 'ether'), 0.7, "user balance should be 0.7");
             userBalance = await tsaishenTokenInstance.balanceOf(user1);
-            assert.equal(web3.utils.fromWei(userBalance,'ether'),0.195,"user balance should be 0.195");
+            assert.equal(web3.utils.fromWei(userBalance, 'ether'), 0.195, "user balance should be 0.195");
             userBalance = await tsaishenTokenInstance.balanceOf(user2);
-            assert.equal(web3.utils.fromWei(userBalance,'ether'),0,"user balance should be 0");
+            assert.equal(web3.utils.fromWei(userBalance, 'ether'), 0, "user balance should be 0");
             userBalance = await tsaishenTokenInstance.balanceOf(feeRecipient);
-            assert.equal(web3.utils.fromWei(userBalance,'ether'),0,"user balance should be 0");
+            assert.equal(web3.utils.fromWei(userBalance, 'ether'), 0, "user balance should be 0");
             let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
-            assert.equal(web3.utils.fromWei(marketBalance,'ether'),0,"market balance should be 0");
-        })
+            assert.equal(web3.utils.fromWei(marketBalance, 'ether'), 0.1, "market balance should be 0.1");
+        });
+        it("Should extend timelock for house3 from user3", async () => {
+            var info = await marketplaceInstance.escrowInfo(3);
+            var originalTimelock = info.timelock.toString();
+            console.log("originalTimelock: ", originalTimelock);
+            await marketplaceInstance.buyerReviewRequest(3, { from: user3 });
+            var extension = await marketplaceInstance.escrowInfo(3);
+            var extended = extension.timelock;
+            var currentTime = await time.latest();
+            console.log("extendedtimelock: ", extended.toString());
+            console.log("current time: ", currentTime.toString());
+            var i = (parseFloat(extended) - parseFloat(currentTime));
+            assert.equal(i, parseFloat(259200), "Must be equal");
+        });
+        it("Should cancel escrow for house3 from user3", async () => {
+            console.log(user3.userBalance);
+            // await marketplaceInstance.cancelEscrowSale(3, { from: user3, value: cancellationFee });
+            // var marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
+            // assert.equal(web3.utils.fromWei(marketBalance, 'ether'), 2.1, "market balance should be 2.1");
+        });
     });
 
     describe("TsaishenUsers::UserInfo", () => {
