@@ -18,7 +18,7 @@ var baseURI = "https://gateway.ipfs.io/ipfs/";
 var housePrice = 100000000;
 
 async function createHouse(houseTokenInstance, _user, tokenURI, tokenID, _totalSupply, _userBalance) {
-    let tokenReceipt = await houseTokenInstance.createHouse(1, 1, tokenURI, { value: acceptableAmount, from: _user })
+    let tokenReceipt = await houseTokenInstance.createHouse(1, 1, tokenURI, { value: acceptableAmount, from: _user });
 
     let event1 = tokenReceipt.logs[0].args;
     assert.equal(event1.tokenId.toNumber(), tokenID, "token id is incorrect");
@@ -29,7 +29,6 @@ async function createHouse(houseTokenInstance, _user, tokenURI, tokenID, _totalS
     assert.equal(event2.id.toNumber(), tokenID, "token id is incorrect");
     assert.equal(event2._owner, _user, "owner is incorrect");
     assert.equal(event2.uri, baseURI + tokenURI, "token uri is incorrect");
-
 }
 
 async function checkDetails(houseTokenInstance, _user, tokenURI, tokenID, _totalSupply, _userBalance, _contractBalance) {
@@ -67,7 +66,7 @@ async function checkHouseOffer(marketplaceInstance, tokenID, _user) {
     assert.equal(res.seller, _user, "Seller of the house not matching");
 }
 
-async function approveMarketPlace(marketplaceInstance, tsaishenTokenInstance,tokenID, _user) {
+async function approveMarketPlace(marketplaceInstance, tsaishenTokenInstance, tokenID, _user) {
     var offer = await marketplaceInstance.getOffer(tokenID);
     var oraclePrice = await marketplaceInstance.getOracleUsdPrice(tsaishenTokenInstance.address);
     var b = (offer.price * housePrice) / oraclePrice[0];
@@ -354,8 +353,12 @@ contract("Positive tests", (accounts) => {
             assert.equal(i, parseFloat(259200), "Must be equal");
         });
         it("Should cancel escrow for house3 from user3", async () => {
-            console.log(user3.userBalance);
-            // await marketplaceInstance.cancelEscrowSale(3, { from: user3, value: cancellationFee });
+            let user3Balance = await web3.eth.getBalance(user3);
+            u3Bal = web3.utils.fromWei(user3Balance); //showing 99
+            cFee = web3.utils.fromWei(cancellationFee); //showing 2
+            console.log("user3 bal", u3Bal);
+            console.log("canc fee", cFee);
+            // await marketplaceInstance.cancelEscrowSale(3, { value: cancellationFee, from: user3 }); //throwing error insufficient funds
             // var marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
             // assert.equal(web3.utils.fromWei(marketBalance, 'ether'), 2.1, "market balance should be 2.1");
         });
@@ -410,9 +413,7 @@ contract("Reverted tests", (accounts) => {
 
     describe("HouseToken", () => {
         it("Negative test for house token 0", async () => {
-            // let res = await houseTokenInstance.getHouse(3);
             await truffleAssert.reverts(houseTokenInstance.getHouse(0), "ERC721Metadata: URI query for nonexistent token");
-            // console.log(res);
         });
         it("Negative test for owning house", async () => {
             let res = await houseTokenInstance.ownsHouse(owner);
