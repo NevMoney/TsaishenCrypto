@@ -28,9 +28,9 @@ contract TsaishenEscrow is Ownable{
     mapping(uint256 => Escrow) escrowById;
 
     struct Escrow {
-        IERC20 token; //does this need to say address IERC20 token???
-        address payable seller; //beneficiary
-        address payable buyer; //refundee
+        IERC20 token; 
+        address payable seller; 
+        address payable buyer; 
         State state;
         uint256 amount;
         uint256 timelock;

@@ -2,10 +2,10 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xf46D7Db2BFD9a80494d19d9a72eE67617d0e47d8";
-var houseTokenAddress = "0x54DB4552f671B5583b8cA97F84d00716689EE343";
-var marketplaceAddress = "0xd67F7237B2436FDD38a351D273Fb832b93492eD9";
-const contractOwnerAddress = "0x22Ff2a94661193978D5425F977C024E7be930B82";
+var tsaishenUsersAddress = "0x99A5982a4c909278D8ac732a529A25A0aE720295";
+var houseTokenAddress = "0x6141445A12320813aa6630668C4E60843D45cc1f";
+var marketplaceAddress = "0xCCBb40C757C787ea34F5A4B76a2E9c4754798450";
+const contractOwnerAddress = "0x469f60E90F4D6038Eb9818deBa999b63192bA233";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
 const ethAddress = "0x0000000000000000000000000000000000000000";
@@ -56,12 +56,7 @@ $(document).ready(async () => {
   usersInstance = await new web3.eth.Contract(abi.TsaishenUsers, tsaishenUsersAddress, { from: user });
   houseTokenInstance = await new web3.eth.Contract(abi.HouseToken, houseTokenAddress, { from: user });
   marketplaceInstance = await new web3.eth.Contract(abi.Marketplace, marketplaceAddress, { from: user });
-  console.log("users ", usersInstance, "house ", houseTokenInstance, "marketplace ", marketplaceInstance);
-
-  // await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
-  // await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send();
-  // console.log("Marketplace: ", marketplaceAddress);
-  // console.log("HouseToken: ", houseTokenAddress);
+  // console.log("users ", usersInstance, "house ", houseTokenInstance, "marketplace ", marketplaceInstance);
 
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
@@ -333,6 +328,19 @@ async function buyCryptoHouse(id, price, token) {
   }
 }
 
+async function escrowBuy(id, price, token) {
+  const offer = await checkOffer(id);
+  var amount = web3.utils.toWei(price.toString(), "");
+  console.log("buy amount", amount);
+  console.log("buy token address", token);
+  try {
+    await marketplaceInstance.methods.buyHouseWithEscrow(token, id).send({ from: user, value: amount });
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
 async function selectToken(id) {
   let offer = await checkOffer(id);
  
@@ -397,8 +405,8 @@ async function displayPurchase(id, price, token) {
 }
 
 async function ownerInitializeContracts() {
-  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send({ gas: '30000' }); 
-  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send({ gas: '30000' });
+  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send(); 
+  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
   console.log("Marketplace: ", marketplaceAddress);
   console.log("HouseToken: ", houseTokenAddress);
 }
@@ -458,6 +466,7 @@ async function displayTsaishenUsers(userAddress, owner, borrowed, lended, reward
   );
 }
 
+// contract owner -- ALL escrows
 async function getEscrowInfo() {
   let userList = await usersInstance.methods.getAllUsers().call();
 
@@ -516,14 +525,47 @@ async function displayEscrows(houseId, seller, buyer, state, amount, timelock) {
   
 }
 
-// async function deedConfirm(id){}
+// for individual deal
+async function houseEscrowInfo(id) {
+  let houseEscrow = await marketplaceInstance.methods.escrowInfo(id).call();
+  console.log(houseEscrow);
 
-// async function checkDeposit(id){}
+  showEscrowInfo(houseEscrow.seller, houseEscrow.buyer, houseEscrow.state, houseEscrow.amount, houseEscrow.timelock);
+}
 
-// async function escrowUpdate(id){}
+function showEscrowInfo(seller, buyer, state, amount, time) {
+  let checkRefund = await marketplaceInstance.methods.refundAllowed(id).call();
+  let checkWithdrawal = await marketplaceInstance.methods.withdrawalAllowed(id).call();
+  let escrowDate = new Date(time * 1000).toUTCString();
+  $("#escrowInfoDisplay").append(
+    `<table class="table">
+      <tbody>
+        <tr>
+          <td>Seller: ${seller}</td>
+        </tr>
+        <tr>
+          <td>Buyer: ${buyer}</td>
+        </tr>
+        <tr>
+          <td>Escrow Amount: ${amount}</td>  
+          <td>Escrow State: ${state}</td>
+          <td>Escrow State Ending: ${escrowDate}</td>
+        </tr>
+        <tr>
+          <td>Can I request refund right now? ${checkRefund}</td>
+          <td>Can I withdraw funds right now? ${checkWithdrawal}</td>
+        </tr>
+      </tbody>
+    </table>`
+  );
+}
 
-// async function checkRefund(id){}
-
-// async function checkPayout(id){}
-
-// async function houseEscrowInfo(id){}
+// for buyer to confirm delivery
+async function deedConfirm(id) {
+  try {
+    await marketplaceInstance.methods.buyerVerify(id).send({ from: user });
+  }
+  catch (err) {
+    console.log(err);
+  }
+}

@@ -294,7 +294,7 @@ $("#buyBtn").on("click", function () {
 });
 
 $("#escrowBuyBtn").on("click", function () {
-    escrwoBuyCryptoHouse(saleId, salePrice, saleToken).then(() => {
+    escrowBuy(saleId, salePrice, saleToken).then(() => {
         $("#buyHouseModal").modal("hide");
     });
 });
@@ -304,14 +304,23 @@ function cancelSale(id) {
     removeOffer(id);
 }
 
+// for owner to get all users
 $("#getAllUsersBtn").on("click", function () {
     getAllTsaishenUsers().then(() => {
         $("#getAllUsersBtn").hide();
     });
 });
 
+// for owner to get all escrow info
 $("#getEscrowInfoBtn").on("click", function () {
     getEscrowInfo().then(() => {
         $("#getEscrowInfoBtn").hide();
+    });
+});
+
+// for individual house escrow info
+$("#escrowInfoBtn").on("click", function () {
+    houseEscrowInfo().then(() => {
+        $("#escrowInfoModal").modal("show"); 
     });
 });

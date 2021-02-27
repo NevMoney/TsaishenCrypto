@@ -243,7 +243,6 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     }
 
     // -- ESCROW MANAGEMENT --
-    // can this be open to all???
     function refundEscrow(uint256 tokenId) public {
         require(msg.sender == escrowById[tokenId].buyer || msg.sender == escrowById[tokenId].seller || msg.sender == owner(), "Mp: Not authorized.");
         require(now > escrowById[tokenId].timelock, "TM: Timelocked.");
