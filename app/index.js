@@ -623,6 +623,23 @@ async function checkContractBalance() {
 
 // this function throws the same code as buyHouse function 32603/32000
 async function withdrawFunds() {
-  await houseTokenInstance.methods.withdrawAll().send();
-  console.log("funds sent");
+  let withdrawal = await houseTokenInstance.methods.withdrawAll().send();
+  console.log("Funds sent", withdrawal);
+}
+
+async function pauseHouseTokenContract() {
+  let pause = await houseTokenInstance.methods.pause().send();
+  console.log("Contract Paused", pause);
+}
+
+async function unPauseHouseTokenContract() {
+  let unPause = await houseTokenInstance.methods.unpause().send();
+  console.log("Contract Paused", unPause);
+}
+
+async function mintHouse() {
+  // probably want to have a modal to add info about the house then mint
+  // another great way to use this is to create ZERO house
+  let minted = await houseTokenInstance.methods.mint(user).send();
+  console.log("house minted", minted);
 }

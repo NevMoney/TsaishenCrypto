@@ -346,6 +346,18 @@ $("#withdrawBtn").on("click", function () {
     withdrawFunds(); 
 });
 
+$("#pauseBtn").on("click", function () {
+    pauseHouseTokenContract(); 
+});
+
+$("#unpauseBtn").on("click", function () {
+    unPauseHouseTokenContract(); 
+});
+
+$("#mintBtn").on("click", function () {
+    mintHouse(); 
+});
+
 // for individual house escrow info
 $("#escrowInfoBtn").on("click", function () {
     houseEscrowInfo().then(() => {

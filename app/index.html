@@ -1203,12 +1203,15 @@
         <!-- Display for Contract Owner -->
         <div class="contractOwner container text-lg-left text-center py-md-11">
           <h3 class="display-4 mb-2 mb-md-6 text-center">Contract Owner Playground</h3>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="initializeBtn" onclick="ownerInitializeContracts()">Initialize <i class="fas fa-file-contract"></i></div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="getAllUsersBtn"><i class="fas fa-users"></i> Info</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="getEscrowInfoBtn"><i class="fas fa-file-signature"></i> Info</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="tokenBtn" data-toggle="modal" data-target="#tokenInputModal"><i class="far fa-plus-square"></i> / <i class="far fa-minus-square"></i> Token</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="initializeBtn" onclick="ownerInitializeContracts()">Init. <i class="fas fa-file-signature"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="getAllUsersBtn"><i class="fas fa-users"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="getEscrowInfoBtn">Escrow</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="tokenBtn" data-toggle="modal" data-target="#tokenInputModal"><i class="far fa-plus-square"></i> Tokens</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="balanceBtn"><i class="fas fa-check"></i> Balance</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="withdrawBtn">Withdraw $$</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="withdrawBtn">Withdraw</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="pauseBtn"><i class="fas fa-pause"></i> HT</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="unpauseBtn"><i class="fas fa-play"></i> HT</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="mintBtn">Mint <i class="fas fa-home"></i></div>
           <div class="table table-responsive" id="userDisplayTable"></div>
           <div class="table table-responsive" id="escrowDisplayTable"></div>
         </div> 
