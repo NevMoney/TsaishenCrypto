@@ -15,27 +15,15 @@ const usdcAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const ethereumButton = document.querySelector('.enableEthereumButton');
 const showAccount = document.querySelector('.showAccount');
 
-// CLicking Enable Web3 button loads account or shows modal to get MetaMask  
+// CLicking Enable Web3 button to get MetaMask  
   ethereumButton.addEventListener("click", () => {
     if (typeof window.web3 !== "undefined") {
       ethereum.request({ method: "eth_requestAccounts" });
-      getAccount();
     }
     else {
       $("#metamaskModal").modal("toggle");
   }
 });
-
-// loads account onto the page
-async function getAccount() {
-  const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-  const account = accounts[0];
-  showAccount.innerHTML = account;
-  ethereum.on("accountsChanged", (_accounts) => {
-    showAccount.innerHTML = _accounts;
-    user = web3.utils.toChecksumAddress(_accounts[0]);
-  });
-}
 
 //Executed when page finish loading
 $(document).ready(async () => {
@@ -43,11 +31,11 @@ $(document).ready(async () => {
   web3 = new Web3(ethereum);
   toWei = (amount) => web3.utils.toWei(String(amount));
   fromWei = (amount) => Number(web3.utils.fromWei(amount)).toFixed(4);
-
-  getAccount();
+  showAccount.innerHTML = accounts[0];
 
   ethereum.on("accountsChanged", (_accounts) => {
     console.log("Account Changed!", accounts[0]);
+    showAccount.innerHTML = _accounts;
     user = web3.utils.toChecksumAddress(_accounts[0]);
   });
 
