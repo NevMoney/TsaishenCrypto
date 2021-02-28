@@ -557,6 +557,10 @@ async function displayEscrows(houseId, seller, buyer, state, amount, timelock) {
 }
 
 // contract owner -- ADD new tokens
+/** @Dev when adding new token, make sure you:
+ *  add buttons in renderCryptoHouse()
+ *  add token in selectToken()
+*/ 
 async function addNewToken() {
   let tokenAddress = $("#tokenAddressInput").val();
   let oracleAddress = $("#oracleAddressInput").val();
@@ -569,6 +573,9 @@ async function addNewToken() {
 }
 
 // contract owner -- REMOVE tokens
+/** @Dev when removing token, make sure you:
+ * remove functionality in renderCryptoHouse() and selectToken()
+*/
 async function removeTokens() {
   let tokenAddress = $("#tokenAddressInput").val();
   let tokenName = $("#tokenName").val();

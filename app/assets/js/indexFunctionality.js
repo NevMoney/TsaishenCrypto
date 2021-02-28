@@ -7,9 +7,6 @@ $(document).ready(async () => {
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
-
-    // $("#tokenAlert").hide();
-    // $("#tokenRemoved").hide();
 });  
 
 $(".marketLink").on("click", function () {
@@ -29,6 +26,8 @@ $(".marketLink").on("click", function () {
     $("#marketLink").addClass("active");
     $("#market-container").show();
     
+    $("#tokenAlert").hide();
+    $("#tokenAlert2").hide();
 });
   
 $("#portfolioLink").on("click", function () {
@@ -254,17 +253,22 @@ function goToInventory() {
     $("#houseDivSale").empty();
     $(".portfolioDisplay").empty();
 
+    $("#tokenAlert").hide();
+    $("#tokenAlert2").hide();
+
     getInventory();
 }
 
 $(".marketLink").click(goToInventory);
 
-//NOT WORKING!!!
-// function validateCheckbox(){
-//     if($("#certification").checked){
+//NOT WORKING!!! -- returning false even if true
+// function validateCheckbox() {
+//     let checked = $("#certification").checked();
+//     if (checked) {
 //         return true;
+//     } else {
+//         return false;
 //     }
-//     return false;
 // }
 
 var saleId;
