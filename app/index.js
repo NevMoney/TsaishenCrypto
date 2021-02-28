@@ -2,10 +2,10 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x99A5982a4c909278D8ac732a529A25A0aE720295";
-var houseTokenAddress = "0x6141445A12320813aa6630668C4E60843D45cc1f";
-var marketplaceAddress = "0xCCBb40C757C787ea34F5A4B76a2E9c4754798450";
-const contractOwnerAddress = "0x469f60E90F4D6038Eb9818deBa999b63192bA233";
+var tsaishenUsersAddress = "0x650015A3E6CA5BF20F3f7536dE5B112AA0cA5337";
+var houseTokenAddress = "0x80641A65257cD6Bf0472471D09514096f738Ff0f";
+var marketplaceAddress = "0xFC54537E0B0ba442e591d89b228f64133cb4d7f8";
+const contractOwnerAddress = "0x8E4a2F3a507bF98c85362A69fc9301A64bA779c6";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
 const ethAddress = "0x0000000000000000000000000000000000000000";
@@ -63,9 +63,9 @@ $(document).ready(async () => {
     let owner = event.returnValues._owner;
     let houseId = event.returnValues.id;
     let houseUri = event.returnValues.uri;
-    $("#houseUploadedMsg").css("display", "block");
-    $("#houseUploadedMsg").text("Congratulations! You have successfully uploaded your real property onto the blockchain. The registered owner wallet address is "
-      + owner + " and your house token ID is " + houseId + " house URI: " + houseUri);
+    $("#houseUploadedMsg").append(`<strong>Congratulations ${owner}!</strong> You have successfully uploaded real property onto 
+      the blockchain. Your house ID is ${houseId}. Head on over the Portfolio page and take a look.`);
+    $("#houseUploadedMsg").show();
   })
     .on("error", console.error);
   
@@ -88,16 +88,45 @@ $(document).ready(async () => {
     if (eventType == "Escrow Refunded") {
       alert("Sale wasn't successful. Escrow has been refunded for " + tokenId); //CONSIDER putting this in a DIV for the house
     }
+    if (eventType == "Escrow closed. Buyer has 3 days to verify.") {
+      alert("Escrow is closed for " + tokenId +
+        ". Buyer has 3 days to verify documents before funds are released to " + actor);
+    }
+    if (eventType == "Buyer verified, house SOLD.") {
+      alert("Congratulations! Buyer has verified the document delivery." + tokenId +
+        " is sold. Funds are transfered to: " + actor);
+    }
     if (eventType == "House SOLD") {
       alert("Congratulations! Escrow has successfully closed and the following property is sold: " + tokenId);
+    }
+    if (eventType == "3-day document update request issued.") {
+      alert("Attention seller: buyer: " + actor + " is requesting document review for "
+        + tokenId + ". Please check that correct document was submitted or clear up any errors.");
+    }
+    if (eventType == "Escrow Cancelled.") {
+      alert("Escrow for " + tokenId + " has been cancelled by " + actor +
+        ". Injured party has been compensated and the property is back on market.");
     }
   })
     .on("error", console.error);
   
+  // marketplaceInstance.events.OracleEvent().on("data", (event) => {
+  //   var eventType = event.returnValues["TxType"].toString();
+  //   var token = event.returnValues["token"];
+  //   if (eventType == "New token added.") {
+  //     $("#tokenAlert").append(`Wahoo! We just added another crypto to transact with: ${token}.`);
+  //     $("#tokenAlert").show();
+  //   }
+  //   if (eventType == "Token removed") {
+  //     $("#tokenAlert").append(`For security reasons, we've had to remove the following token: ${token}.`);
+  //     $("#tokenAlert").show();
+  //   }
+  // })
+  //   .on("error", console.error);
+  
   usersInstance.events.userAdded().on("data", (event) => {
-    $("#newUserMsg").css("display", "block");
-    $("#newUserMsg").text("Welcome to Tsaishen Crypto House! You are registered with account: " + user +
-    ". Head on over to Portfolio page to view details.");
+    $("#newUserMsg").append(`Welcome to <strong>Tsaishen Crypto House</strong>! You are registered with account: ${user}.`);
+    $("#newUserMsg").show();
   })
     .on("error", console.error);
 });
@@ -404,6 +433,7 @@ async function displayPurchase(id, price, token) {
   });
 }
 
+// contract owner initialization
 async function ownerInitializeContracts() {
   await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send(); 
   await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
@@ -411,6 +441,7 @@ async function ownerInitializeContracts() {
   console.log("HouseToken: ", houseTokenAddress);
 }
 
+// contract owner -- ALL users
 async function getAllTsaishenUsers() {
   let userList = await usersInstance.methods.getAllUsers().call();
   console.log("user array", userList); 
@@ -525,6 +556,29 @@ async function displayEscrows(houseId, seller, buyer, state, amount, timelock) {
   
 }
 
+// contract owner -- ADD new tokens
+async function addNewToken() {
+  let tokenAddress = $("#tokenAddressInput").val();
+  let oracleAddress = $("#oracleAddressInput").val();
+  let tokenName = $("#tokenName").val();
+  let tokenAdded = await marketplaceInstance.methods.addOracle(tokenAddress, oracleAddress).send();
+  console.log(tokenAdded);
+  console.log("token added", tokenName);
+  $("#tokenAdded").append(`<strong>Wahoo!</strong> We just added another token you can use to transact with: <strong>${tokenName}</strong>.`);
+  $("#tokenAlert").show();
+}
+
+// contract owner -- REMOVE tokens
+async function removeTokens() {
+  let tokenAddress = $("#tokenAddressInput").val();
+  let tokenName = $("#tokenName").val();
+  let tokenRemoved = await marketplaceInstance.methods.removeOracle(tokenAddress).send();
+  console.log(tokenRemoved);
+  console.log("token removed", tokenName);
+  $("#tokenRemoved").append(`<strong>Attention!</strong> For security reasons, we had to remove <strong>${tokenName}</strong> from the platform. Our sincere apologies.`);
+  $("#tokenAlert2").show();
+}
+
 // for individual deal
 async function houseEscrowInfo(id) {
   let houseEscrow = await marketplaceInstance.methods.escrowInfo(id).call();
@@ -533,7 +587,7 @@ async function houseEscrowInfo(id) {
   showEscrowInfo(houseEscrow.seller, houseEscrow.buyer, houseEscrow.state, houseEscrow.amount, houseEscrow.timelock);
 }
 
-function showEscrowInfo(seller, buyer, state, amount, time) {
+async function showEscrowInfo(seller, buyer, state, amount, time) {
   let checkRefund = await marketplaceInstance.methods.refundAllowed(id).call();
   let checkWithdrawal = await marketplaceInstance.methods.withdrawalAllowed(id).call();
   let escrowDate = new Date(time * 1000).toUTCString();

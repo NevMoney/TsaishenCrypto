@@ -7,6 +7,9 @@ $(document).ready(async () => {
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
+
+    // $("#tokenAlert").hide();
+    // $("#tokenRemoved").hide();
 });  
 
 $(".marketLink").on("click", function () {
@@ -25,6 +28,7 @@ $(".marketLink").on("click", function () {
   
     $("#marketLink").addClass("active");
     $("#market-container").show();
+    
 });
   
 $("#portfolioLink").on("click", function () {
@@ -315,6 +319,18 @@ $("#getAllUsersBtn").on("click", function () {
 $("#getEscrowInfoBtn").on("click", function () {
     getEscrowInfo().then(() => {
         $("#getEscrowInfoBtn").hide();
+    });
+});
+
+$("#addTokenBtn").on("click", function () {
+    addNewToken().then(() => {
+        $("#tokenInputModal").modal("hide");
+    });
+});
+
+$("#removeTokenBtn").on("click", function () {
+    removeTokens().then(() => {
+        $("#tokenInputModal").modal("hide");
     });
 });
 
