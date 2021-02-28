@@ -338,6 +338,14 @@ $("#removeTokenBtn").on("click", function () {
     });
 });
 
+$("#balanceBtn").on("click", function () {
+    checkContractBalance(); 
+});
+
+$("#withdrawBtn").on("click", function () {
+    withdrawFunds(); 
+});
+
 // for individual house escrow info
 $("#escrowInfoBtn").on("click", function () {
     houseEscrowInfo().then(() => {

@@ -1203,10 +1203,12 @@
         <!-- Display for Contract Owner -->
         <div class="contractOwner container text-lg-left text-center py-md-11">
           <h3 class="display-4 mb-2 mb-md-6 text-center">Contract Owner Playground</h3>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="initializeBtn" onclick="ownerInitializeContracts()">Initialize Contracts</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="getAllUsersBtn">Get Tsaishen Users</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="getEscrowInfoBtn">Get Escrow Info</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="tokenBtn" data-toggle="modal" data-target="#tokenInputModal">Add / Remove Tokens</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="initializeBtn" onclick="ownerInitializeContracts()">Initialize <i class="fas fa-file-contract"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="getAllUsersBtn"><i class="fas fa-users"></i> Info</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="getEscrowInfoBtn"><i class="fas fa-file-signature"></i> Info</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="tokenBtn" data-toggle="modal" data-target="#tokenInputModal"><i class="far fa-plus-square"></i> / <i class="far fa-minus-square"></i> Token</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="balanceBtn"><i class="fas fa-check"></i> Balance</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="withdrawBtn">Withdraw $$</div>
           <div class="table table-responsive" id="userDisplayTable"></div>
           <div class="table table-responsive" id="escrowDisplayTable"></div>
         </div> 
