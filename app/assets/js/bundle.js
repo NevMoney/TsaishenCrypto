@@ -39,7 +39,7 @@
             return "CAUTION: Faled to certify ownership.";
         }
       }
-    
+
       function hashDeed(deed) {
         console.log(deed);
         console.log(deed.name);

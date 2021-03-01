@@ -261,6 +261,16 @@ function goToInventory() {
 
 $(".marketLink").click(goToInventory);
 
+function certificationValidation() {
+    if ($("#certification").prop("checked") == false){
+      alert("WARNING: You have failed to certify ownership. Ownership certificaiton is shown to all. Please CANCEL upload, verify ownership, then proceed.");
+    }
+  }
+
+$("#file").on("click", function () {
+    certificationValidation();
+});
+
 var saleId;
 var salePrice;
 var saleToken;
