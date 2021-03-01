@@ -28,6 +28,8 @@ $(".marketLink").on("click", function () {
     
     $("#tokenAlert").hide();
     $("#tokenAlert2").hide();
+
+    goToInventory();
 });
   
 $("#portfolioLink").on("click", function () {
@@ -56,7 +58,7 @@ $("#portfolioLink").on("click", function () {
     } else {
         $(".contractOwner").hide();
     }
-
+    
     getHouses();   
 });
 
@@ -259,7 +261,6 @@ function goToInventory() {
     getInventory();
 }
 
-$(".marketLink").click(goToInventory);
 
 function certificationValidation() {
     if ($("#certification").prop("checked") == false){

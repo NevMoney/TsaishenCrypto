@@ -123,7 +123,7 @@ function appendCryptoHouse(id, url, isMarketplace, price, seller) {
   // getHouses();
   renderCryptoHouse(id, url, isMarketplace, price, seller)
   // houseButtons(id, url, isMarketplace, price, seller);
-  $("#portfolioLoading").hide();
+  $("#marketplaceLoading").hide();
 }
 
 // get array of houses and house info by user
@@ -139,14 +139,12 @@ async function getHouses() {
       house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
       
       let id = arrayId[i];
+      let url = house.uri;
       // console.log("id", id);
       // console.log("house info ", house);
-      let url = house.uri;
       // console.log(url);
       
-      // renderCryptoHouse(id, url);
-      appendCryptoHouse(id, url);
-      // getInventory(id, url);
+      appendCryptoHouse(id, url, false, NaN, user);  
     }
   }
   catch (err) {
@@ -159,7 +157,7 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
   fetch(url).then(function (res) {
     res.json().then(function (data) {
       // console.log("JSON file: ", data);
-      // console.log("renderCryptoHouse", id, url, isMarketplace, price, owner);
+      console.log("renderCryptoHouse", id, url, isMarketplace, price, owner);
 
       $("#portfolioLoading").hide();
       
@@ -198,7 +196,7 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
                           <h4 class="btn btn-dark-soft light-b-shadow" data-toggle="modal" data-target="#buyHouseModal" id="usdcToken${id}"><img src="https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389"> <span id="showUsdcPrice${id}"></span> USDC</h4>
                         </div>
                     </div>`
-
+                    
       $(".portfolioDisplay").append(
         `<tr>
           <td><img width=250px src=${imageUrl}>
@@ -225,7 +223,6 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
       if (!isMarketplace) {
         $("#houseDisplay").append(button);
         $(`#buyBtn${id}`).hide();
-        $(`#buyEscrowBtn${id}`).hide();
         $(`#cancelBtn${id}`).show();
         $(`#selectSaleBtn${id}`).show();
       }
@@ -235,12 +232,10 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
     
           if (owner === user) {
               $(`#buyBtn${id}`).hide();
-              $(`#buyEscrowBtn${id}`).hide();
               $(`#cancelBtn${id}`).show();
           }
           else {
               $(`#buyBtn${id}`).show();
-              $(`#buyEscrowBtn${id}`).show();
               $(`#cancelBtn${id}`).hide();
           }
       }
