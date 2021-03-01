@@ -32,10 +32,12 @@
       }
 
       function validateCheckbox() {
-        if ($("#certification").checked) {
-          return true;
+        if ($("#certification").prop("checked") == true) {
+            return "Ownership certified.";
         }
-        return false;
+        else if ($("#certification").prop("checked") == false){
+            return "CAUTION: Faled to certify ownership.";
+        }
       }
     
       function hashDeed(deed) {
@@ -59,7 +61,7 @@
       $("#upload").click((async () => {
   
         const addFileToIpfs = await
-          console.log("adding to IPFS...");
+          // console.log("adding to IPFS...");
           $("#upload").html("Uploading");
     
         const added = await ipfs.add(buffer, {
@@ -142,8 +144,8 @@
               trait_type: "Video Link",
               value: $("#video").val()
             }
-          ],     //may need to remove ',' if certification moved or inside array
-          certification: validateCheckbox(), //this is NOT working
+          ],
+          certification: validateCheckbox(), 
         });
     
         const insert = await ipfs.add(propertyData);

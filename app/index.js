@@ -17,7 +17,7 @@ const showAccount = document.querySelector('.showAccount');
 
 // CLicking Enable Web3 button to get MetaMask  
   ethereumButton.addEventListener("click", () => {
-    if (typeof window.web3 !== "undefined") {
+    if (typeof window.ethereum !== "undefined") {
       ethereum.request({ method: "eth_requestAccounts" });
     }
     else {
@@ -27,7 +27,7 @@ const showAccount = document.querySelector('.showAccount');
 
 //Executed when page finish loading
 $(document).ready(async () => {
-  const accounts = await ethereum.enable();
+  const accounts = await ethereum.request({ method: "eth_requestAccounts" });
   web3 = new Web3(ethereum);
   toWei = (amount) => web3.utils.toWei(String(amount));
   fromWei = (amount) => Number(web3.utils.fromWei(amount)).toFixed(4);
@@ -123,6 +123,7 @@ function appendCryptoHouse(id, url, isMarketplace, price, seller) {
   // getHouses();
   renderCryptoHouse(id, url, isMarketplace, price, seller)
   // houseButtons(id, url, isMarketplace, price, seller);
+  $("#portfolioLoading").hide();
 }
 
 // get array of houses and house info by user
@@ -158,9 +159,9 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
   fetch(url).then(function (res) {
     res.json().then(function (data) {
       // console.log("JSON file: ", data);
-      console.log("renderCryptoHouse", id, url, isMarketplace, price, owner);
+      // console.log("renderCryptoHouse", id, url, isMarketplace, price, owner);
 
-      // $("#loading").hide();
+      $("#portfolioLoading").hide();
       
       address = data.attributes[0].value;
       county = data.attributes[1].value;
@@ -179,10 +180,11 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
       imageUrl = data.image;
       localLink = data.external_url;
       description = data.description;
+      certification = data.certification;
       // console.log("pic:", imageUrl, "about:", description, "address:", address, "county:", county, "beds:", beds,
       //   "bath:", baths, "year built:", year, "house sqft:", house, "lot size:", size,
       //   "parcel no:", parcel, "current value:", value, "current income:", income,
-      //   "property type:", type, "more info:", link, "video tour:", video);           
+      //   "property type:", type, "more info:", link, "video tour:", video, "certification", certification);           
 
       var button = `<div class="row">     
                       <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
@@ -214,7 +216,8 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
           <td><strong>Value:</strong> $${value}
             <br><strong>Monthly Income:</strong> $${income}</td>
           <td><strong>Public Link:</strong> <a href=${link} target="_blank" rel="noopener noreferrer">${link}</a>
-            <br><strong>Video:</strong> <a href=${video} target="_blank" rel="noopener noreferrer">${video}</a></td>
+            <br><strong>Video:</strong> <a href=${video} target="_blank" rel="noopener noreferrer">${video}</a>
+            <br><strong>Certification:</strong> ${certification}</td>
         </tr>
         `
       )

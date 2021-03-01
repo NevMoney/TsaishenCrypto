@@ -261,16 +261,6 @@ function goToInventory() {
 
 $(".marketLink").click(goToInventory);
 
-//NOT WORKING!!! -- returning false even if true
-// function validateCheckbox() {
-//     let checked = $("#certification").checked();
-//     if (checked) {
-//         return true;
-//     } else {
-//         return false;
-//     }
-// }
-
 var saleId;
 var salePrice;
 var saleToken;

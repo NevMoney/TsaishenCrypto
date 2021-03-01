@@ -1155,13 +1155,14 @@
     <div id="market-container" class="py-8 py-md-11">
         <div class="marketplace-top">
 
+          <!-- Token Add Alert -->
           <div class="alert alert-success alert-dismissible fade show" id="tokenAlert" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
             <div id="tokenAdded"></div>
           </div>
-
+          <!-- Token Remove Alert -->
           <div class="alert alert-warning alert-dismissible fade show" id="tokenAlert2" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
@@ -1178,11 +1179,21 @@
             <p class="font-size-lg text-muted mb-4 mb-md-8 text-center">
               Don't see anything? Make sure you're connected to blockchain. 
             </p>
+
+            <!-- Spinner -->
+            <div class="text-center" id="marketplaceLoading">
+              <div class="spinner-border text-primary" role="status">   
+              </div>
+              <span class="visually-hidden text-primary-desat font-size-lg font-weight-bold">Give it a minute as minders add to blockchain...</span>
+            </div>
+
         </div>
-        <br> 
+        <br>
+        <!-- Display of Houses For Sale --> 
         <div class="houseSale text-lg-left">
           <div class="portfolioDisplay table table-responsive" id="houseDivSale"></div>
         </div> 
+
     </div>
 
     <!-- Portfolio -->
@@ -1200,7 +1211,7 @@
           Using the same account you used to upload? 
         </p>
 
-        <!-- Display for Contract Owner -->
+        <!-- Contract Owner DISPLAY -->
         <div class="contractOwner container text-lg-left text-center py-md-11">
           <h3 class="display-4 mb-2 mb-md-6 text-center">Contract Owner Playground</h3>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="initializeBtn" onclick="ownerInitializeContracts()">Init. <i class="fas fa-file-signature"></i></div>
@@ -1216,10 +1227,18 @@
           <div class="table table-responsive" id="escrowDisplayTable"></div>
         </div> 
 
-        <!-- Display for Asset Owners -->
+        <!-- Spinner -->
+        <div class="text-center" id="portfolioLoading">
+          <div class="spinner-border text-primary" role="status">   
+          </div>
+          <span class="visually-hidden text-primary-desat font-size-lg font-weight-bold">Adding to blockchain...</span>
+        </div>
+
+        <!-- Asset Owner DISPLAY -->
         <div class="houseDisplay text-lg-left">
           <div class="portfolioDisplay table table-responsive" id="houseDiv"></div>
         </div>   
+
     </div>
 
     <!-- Modal to Upload -->
