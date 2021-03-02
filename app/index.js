@@ -220,6 +220,7 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
         `
       )
 
+      // top part if(!isMarketplace) is irrelevant -- buttons always display
       if (!isMarketplace) {
         $("#houseDisplay").append(button);
         $(`#buyBtn${id}`).hide();
