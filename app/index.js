@@ -2,10 +2,10 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x650015A3E6CA5BF20F3f7536dE5B112AA0cA5337";
-var houseTokenAddress = "0x80641A65257cD6Bf0472471D09514096f738Ff0f";
-var marketplaceAddress = "0xFC54537E0B0ba442e591d89b228f64133cb4d7f8";
-const contractOwnerAddress = "0x8E4a2F3a507bF98c85362A69fc9301A64bA779c6";
+var tsaishenUsersAddress = "0x306a069553c682C7b83638B95084Fe17E9d5F931";
+var houseTokenAddress = "0x5a9567d72554E04D668a3DF0617ab0D4DF530026";
+var marketplaceAddress = "0x8DAb4901760c4CA0c1be7cd11676086095Bb1E0d";
+const contractOwnerAddress = "0x3E259829c7B7561416B0248AdE663Db061134e8E";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
 const ethAddress = "0x0000000000000000000000000000000000000000";
@@ -28,6 +28,7 @@ const showAccount = document.querySelector('.showAccount');
 //Executed when page finish loading
 $(document).ready(async () => {
   const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+  console.log(accounts);
   web3 = new Web3(ethereum);
   toWei = (amount) => web3.utils.toWei(String(amount));
   fromWei = (amount) => Number(web3.utils.fromWei(amount)).toFixed(4);

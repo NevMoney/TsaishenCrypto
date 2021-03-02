@@ -3,7 +3,6 @@ Created a localhost network for development. Linked the local host to
 the Rinkeby network to launch onto test net. Installed HDWallet 
 */
 
-
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 require("dotenv").config();
 
