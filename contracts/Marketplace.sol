@@ -181,7 +181,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     }
 
     // -- house transaction --
-    function buyHouse (IERC20 token, uint256 tokenId) public nonReentrant{
+    function buyHouse (IERC20 token, uint256 tokenId) public payable nonReentrant{
         // access offer
         Offer storage offer = offerDetails[tokenId];  
 
@@ -207,7 +207,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         require(token.universalTransfer(offer.seller, cryptoHousePrice.sub(houseTransactionFee)));
         
         // transfer house to buyer
-        _houseToken.safeTransferFrom(offer.seller, msg.sender, tokenId);
+        _houseToken.transferFrom(offer.seller, msg.sender, tokenId);
 
         // make offer inactive and take off market
         offers[offer.index].active = false;

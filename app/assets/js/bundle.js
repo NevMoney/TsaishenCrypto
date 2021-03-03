@@ -75,7 +75,7 @@
         const propertyData = JSON.stringify({
           name: "Tsaishen Crypto House",
           description: $("#description").val(),
-          image: 'https://gateway.ipfs.io/ipfs/' + ipfsHash,
+          image: 'https://ipfs.io/ipfs/' + ipfsHash,
           // will need to tweak this once I figure out the actual URL
           external_url: "",
           attributes: [

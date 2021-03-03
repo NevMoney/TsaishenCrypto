@@ -65,7 +65,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         _tsaishenUsers = TsaishenUsers(_userContractAddress);
     }
 
-    function withdrawAll() public onlyOwner nonReentrant{
+    function withdrawAll() public payable onlyOwner nonReentrant{
         msg.sender.transfer(address(this).balance);
     }
 
