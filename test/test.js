@@ -10,13 +10,14 @@ const {
     time, 
     BN
   } = require('@openzeppelin/test-helpers');
+const ether = require('@openzeppelin/test-helpers/src/ether');
 
 var acceptableAmount = web3.utils.toWei('1', 'ether');
 var cancellationFee = web3.utils.toWei('2', 'ether');
 var name = "Tsaishen Real Estate";
 var symbol = "HOUS";
 var decimals = 18;
-var baseURI = "https://gateway.ipfs.io/ipfs/";
+var baseURI = "https://ipfs.io/ipfs/";
 var housePrice = 100000000;
 
 async function createHouse(houseTokenInstance, _user, tokenURI, tokenID, _totalSupply, _userBalance) {
@@ -170,25 +171,19 @@ contract("Positive tests", (accounts) => {
             var contractBalance = await web3.eth.getBalance(houseTokenInstance.address);
             console.log("contract balance: ", contractBalance);
             
-            /** ?????
-             * NOT WORKING --- Worked for Wafflemakr on a call
-             * no changes to the code/contract have been made
-             * ERROR: "invalid opcode"
-            */
-            // let res = await houseTokenInstance.withdrawAll();
+            let res = await houseTokenInstance.withdrawAll();
 
             var finalOwnerBalance = await web3.eth.getBalance(owner);
             console.log("final owner balance: ", finalOwnerBalance);
-            
-            // var gasUsed = res.receipt.gasUsed;
-            // var tx = await web3.eth.getTransaction(res.tx);
-            // var gasPrice = tx.gasPrice;
-            // var i = (parseFloat(initialOwnerBalance) + parseFloat(contractBalance) - parseFloat(gasPrice * gasUsed));
-            // assert.equal(i, parseFloat(finalOwnerBalance), "Must be equal");
+            var gasUsed = res.receipt.gasUsed;
+            var tx = await web3.eth.getTransaction(res.tx);
+            var gasPrice = tx.gasPrice;
+            var i = (parseFloat(initialOwnerBalance) + parseFloat(contractBalance) - parseFloat(gasPrice * gasUsed));
+            assert.equal(i, parseFloat(finalOwnerBalance), "Must be equal");
 
             // another way to test is using Big Number:
             // const { BN } = web3.utils;
-            // var i = new BN(initialOwnerBalance).add(new BN(contractBalance)).sub(new BN(gasPrice.mul(gasUsed))).toString();
+            // var i = new BN(initialOwnerBalance).add(new BN(contractBalance)).sub(new BN(gasPrice).mul(new BN(gasUsed))).toString();
             // console.log("value of i: ", i);
             // assert.equal("compare i to final owner balance: ", i, new BN(finalOwnerBalance).toString(), "Must be equal");
         });

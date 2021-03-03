@@ -2,10 +2,10 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x306a069553c682C7b83638B95084Fe17E9d5F931";
-var houseTokenAddress = "0x5a9567d72554E04D668a3DF0617ab0D4DF530026";
-var marketplaceAddress = "0x8DAb4901760c4CA0c1be7cd11676086095Bb1E0d";
-const contractOwnerAddress = "0x3E259829c7B7561416B0248AdE663Db061134e8E";
+var tsaishenUsersAddress = "0xCfEB869F69431e42cdB54A4F4f105C19C080A601";
+var houseTokenAddress = "0x254dffcd3277C0b1660F6d42EFbB754edaBAbC2B";
+var marketplaceAddress = "0xC89Ce4735882C9F0f0FE26686c53074E09B0D550";
+const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
 const ethAddress = "0x0000000000000000000000000000000000000000";
@@ -28,7 +28,7 @@ const showAccount = document.querySelector('.showAccount');
 //Executed when page finish loading
 $(document).ready(async () => {
   const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-  console.log(accounts);
+  // console.log(accounts);
   web3 = new Web3(ethereum);
   toWei = (amount) => web3.utils.toWei(String(amount));
   fromWei = (amount) => Number(web3.utils.fromWei(amount)).toFixed(4);
@@ -155,7 +155,7 @@ async function getHouses() {
 
 // get data from JSON and render display
 function renderCryptoHouse(id, url, isMarketplace, price, owner) {
-  fetch(url).then(function (res) {
+  fetch("https://ipfs.io/ipfs/QmScq88YBMD7nt5mc4EZYfMNYtAuu73q6KGvRTWrmDGsVi").then(function (res) {
     res.json().then(function (data) {
       // console.log("JSON file: ", data);
       console.log("renderCryptoHouse", id, url, isMarketplace, price, owner);
@@ -320,7 +320,7 @@ async function removeOffer(id) {
 }
 
 async function getRecentTokenPrice(id, price, token) {
-  console.log("getRecentTokenPriceID", id, "recentTokenPrice", price, "tokenAdd", token);
+  // console.log("getRecentTokenPriceID", id, "recentTokenPrice", price, "tokenAdd", token);
   let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(token).call();
   let recentPrice, priceTime;
   [recentPrice, priceTime] = Object.values(oracleObject);
@@ -335,8 +335,8 @@ async function buyCryptoHouse(id, price, token) {
   // console.log("buying House", offer);
   // console.log(id, offer.price);
   var amount = web3.utils.toWei(price.toString(), "");
-  console.log("buy amount", amount);
-  console.log("buy token address", token);
+  // console.log("buy amount", amount);
+  // console.log("buy token address", token);
   try {
     await marketplaceInstance.methods.buyHouse(token, id).send({ from: user, value: amount });
   }
@@ -379,22 +379,22 @@ async function selectToken(id) {
   let ethAmount = web3.utils.fromWei(ethOracle.toString());
   let daiAmount = web3.utils.fromWei(daiOracle.toString());
   let usdcAmount = web3.utils.fromWei(usdcOracle.toString());
-  console.log("ethAmount", ethAmount, "daiAmount", daiAmount, "usdcAmount", usdcAmount);
+  // console.log("ethAmount", ethAmount, "daiAmount", daiAmount, "usdcAmount", usdcAmount);
   
   if ($(`#ethereumToken${id}`).click(function () {
-    console.log("eth btn clicked");
+    // console.log("eth btn clicked");
     $(".displaySelectedCurrencyPrice").empty();
     $(".displaySelectedCurrencyPrice").append(ethOracle, " ETH");
     selectHouseToBuy(id, ethAmount, ethAddress);
   }));
   if ($(`#daiToken${id}`).click(function () {
-    console.log("dai btn clicked");
+    // console.log("dai btn clicked");
     $(".displaySelectedCurrencyPrice").empty();
     $(".displaySelectedCurrencyPrice").append(daiOracle, " DAI");
     selectHouseToBuy(id, daiAmount, daiAddress);
   }));
   if ($(`#usdcToken${id}`).click(function () {
-    console.log("usdcs btn clicked");
+    // console.log("usdcs btn clicked");
     $(".displaySelectedCurrencyPrice").empty();
     $(".displaySelectedCurrencyPrice").append(usdcOracle, " USDC");
     selectHouseToBuy(id, usdcAmount, usdcAddress);
@@ -403,7 +403,7 @@ async function selectToken(id) {
 
 async function displayPurchase(id, price, token) {
   house = await houseTokenInstance.methods.getHouse(id).call();
-  console.log("displayPurchase", house.uri);
+  // console.log("displayPurchase", house.uri);
   fetch(house.uri).then(function (res) {
     res.json().then(function (data) {
       imageUrl = data.image;
@@ -470,8 +470,8 @@ async function deedConfirm(id) {
 async function ownerInitializeContracts() {
   await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send(); 
   await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
-  console.log("Marketplace: ", marketplaceAddress);
-  console.log("HouseToken: ", houseTokenAddress);
+  // console.log("Marketplace: ", marketplaceAddress);
+  // console.log("HouseToken: ", houseTokenAddress);
 }
 
 async function getAllTsaishenUsers() {
