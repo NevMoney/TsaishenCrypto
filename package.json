@@ -26,7 +26,7 @@
     "Tsaishen"
   ],
   "author": "Nev K & Tsaishen",
-  "license": "ISC",
+  "license": "BSD Copyright @ Nev Kraguljevic & Tsaishen 2021. This software uses open source libraries and proprietary development. No user can copy, share, amend the software without prior written authorization of the author.",
   "bugs": {
     "url": "https://github.com/NevMoney/TsaishenCrypto/issues"
   },
