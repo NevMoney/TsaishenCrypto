@@ -8,7 +8,6 @@ import "./tokens/HouseToken.sol";
 import "./TsaishenUsers.sol";
 import "./TsaishenEscrow.sol";
 
-
 interface AggregatorV3Interface {
 
   function decimals() external view returns (uint8);
@@ -42,20 +41,6 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     uint256 housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
     uint256 txFee = 2; //2% transaction fee
     uint256 private balance;
-
-    mapping (address => address) availableOracles;
-    mapping(uint256 => Offer) internal offerDetails;
-    Offer [] offers;
-
-    struct Offer {
-        address payable seller;
-        uint256 price;
-        uint256 income;
-        uint256 loan;
-        uint256 index;
-        uint256 tokenId;
-        bool active;
-    }
     
     // *** MODIFIER ***
     modifier costs (uint cost){
@@ -83,8 +68,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         address oracleAddress = availableOracles[token];
         require(oracleAddress != address(0), "Mp: Token not supported.");
 
-        // get the latest price
-        // FOR TEST comment this
+        // get the latest price // FOR TEST comment this
         // (, int256 answer, , uint256 updatedAt, ) = AggregatorV3Interface(oracleAddress).latestRoundData();
         
         // FOR TEST comment this

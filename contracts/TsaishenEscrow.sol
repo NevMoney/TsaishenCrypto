@@ -5,38 +5,22 @@ pragma solidity 0.6.10;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-import "./libs/UniversalERC20.sol";
+import "./Storage.sol";
 
-contract TsaishenEscrow is Ownable{
-
+contract TsaishenEscrow is Ownable, Storage{
     using SafeMath for uint256;
     using Address for address payable;
-    using UniversalERC20 for IERC20;
-
+    
     event Deposited(string, address indexed seller, uint256 weiAmount);
     event Withdrawn(string, address indexed seller, uint256 weiAmount);
     event RefundsClosed(string, address, uint256);
     event RefundsEnabled(string, address, uint256);
 
-    enum State { Active, Refunding, Closed }
-
     uint256 private constant _TIMELOCK= 10 days;
     address payable internal feeRecipient;
     uint256 fee = 3;
-    
-    // tokenId to Struct
-    mapping(uint256 => Escrow) escrowById;
 
-    struct Escrow {
-        IERC20 token; 
-        address payable seller; 
-        address payable buyer; 
-        State state;
-        uint256 amount;
-        uint256 timelock;
-    }
-
-    // *** GETTER ***
+     // *** GETTER ***
     function escrowInfo(uint256 tokenId) public view returns(
         address seller, 
         address buyer, 

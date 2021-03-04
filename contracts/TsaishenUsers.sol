@@ -2,16 +2,10 @@
 
 pragma solidity 0.6.10;
 
-
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "./Storage.sol";
 
 contract TsaishenUsers is Ownable, Storage {
-    using EnumerableSet for EnumerableSet.AddressSet;
-    EnumerableSet.AddressSet internal users;
-
-    using EnumerableSet for EnumerableSet.UintSet;
 
     event userAdded(string, address user, bool active);
     event userDeleted(string, address user, bool active);
@@ -19,18 +13,7 @@ contract TsaishenUsers is Ownable, Storage {
     event houseDeleted(string, address user);
 
     address marketplace;
-    address houseToken;
-
-    mapping(address => User) internal userInfo;
-
-    struct User {
-        address payable user;
-        bool houseOwner;
-        bool borrower;
-        bool lender;
-        bool reward;
-        EnumerableSet.UintSet houses;
-    }    
+    address houseToken; 
 
     // MUST USE
     modifier onlyAuthorized(){
