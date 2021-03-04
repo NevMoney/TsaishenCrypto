@@ -288,10 +288,10 @@ $("#sellBtn").on("click", function () {
 
 function selectHouseToBuy(id, price, token) {
     saleId = id;
-    // console.log("selectHouse verification", id, price, token);
+    console.log("selectHouse verification", id, price, token);
     salePrice = web3.utils.toWei(price.toString());
     saleToken = token;
-    // console.log("selectHouseToBuy", saleId, salePrice, saleToken);
+    console.log("selectHouseToBuy", saleId, salePrice, saleToken);
     
     displayPurchase(saleId, salePrice, saleToken);
 }
