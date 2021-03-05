@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x1b88Bdb8269A1aB1372459F5a4eC3663D6f5cCc4";
-var houseTokenAddress = "0x22d5C8BdD4346b390014a07109a8F830094d4abf";
-var marketplaceAddress = "0x7414e38377D6DAf6045626EC8a8ABB8a1BC4B97a";
+var tsaishenUsersAddress = "0x26b4AFb60d6C903165150C6F0AA14F8016bE4aec";
+var houseTokenAddress = "0x630589690929E9cdEFDeF0734717a9eF3Ec7Fcfe";
+var marketplaceAddress = "0x0E696947A06550DEf604e82C26fd9E493e576337";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -423,18 +423,20 @@ async function buyCryptoHouse(id, price, token) {
 
 async function escrowBuy(id, price, token) {
   const offer = await checkOffer(id);
-  var amount = web3.utils.toWei(price.toString(), "");
-  console.log("buy amount", amount);
-  console.log("buy token address", token);
+  console.log("escrowBuy offer", offer);
+  console.log("ID", id, "price", price, "offer.price", offer.price, "token address", token);
+  let amount = web3.utils.toWei("50", "ether");
+  console.log("amount", amount);
   try {
-    await marketplaceInstance.methods.buyHouseWithEscrow(token, id).send({ from: user, value: amount });
+    let txInfo = await marketplaceInstance.methods.buyHouseWithEscrow(token, id).send({ from: user, value: amount });
+    console.log("escrowBuy txInfo", txInfo);
   }
   catch (err) {
     console.log(err);
   }
 }
 
-// for individual
+// for individual escrow to get info
 async function houseEscrowInfo(id) {
   let houseEscrow = await marketplaceInstance.methods.escrowInfo(id).call();
   console.log(houseEscrow);
@@ -632,8 +634,7 @@ async function checkContractBalance() {
   let balance = await web3.eth.getBalance(houseTokenAddress);
   balance = web3.utils.fromWei(balance);
   console.log(balance, "ETH");
-  $("#balanceDisplay").html(balance + " ETH");
-  
+  $("#balanceDisplay").html(balance + " ETH"); 
 }
 
 async function withdrawFunds() {

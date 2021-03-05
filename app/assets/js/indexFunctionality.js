@@ -261,6 +261,36 @@ function goToInventory() {
     getInventory();
 }
 
+function goToPortfolio() {
+    $("#upload-container").hide();
+    $("#market-container").hide();
+    $("#homePage").hide();
+    $("#deed-container").hide();
+    $("#upload-what").hide();
+    $("#learnMore").hide();
+    $("#aboutPage").hide();
+    $("#escrowPage").hide();
+
+    $("#blockLink").removeClass("active");
+    $("#marketLink").removeClass("active");
+    $("#homeLink").removeClass("active");
+
+    $("#portfolioLink").addClass("active");
+    $("#portfolio").show();
+
+    $("#houseDiv").empty();
+    $("#houseDivSale").empty();
+    $(".portfolioDisplay").empty();
+
+    if (user === contractOwnerAddress) {
+        $(".contractOwner").show();
+    } else {
+        $(".contractOwner").hide();
+    }
+    
+    getHouses();   
+}
+
 
 function certificationValidation() {
     if ($("#certification").prop("checked") == false){

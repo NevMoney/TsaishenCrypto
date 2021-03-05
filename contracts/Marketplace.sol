@@ -206,7 +206,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("House purchased", msg.sender, tokenId);
     }
  
-    function buyHouseWithEscrow (IERC20 token, uint256 tokenId) public nonReentrant{
+    function buyHouseWithEscrow (IERC20 token, uint256 tokenId) public payable nonReentrant{
         Offer storage offer = offerDetails[tokenId];      
         require(offer.active == true, "Mp: Must be active."); 
 
