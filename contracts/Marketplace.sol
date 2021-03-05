@@ -73,7 +73,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         
         // FOR TEST comment this
         // return (answer, updatedAt);
-        //for local testing ONLY
+        //for local testing ONLY //set at 1+10 zeros(100.00000000)
         return (10000000000, now); 
     }
 
@@ -186,9 +186,9 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         // transfer funds from buyer
         token.universalTransferFromSenderToThis(cryptoHousePrice);
         // pay the fee collector
-        require(token.universalTransfer(feeRecipient, houseTransactionFee));
+        token.universalTransfer(feeRecipient, houseTransactionFee);
         // pay the seller
-        require(token.universalTransfer(offer.seller, cryptoHousePrice.sub(houseTransactionFee)));
+        token.universalTransfer(offer.seller, cryptoHousePrice.sub(houseTransactionFee));
         
         // transfer house to buyer
         _houseToken.transferFrom(offer.seller, msg.sender, tokenId);

@@ -296,7 +296,7 @@ function selectHouseToBuy(id, price, token) {
     displayPurchase(saleId, salePrice, saleToken);
 }
 
-$("#buyBtn").on("click", function () {
+$("#purchaseBtn").on("click", function () {
     buyCryptoHouse(saleId, salePrice, saleToken).then(() => {
         $("#buyHouseModal").modal("hide");
     });

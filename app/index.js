@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xe6dA6E31540239b4a09eC574f147004D50f1b140";
-var houseTokenAddress = "0xB0015714B541A99265f529c7c0d34DA47deCA5b2";
-var marketplaceAddress = "0xa6f8431C9eEe4Ac2859207aF4004F7a948924c30";
+var tsaishenUsersAddress = "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D";
+var houseTokenAddress = "0x7C728214be9A0049e6a86f2137ec61030D0AA964";
+var marketplaceAddress = "0x5017A545b09ab9a30499DE7F431DF0855bCb7275";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -183,13 +183,26 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
       // console.log("pic:", imageUrl, "about:", description, "address:", address, "county:", county, "beds:", beds,
       //   "bath:", baths, "year built:", year, "house sqft:", house, "lot size:", size,
       //   "parcel no:", parcel, "current value:", value, "current income:", income,
-      //   "property type:", type, "more info:", link, "video tour:", video, "certification", certification);           
+      //   "property type:", type, "more info:", link, "video tour:", video, "certification", certification); 
+
+      /**
+       * Because at listing house we pass the number as BigNumber, we have to use it here as well.
+       * The price will show inWei, so we have to multiply it by 1**18 (basically "fromWei").
+       * Then we take the price and utilize number format to display comas, etc. for better UI
+       */
+      const { BN } = web3.utils;
+      let multiplier = new BN('1000000000000000000');
+      let showPrice = new Intl.NumberFormat().format(new BN(price * multiplier));
+      // let showPrice = web3.utils.fromWei(price);
+      // let printPrice = web3.utils.fromWei(showPrice);
+      console.log("price", price);
+      console.log("price w multiplier", showPrice);
 
       var button = `<div class="row">     
                       <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
                       <button class="btn btn-danger" id="cancelBtn${id}" onclick="cancelSale(${id})">Cancel Sale</button>
                       
-                      <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectToken(${id})" data-toggle="dropdown">Buy House: $${price}</button>
+                      <button class="btn btn-warning light-b-shadow" id="buyBtn${id}" onclick="selectToken(${id})" data-toggle="dropdown">Buy House: $${showPrice}</button>
                         <div class="tokenPrices dropdown-menu dropdown-menu-md">
                           <h4>Currently accepting:</h4><br>                             
                           <h4 class="btn btn-dark-soft light-b-shadow" data-toggle="modal" data-target="#buyHouseModal" id="ethereumToken${id}"><img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880"> <span id="showEthPrice${id}"></span> ETH</h4>
@@ -293,9 +306,11 @@ async function sellCryptoHouse(id) {
   if (offer.onSale) return alert("This house is already listed for sale.");
 
   var price = $("#housePrice").val();
-  var amount = web3.utils.toWei(price);
+  const { BN } = web3.utils;
+  var amount = new BN(price);
   const isApproved = await houseTokenInstance.methods.isApprovedForAll(user, marketplaceAddress).call();
-  //console.log(isApproved);
+  console.log(isApproved);
+  console.log("sellCryptohouse Amount", amount);
   try {
     if (!isApproved) {
       await houseTokenInstance.methods
@@ -330,74 +345,50 @@ async function getRecentTokenPrice(id, price, token) {
   return priceInCrypto;
 }
 
-async function buyCryptoHouse(id, price, token) {
-  const offer = await checkOffer(id);
-  // console.log("buying House", offer);
-  // console.log(id, offer.price);
-  var amount = web3.utils.fromWei(price.toString(), "");
-  console.log("buy amount", amount);
-  console.log("buy token address", token);
-  try {
-    await marketplaceInstance.methods.buyHouse(token, id).send({ from: user, value: amount , to: offer.seller});
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
-
-async function escrowBuy(id, price, token) {
-  const offer = await checkOffer(id);
-  var amount = web3.utils.toWei(price.toString(), "");
-  console.log("buy amount", amount);
-  console.log("buy token address", token);
-  try {
-    await marketplaceInstance.methods.buyHouseWithEscrow(token, id).send({ from: user, value: amount });
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
-
 async function selectToken(id) {
   let offer = await checkOffer(id);
+  const { BN } = web3.utils;
  
   let ethOracle = await getRecentTokenPrice(id, offer.price, ethAddress);
+  let ethPrice = (ethOracle*1000000000000000000);
   $(`#showEthPrice${id}`).empty();
-  $(`#showEthPrice${id}`).append(ethOracle);
-  console.log("ethOracle", ethOracle);
+  $(`#showEthPrice${id}`).append(ethPrice);
+  console.log("ethOracle", ethPrice);
   
   let daiOracle = await getRecentTokenPrice(id, offer.price, daiAddress);
+  let daiPrice = (daiOracle*1000000000000000000);
   $(`#showDaiPrice${id}`).empty();
-  $(`#showDaiPrice${id}`).append(daiOracle);
+  $(`#showDaiPrice${id}`).append(daiPrice);
   // console.log("daiOracle", daiOracle);
 
   let usdcOracle = await getRecentTokenPrice(id, offer.price, usdcAddress);
+  let usdcPrice = (usdcOracle * 1000000000000000000);
   $(`#showUsdcPrice${id}`).empty();
-  $(`#showUsdcPrice${id}`).append(usdcOracle);
+  $(`#showUsdcPrice${id}`).append(usdcPrice);
   // console.log("usdcOracle", usdcOracle);
 
-  let ethAmount = web3.utils.toWei(ethOracle.toString());
-  let daiAmount = web3.utils.toWei(daiOracle.toString());
-  let usdcAmount = web3.utils.toWei(usdcOracle.toString());
+  // let ethAmount = web3.utils.toWei(ethOracle.toString());
+  // let daiAmount = web3.utils.toWei(daiOracle.toString());
+  // let usdcAmount = web3.utils.toWei(usdcOracle.toString());
   // console.log("ethAmount", ethAmount, "daiAmount", daiAmount, "usdcAmount", usdcAmount);
   
   if ($(`#ethereumToken${id}`).click(function () {
     console.log("eth btn clicked");
     $(".displaySelectedCurrencyPrice").empty();
-    $(".displaySelectedCurrencyPrice").append(ethOracle, " ETH");
-    selectHouseToBuy(id, ethAmount, ethAddress);
+    $(".displaySelectedCurrencyPrice").append(ethPrice, " ETH");
+    selectHouseToBuy(id, ethPrice, ethAddress);
   }));
   if ($(`#daiToken${id}`).click(function () {
     // console.log("dai btn clicked");
     $(".displaySelectedCurrencyPrice").empty();
-    $(".displaySelectedCurrencyPrice").append(daiOracle, " DAI");
-    selectHouseToBuy(id, daiAmount, daiAddress);
+    $(".displaySelectedCurrencyPrice").append(daiPrice, " DAI");
+    selectHouseToBuy(id, daiPrice, daiAddress);
   }));
   if ($(`#usdcToken${id}`).click(function () {
     // console.log("usdcs btn clicked");
     $(".displaySelectedCurrencyPrice").empty();
-    $(".displaySelectedCurrencyPrice").append(usdcOracle, " USDC");
-    selectHouseToBuy(id, usdcAmount, usdcAddress);
+    $(".displaySelectedCurrencyPrice").append(usdcPrice, " USDC");
+    selectHouseToBuy(id, usdcPrice, usdcAddress);
   }));
 }
 
@@ -419,6 +410,39 @@ async function displayPurchase(id, price, token) {
       );
     });
   });
+}
+
+async function buyCryptoHouse(id, price, token) {
+  const offer = await checkOffer(id);
+  console.log("buying House", offer);
+  console.log("ID", id);
+  console.log("price", price);
+  // var amount = web3.utils.toWei(offer.price, "");
+  // var amount = web3.utils.toWei(price.toString(), "");
+  var amount = web3.utils.toWei("30", "ether")
+  console.log("buy amount", amount);
+  console.log("offer.price", offer.price);
+  console.log("buy token address", token);
+  try {
+    let txInfo = await marketplaceInstance.methods.buyHouse(token, id).send({ from: user, value: amount });
+    console.log("buy house txInfo", txInfo);
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+async function escrowBuy(id, price, token) {
+  const offer = await checkOffer(id);
+  var amount = web3.utils.toWei(price.toString(), "");
+  console.log("buy amount", amount);
+  console.log("buy token address", token);
+  try {
+    await marketplaceInstance.methods.buyHouseWithEscrow(token, id).send({ from: user, value: amount });
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
 
 // for individual
