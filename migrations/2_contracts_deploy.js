@@ -14,6 +14,6 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(TsaishenUsers);
     await deployer.deploy(HouseToken, TsaishenUsers.address, "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95");
     // feeRecipient (for local testing purposes I have account 0 -- CHANGE THIS for Test/MainNet)
-    await deployer.deploy(Marketplace, TsaishenUsers.address, HouseToken.address, "0xb49dD94C769105C684C1A8479Fb0caFa8C598FCc");
+    await deployer.deploy(Marketplace, TsaishenUsers.address, HouseToken.address, "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95");
     // await deployer.deploy(TsaishenToken);
 }

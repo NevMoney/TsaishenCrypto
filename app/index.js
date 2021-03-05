@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D";
-var houseTokenAddress = "0x7C728214be9A0049e6a86f2137ec61030D0AA964";
-var marketplaceAddress = "0x5017A545b09ab9a30499DE7F431DF0855bCb7275";
+var tsaishenUsersAddress = "0x1b88Bdb8269A1aB1372459F5a4eC3663D6f5cCc4";
+var houseTokenAddress = "0x22d5C8BdD4346b390014a07109a8F830094d4abf";
+var marketplaceAddress = "0x7414e38377D6DAf6045626EC8a8ABB8a1BC4B97a";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -350,28 +350,23 @@ async function selectToken(id) {
   const { BN } = web3.utils;
  
   let ethOracle = await getRecentTokenPrice(id, offer.price, ethAddress);
-  let ethPrice = (ethOracle*1000000000000000000);
+  let ethPrice = (ethOracle * 1000000000000000000).toFixed(2);
   $(`#showEthPrice${id}`).empty();
   $(`#showEthPrice${id}`).append(ethPrice);
   console.log("ethOracle", ethPrice);
   
   let daiOracle = await getRecentTokenPrice(id, offer.price, daiAddress);
-  let daiPrice = (daiOracle*1000000000000000000);
+  let daiPrice = (daiOracle * 1000000000000000000).toFixed(2);
   $(`#showDaiPrice${id}`).empty();
   $(`#showDaiPrice${id}`).append(daiPrice);
   // console.log("daiOracle", daiOracle);
 
   let usdcOracle = await getRecentTokenPrice(id, offer.price, usdcAddress);
-  let usdcPrice = (usdcOracle * 1000000000000000000);
+  let usdcPrice = (usdcOracle * 1000000000000000000).toFixed(2);
   $(`#showUsdcPrice${id}`).empty();
   $(`#showUsdcPrice${id}`).append(usdcPrice);
   // console.log("usdcOracle", usdcOracle);
 
-  // let ethAmount = web3.utils.toWei(ethOracle.toString());
-  // let daiAmount = web3.utils.toWei(daiOracle.toString());
-  // let usdcAmount = web3.utils.toWei(usdcOracle.toString());
-  // console.log("ethAmount", ethAmount, "daiAmount", daiAmount, "usdcAmount", usdcAmount);
-  
   if ($(`#ethereumToken${id}`).click(function () {
     console.log("eth btn clicked");
     $(".displaySelectedCurrencyPrice").empty();
@@ -414,18 +409,12 @@ async function displayPurchase(id, price, token) {
 
 async function buyCryptoHouse(id, price, token) {
   const offer = await checkOffer(id);
-  console.log("buying House", offer);
-  console.log("ID", id);
-  console.log("price", price);
-  // var amount = web3.utils.toWei(offer.price, "");
-  // var amount = web3.utils.toWei(price.toString(), "");
-  var amount = web3.utils.toWei("30", "ether")
-  console.log("buy amount", amount);
-  console.log("offer.price", offer.price);
-  console.log("buy token address", token);
+  console.log("buying House offer", offer);
+  console.log("ID", id, "price", price, "offer.price", offer.price, "token address", token);
   try {
-    let txInfo = await marketplaceInstance.methods.buyHouse(token, id).send({ from: user, value: amount });
+    let txInfo = await marketplaceInstance.methods.buyHouse(token, id).send({ from: user, value: price });
     console.log("buy house txInfo", txInfo);
+    goToPortfolio();
   }
   catch (err) {
     console.log(err);
@@ -647,7 +636,6 @@ async function checkContractBalance() {
   
 }
 
-// this function throws the same code as buyHouse function 32603/32000
 async function withdrawFunds() {
   let withdrawal = await houseTokenInstance.methods.withdrawAll().send({ to: user });
   console.log("Funds sent", withdrawal);
@@ -665,7 +653,7 @@ async function unPauseHouseTokenContract() {
 
 async function mintHouse() {
   // probably want to have a modal to add info about the house then mint
-  // another great way to use this is to create ZERO house
+  // use this is to create ZERO house
   let minted = await houseTokenInstance.methods.mint(user).send();
   console.log("house minted", minted);
 }
