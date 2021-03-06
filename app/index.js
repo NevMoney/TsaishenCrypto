@@ -193,10 +193,7 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
       const { BN } = web3.utils;
       let multiplier = new BN('1000000000000000000');
       let showPrice = new Intl.NumberFormat().format(new BN(price * multiplier));
-      // let showPrice = web3.utils.fromWei(price);
-      // let printPrice = web3.utils.fromWei(showPrice);
-      console.log("price", price);
-      console.log("price w multiplier", showPrice);
+      // console.log("price w multiplier", showPrice);
 
       var button = `<div class="row">     
                       <button class="btn btn-success" id="selectSaleBtn${id}" onclick="selectHouseForSale(${id})" data-toggle="modal" data-target="#sellHouseModal">Sell</button>
@@ -309,8 +306,8 @@ async function sellCryptoHouse(id) {
   const { BN } = web3.utils;
   var amount = new BN(price);
   const isApproved = await houseTokenInstance.methods.isApprovedForAll(user, marketplaceAddress).call();
-  console.log(isApproved);
-  console.log("sellCryptohouse Amount", amount);
+  // console.log(isApproved);
+  // console.log("sellCryptohouse Amount", amount);
   try {
     if (!isApproved) {
       await houseTokenInstance.methods
@@ -335,13 +332,13 @@ async function removeOffer(id) {
 }
 
 async function getRecentTokenPrice(id, price, token) {
-  console.log("getRecentTokenPriceID", id, "recentTokenPrice", price, "tokenAdd", token);
+  // console.log("getRecentTokenPriceID", id, "recentTokenPrice", price, "tokenAdd", token);
   let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(token).call();
   let recentPrice, priceTime;
   [recentPrice, priceTime] = Object.values(oracleObject);
   let conversion = recentPrice / 100000000;
   let priceInCrypto = (price / conversion);
-  console.log("token price and time: ", priceInCrypto, priceTime);
+  // console.log("token price and time: ", priceInCrypto, priceTime);
   return priceInCrypto;
 }
 
@@ -353,34 +350,28 @@ async function selectToken(id) {
   let ethPrice = (ethOracle * 1000000000000000000).toFixed(2);
   $(`#showEthPrice${id}`).empty();
   $(`#showEthPrice${id}`).append(ethPrice);
-  console.log("ethOracle", ethPrice);
   
   let daiOracle = await getRecentTokenPrice(id, offer.price, daiAddress);
   let daiPrice = (daiOracle * 1000000000000000000).toFixed(2);
   $(`#showDaiPrice${id}`).empty();
   $(`#showDaiPrice${id}`).append(daiPrice);
-  // console.log("daiOracle", daiOracle);
 
   let usdcOracle = await getRecentTokenPrice(id, offer.price, usdcAddress);
   let usdcPrice = (usdcOracle * 1000000000000000000).toFixed(2);
   $(`#showUsdcPrice${id}`).empty();
   $(`#showUsdcPrice${id}`).append(usdcPrice);
-  // console.log("usdcOracle", usdcOracle);
 
   if ($(`#ethereumToken${id}`).click(function () {
-    console.log("eth btn clicked");
     $(".displaySelectedCurrencyPrice").empty();
     $(".displaySelectedCurrencyPrice").append(ethPrice, " ETH");
     selectHouseToBuy(id, ethPrice, ethAddress);
   }));
   if ($(`#daiToken${id}`).click(function () {
-    // console.log("dai btn clicked");
     $(".displaySelectedCurrencyPrice").empty();
     $(".displaySelectedCurrencyPrice").append(daiPrice, " DAI");
     selectHouseToBuy(id, daiPrice, daiAddress);
   }));
   if ($(`#usdcToken${id}`).click(function () {
-    // console.log("usdcs btn clicked");
     $(".displaySelectedCurrencyPrice").empty();
     $(".displaySelectedCurrencyPrice").append(usdcPrice, " USDC");
     selectHouseToBuy(id, usdcPrice, usdcAddress);
@@ -389,7 +380,7 @@ async function selectToken(id) {
 
 async function displayPurchase(id, price, token) {
   house = await houseTokenInstance.methods.getHouse(id).call();
-  console.log("displayPurchase", house.uri);
+  // console.log("displayPurchase", house.uri);
   fetch(house.uri).then(function (res) {
     res.json().then(function (data) {
       imageUrl = data.image;
@@ -409,8 +400,8 @@ async function displayPurchase(id, price, token) {
 
 async function buyCryptoHouse(id, price, token) {
   const offer = await checkOffer(id);
-  console.log("buying House offer", offer);
-  console.log("ID", id, "price", price, "offer.price", offer.price, "token address", token);
+  // console.log("buying House offer", offer);
+  // console.log("ID", id, "price", price, "offer.price", offer.price, "token address", token);
   try {
     let txInfo = await marketplaceInstance.methods.buyHouse(token, id).send({ from: user, value: price });
     console.log("buy house txInfo", txInfo);
@@ -423,12 +414,10 @@ async function buyCryptoHouse(id, price, token) {
 
 async function escrowBuy(id, price, token) {
   const offer = await checkOffer(id);
-  console.log("escrowBuy offer", offer);
-  console.log("ID", id, "price", price, "offer.price", offer.price, "token address", token);
-  let amount = web3.utils.toWei("50", "ether");
-  console.log("amount", amount);
+  // console.log("escrowBuy offer", offer);
+  // console.log("ID", id, "price", price, "offer.price", offer.price, "token address", token);
   try {
-    let txInfo = await marketplaceInstance.methods.buyHouseWithEscrow(token, id).send({ from: user, value: amount });
+    let txInfo = await marketplaceInstance.methods.buyHouseWithEscrow(token, id).send({ from: user, value: price });
     console.log("escrowBuy txInfo", txInfo);
   }
   catch (err) {
@@ -491,7 +480,7 @@ async function ownerInitializeContracts() {
 
 async function getAllTsaishenUsers() {
   let userList = await usersInstance.methods.getAllUsers().call();
-  console.log("user array", userList); 
+  // console.log("user array", userList); 
 
   for (i = 0; i < userList.length; i++) {
     let list = userList[i].toString();
@@ -517,13 +506,16 @@ async function displayTsaishenUsers(userAddress, owner, borrowed, lended, reward
   userAddress = userAddress.substr(26);
   let start = "0x";
   let address = start.concat(userAddress);
-  console.log("address", address);
-  console.log("properties", properties);
+  // console.log("address", address);
+  // console.log("properties", properties);
+
+  $("#userDisplayTable").empty();
+  $("#userDisplayTable").show();
   
   $("#userDisplayTable").append(
       `<table class="table table-responsive">
         <thead class="thead-dark">
-          <th scope="col">Address</th>
+          <th scope="col">User Address</th>
           <th scope="col">Owner?</th>
           <th scope="col">Borrower?</th>
           <th scope="col">Lender?</th>
@@ -553,35 +545,48 @@ async function getEscrowInfo() {
     let begin = "0x";
     let tUserAdd = begin.concat(list);
     let tsaishenUserInfo = await usersInstance.methods.getUserInfo(tUserAdd).call();
-    console.log("users object" + i +":", tsaishenUserInfo);
+    // console.log("users object" + i +":", tsaishenUserInfo);
     let homeArray = tsaishenUserInfo.houses;
-    console.log("homes array" + i +":", homeArray);
+    // console.log("homes array" + i +":", homeArray);
     for (n = 0; n < homeArray.length; n++){
       let homes = homeArray[n].toString();
       homes = homes.substr(26);
-      console.log("homes" + n +":", homes);
-      // let id = web3.utils.fromWei(homes[n].toString());
-      // console.log("ID:", id);
+      // console.log("homes" + n +":", homes);
+      
       let escrow = await marketplaceInstance.methods.escrowInfo(homes).call();
       console.log("escrow Array" + n +":", escrow);
-      console.log("seller", escrow.seller, "buyer", escrow.buyer, "state", escrow.state, "amount", escrow.amount, "timelock", escrow.timelock);
+      // console.log("seller", escrow.seller, "buyer", escrow.buyer, "state", escrow.state, "amount", escrow.amount, "timelock", escrow.timelock);
     
-      displayEscrows(homes, escrow.seller, escrow.buyer, escrow.state, escrow.amount, escrow.timelock);
+      let escrowAmount = web3.utils.fromWei(escrow.amount);
+      let timeToEnd = new Date(escrow.timelock * 1000).toLocaleDateString();
+      
+      displayEscrows(homes, escrow.seller, escrow.buyer, escrow.state, escrowAmount, timeToEnd);
     }
   }
 }
 
 async function displayEscrows(houseId, seller, buyer, state, amount, timelock) {
+  $("#escrowDisplayTable").empty();
+  $("#escrowDisplayTable").show();
+  if (state == 0) {
+    state = "active";
+  }
+  else if (state == 1) {
+    state = "refunding";
+  }
+  else if (state == 2) {
+    state = "closed";
+  }
   if (amount > 0) {
     $("#escrowDisplayTable").append(
       `<table class="table table-responsive">
         <thead class="thead-dark">
-        <th scope="col">House ID</th>
+        <th scope="col">Escrow House ID</th>
           <th scope="col">Seller</th>
           <th scope="col">Buyer</th>
           <th scope="col">State</th>
           <th scope="col">Amount</th>
-          <th scope="col">Timelock</th>
+          <th scope="col">Locked Until</th>
         </thead>
         <tbody>
           <tr>
@@ -634,7 +639,9 @@ async function checkContractBalance() {
   let balance = await web3.eth.getBalance(houseTokenAddress);
   balance = web3.utils.fromWei(balance);
   console.log(balance, "ETH");
-  $("#balanceDisplay").html(balance + " ETH"); 
+  $("#balanceDisplay").html(balance + " ETH");
+  $("#balanceDisplay").show();
+  $("#ownerCloseBtn").show();
 }
 
 async function withdrawFunds() {

@@ -17,14 +17,26 @@ contract Storage {
     mapping (string => bool) _boolStorage;
     mapping (string => string) _stringStorage;
     mapping (string => bytes4) _bytesStorage;
+    // house mapping
     mapping (uint256 => House) internal houseInfo;
+    // user mapping
+    mapping(address => User) internal userInfo;
+    // escrow mapping
+    mapping(uint256 => Escrow) escrowById;
+    // marketplace mapping
+    mapping (address => address) availableOracles;
+    mapping(uint256 => Offer) internal offerDetails;
+    // marketplace array
+    Offer [] offers;
+    // escrow options
+    enum State { Active, Refunding, Closed }
+    // marketplace listing options
+    enum OfferState { Dormant, Active, Escrow }
 
     struct House {
         uint256 value;
         uint256 income;
     }
-
-    mapping(address => User) internal userInfo;
 
     struct User {
         address payable user;
@@ -35,9 +47,6 @@ contract Storage {
         EnumerableSet.UintSet houses;
     } 
 
-    // tokenId to Struct
-    mapping(uint256 => Escrow) escrowById;
-
     struct Escrow {
         IERC20 token; 
         address payable seller; 
@@ -47,12 +56,6 @@ contract Storage {
         uint256 timelock;
     }
 
-    enum State { Active, Refunding, Closed }
-
-    mapping (address => address) availableOracles;
-    mapping(uint256 => Offer) internal offerDetails;
-    Offer [] offers;
-
     struct Offer {
         address payable seller;
         uint256 price;
@@ -60,6 +63,6 @@ contract Storage {
         uint256 loan;
         uint256 index;
         uint256 tokenId;
-        bool active;
+        OfferState offerstate;
     }
 }

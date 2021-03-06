@@ -345,16 +345,14 @@ function cancelSale(id) {
 
 // for owner to get all users
 $("#getAllUsersBtn").on("click", function () {
-    getAllTsaishenUsers().then(() => {
-        $("#getAllUsersBtn").hide();
-    });
+    $("#ownerCloseBtn").show();
+    getAllTsaishenUsers();
 });
 
 // for owner to get all escrow info
 $("#getEscrowInfoBtn").on("click", function () {
-    getEscrowInfo().then(() => {
-        $("#getEscrowInfoBtn").hide();
-    });
+    $("#ownerCloseBtn").show();
+    getEscrowInfo();
 });
 
 $("#addTokenBtn").on("click", function () {
@@ -388,6 +386,15 @@ $("#unpauseBtn").on("click", function () {
 $("#mintBtn").on("click", function () {
     mintHouse(); 
 });
+
+$("#ownerCloseBtn").hide();
+
+$("#ownerCloseBtn").on("click", function () {
+    $("#balanceDisplay").hide();
+    $("#escrowDisplayTable").hide()
+    $("#ownerCloseBtn").hide();
+    $("#userDisplayTable").hide();
+})
 
 // for individual house escrow info
 $("#escrowInfoBtn").on("click", function () {
