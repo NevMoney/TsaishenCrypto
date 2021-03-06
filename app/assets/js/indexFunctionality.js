@@ -346,12 +346,14 @@ function cancelSale(id) {
 // for owner to get all users
 $("#getAllUsersBtn").on("click", function () {
     $("#ownerCloseBtn").show();
+    $("#userDisplayTable").empty();
     getAllTsaishenUsers();
 });
 
 // for owner to get all escrow info
 $("#getEscrowInfoBtn").on("click", function () {
     $("#ownerCloseBtn").show();
+    $("#escrowDisplayTable").empty();
     getEscrowInfo();
 });
 

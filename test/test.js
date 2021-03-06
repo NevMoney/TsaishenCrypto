@@ -214,7 +214,7 @@ contract("Positive tests", (accounts) => {
             let owner = await marketplaceInstance.owner();
             assert.equal(owner, accounts[0], "incorrect owner account");
         });
-        it("should get correct Oracle price", async () => {
+        it("Should get correct Oracle price", async () => {
             let orcPrice = await marketplaceInstance.getOracleUsdPrice(tsaishenTokenInstance.address);
             assert.equal(orcPrice[0], 10000000000, "incorrect oracle price");
         });
@@ -224,7 +224,7 @@ contract("Positive tests", (accounts) => {
         it("should list house 0 of user1", async () => {
             await sellHouse(houseTokenInstance, marketplaceInstance, user1, 0);
         });
-        it("should Get all tokens on sale", async () => {
+        it("Should Get all tokens on sale", async () => {
             let res = await marketplaceInstance.getAllTokensOnSale();
             assert.equal(res.length, 1, "only 1 house on sale");
         });

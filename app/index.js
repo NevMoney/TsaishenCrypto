@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x26b4AFb60d6C903165150C6F0AA14F8016bE4aec";
-var houseTokenAddress = "0x630589690929E9cdEFDeF0734717a9eF3Ec7Fcfe";
-var marketplaceAddress = "0x0E696947A06550DEf604e82C26fd9E493e576337";
+var tsaishenUsersAddress = "0xB9bdBAEc07751F6d54d19A6B9995708873F3DE18";
+var houseTokenAddress = "0x4bf3A7dFB3b76b5B3E169ACE65f888A4b4FCa5Ee";
+var marketplaceAddress = "0xFcCeD5E997E7fb1D0594518D3eD57245bB8ed17E";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -255,47 +255,30 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
   });
 }
 
+async function appendHouse(id, price, seller) {
+  // console.log("appendHouse ID", id, "aH price", price, "aH seller", seller);
+  var house = await houseTokenInstance.methods.getHouse(id).call();
+  console.log("appendHouse", house);
+  appendCryptoHouse(id, house.uri, true, price, seller);
+}
+
 async function checkOffer(id) {
   try {
     let x = await marketplaceInstance.methods.getOffer(id).call();
+    console.log("checkOffer x", x);
     var price = x.price;
     var seller = x.seller;
     var onSale = x.active;
+    var inEscrow = x.escrow;
 
     price = web3.utils.fromWei(price);
     var offer = { seller: seller, price: price, onSale: onSale };
+    console.log("offer", offer);
     return offer;
   }
   catch (err) {
     console.log(err)
   }
-}
-
-async function getInventory() {
-  try {
-    var arrayId = await marketplaceInstance.methods.getAllTokensOnSale().call();
-    // console.log("getInventory array: ", arrayId);
-    for (i = 0; i < arrayId.length; i++){
-      if (arrayId[i] != 0) {
-        const offer = await checkOffer(arrayId[i]);
-        // console.log("getInventory", offer, arrayId[i]);
-
-        if (offer.onSale) {
-          appendHouse(arrayId[i], offer.price, offer.seller);
-        }
-        
-      }
-    }
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
-
-async function appendHouse(id, price, seller) {
-  // console.log("appendHouse ID", id, "aH price", price, "aH seller", seller);
-  var house = await houseTokenInstance.methods.getHouse(id).call();
-  appendCryptoHouse(id, house.uri, true, price, seller);
 }
 
 async function sellCryptoHouse(id) {
@@ -321,6 +304,27 @@ async function sellCryptoHouse(id) {
   }
   catch (err) {
     console.log(err)
+  }
+}
+
+async function getInventory() {
+  try {
+    var arrayId = await marketplaceInstance.methods.getAllTokensOnSale().call();
+    console.log("getInventory array: ", arrayId);
+    for (i = 0; i < arrayId.length; i++){
+      if (arrayId[i] != 0) {
+        const offer = await checkOffer(arrayId[i]);
+        console.log("getInventory", offer, arrayId[i]);
+
+        if (offer.onSale) {
+          appendHouse(arrayId[i], offer.price, offer.seller);
+        }
+        
+      }
+    }
+  }
+  catch (err) {
+    console.log(err);
   }
 }
 
@@ -509,7 +513,6 @@ async function displayTsaishenUsers(userAddress, owner, borrowed, lended, reward
   // console.log("address", address);
   // console.log("properties", properties);
 
-  $("#userDisplayTable").empty();
   $("#userDisplayTable").show();
   
   $("#userDisplayTable").append(
@@ -536,6 +539,7 @@ async function displayTsaishenUsers(userAddress, owner, borrowed, lended, reward
   );
 }
 
+// for owner only
 async function getEscrowInfo() {
   let userList = await usersInstance.methods.getAllUsers().call();
 
@@ -545,29 +549,29 @@ async function getEscrowInfo() {
     let begin = "0x";
     let tUserAdd = begin.concat(list);
     let tsaishenUserInfo = await usersInstance.methods.getUserInfo(tUserAdd).call();
-    // console.log("users object" + i +":", tsaishenUserInfo);
+    console.log("users object" + i +":", tsaishenUserInfo);
     let homeArray = tsaishenUserInfo.houses;
-    // console.log("homes array" + i +":", homeArray);
+    console.log("homes array" + i +":", homeArray);
     for (n = 0; n < homeArray.length; n++){
       let homes = homeArray[n].toString();
       homes = homes.substr(26);
-      // console.log("homes" + n +":", homes);
+      console.log("homes" + n +":", homes);
       
       let escrow = await marketplaceInstance.methods.escrowInfo(homes).call();
-      console.log("escrow Array" + n +":", escrow);
+      console.log("escrow Array" + i + "." + n +":", escrow);
       // console.log("seller", escrow.seller, "buyer", escrow.buyer, "state", escrow.state, "amount", escrow.amount, "timelock", escrow.timelock);
-    
+
       let escrowAmount = web3.utils.fromWei(escrow.amount);
       let timeToEnd = new Date(escrow.timelock * 1000).toLocaleDateString();
-      
+
       displayEscrows(homes, escrow.seller, escrow.buyer, escrow.state, escrowAmount, timeToEnd);
     }
   }
 }
 
 async function displayEscrows(houseId, seller, buyer, state, amount, timelock) {
-  $("#escrowDisplayTable").empty();
   $("#escrowDisplayTable").show();
+
   if (state == 0) {
     state = "active";
   }
@@ -577,6 +581,7 @@ async function displayEscrows(houseId, seller, buyer, state, amount, timelock) {
   else if (state == 2) {
     state = "closed";
   }
+
   if (amount > 0) {
     $("#escrowDisplayTable").append(
       `<table class="table table-responsive">
@@ -599,12 +604,12 @@ async function displayEscrows(houseId, seller, buyer, state, amount, timelock) {
           </tr>
         </tbody>
       </table>`
-  );
-  } else {
-    $("#escrowDisplayTable").css("display", "block");
-    $("#escrowDisplayTable").text("No houses in escrow.");
+    );
   }
-  
+  // else {
+  //   $("#escrowDisplayTable").css("display", "block");
+  //   $("#escrowDisplayTable").text("No houses in escrow.");
+  // }
 }
 
 /** @Dev when adding new token, make sure you:

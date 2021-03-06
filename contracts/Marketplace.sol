@@ -83,21 +83,22 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         uint256 income, 
         uint256 loan, 
         uint256 index, 
-        uint256 tokenId, 
+        uint256 tokenId,
         OfferState offerstate) {
-        Offer storage offer = offerDetails[_tokenId];//get the tokenId from the mapping
-
-        //return details for that offer
         return 
-        (offer.seller, 
-        offer.price, 
-        offer.income, 
-        offer.loan, 
-        offer.index, 
-        offer.tokenId, 
-        offer.offerstate); 
+        (offerDetails[_tokenId].seller, 
+        offerDetails[_tokenId].price, 
+        offerDetails[_tokenId].income, 
+        offerDetails[_tokenId].loan, 
+        offerDetails[_tokenId].index,
+        offerDetails[_tokenId].tokenId,
+        offerDetails[_tokenId].offerstate); 
     }
 
+    function getOfferState(uint256 tokenId) public view returns(OfferState){
+        return offerDetails[tokenId].offerstate;
+    }
+    
     function getAllTokensOnSale() public view returns(uint256[] memory listOfOffers) {
         uint256 forSaleList = offers.length;//this gives us the length of the offers array
 
@@ -235,7 +236,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     function refundEscrow(uint256 tokenId) public {
         require(msg.sender == escrowById[tokenId].buyer || msg.sender == escrowById[tokenId].seller || msg.sender == owner(), "Mp: Not authorized.");
         require(now > escrowById[tokenId].timelock, "TM: Timelocked.");
-        require(offerDetails[tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow.");
+        // require(offerDetails[tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow.");
 
         if(now >= escrowById[tokenId].timelock){
             Offer storage offer = offerDetails[tokenId];
