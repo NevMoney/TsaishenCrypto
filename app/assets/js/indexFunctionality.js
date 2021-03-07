@@ -244,7 +244,7 @@ function goToPortfolio() {
     }
     
     getHouses();
-    getEscrowUser();
+    fetchEscrowInfo();
 }
 
 

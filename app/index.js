@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x4D32ECeC25d722C983f974134d649a20e78B1417";
-var houseTokenAddress = "0x0B6fc157C83a9A5a64776E2183959f75180eFF27";
-var marketplaceAddress = "0x970e1d481CEDbeaeFE776275F0d1b4E1B301bB3b";
+var tsaishenUsersAddress = "0xCfEB869F69431e42cdB54A4F4f105C19C080A601";
+var houseTokenAddress = "0x254dffcd3277C0b1660F6d42EFbB754edaBAbC2B";
+var marketplaceAddress = "0xC89Ce4735882C9F0f0FE26686c53074E09B0D550";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -53,7 +53,7 @@ $(document).ready(async () => {
     let houseId = event.returnValues.id;
     let houseUri = event.returnValues.uri;
     $("#houseUploadedMsg").append(`<strong>Congratulations ${owner}!</strong> You have successfully uploaded real property onto 
-      the blockchain. Your house ID is ${houseId}. Head on over the Portfolio page and take a look.`);
+      the blockchain. <u>Your property ID is ${houseId}</u>. Head on over the Portfolio page and take a look.`);
     $("#houseUploadedMsg").show();
   })
     .on("error", console.error);
@@ -63,37 +63,37 @@ $(document).ready(async () => {
     var tokenId = event.returnValues["tokenId"];
     var actor = event.returnValues["actor"];
     if (eventType == "House listed") {
-      alert("Congrats! You have listed the following property for sale: " + tokenId);
+      alert("Congrats " + actor + "! You have listed property ID: " + tokenId + " for sale.");
     }
     if (eventType == "Offer removed") {
-      alert("The following property has been removed from the market: " + tokenId);
+      alert("You have successfully removed property ID: " + tokenId + " from the market.");
     }
     if (eventType == "House purchased") {
-      alert("Congrats on your purchase. You have acquired the following property: " + tokenId);
+      alert("Congrats on your purchase. You have acquired property ID: " + tokenId);
     }
     if (eventType == "House in Escrow") {
-      alert("Congratulations! You are in escrow for " + tokenId);
+      alert("Well done! You are in escrow for property ID: " + tokenId);
     }
     if (eventType == "Escrow Refunded") {
-      alert("Sale wasn't successful. Escrow has been refunded for " + tokenId); //CONSIDER putting this in a DIV for the house
+      alert("Escrow sale didn't go through. Funds are refunded to " + actor + " for property ID: " + tokenId + ". House is back on the market."); //CONSIDER putting this in a DIV for the house
     }
     if (eventType == "Escrow closed. Buyer has 3 days to verify.") {
       alert("Escrow is closed for " + tokenId +
         ". Buyer has 3 days to verify documents before funds are released to " + actor);
     }
     if (eventType == "Buyer verified, house SOLD.") {
-      alert("Congratulations! Buyer has verified the document delivery." + tokenId +
-        " is sold. Funds are transfered to: " + actor);
+      alert("Congratulations! Buyer has verified the document delivery. House ID: " + tokenId +
+        " is sold.");
     }
     if (eventType == "House SOLD") {
-      alert("Congratulations! Escrow has successfully closed and the following property is sold: " + tokenId);
+      alert("Congratulations " + actor + "! Escrow has successfully closed and property ID: " + tokenId + " is sold.");
     }
     if (eventType == "3-day document update request issued.") {
-      alert("Attention seller: buyer: " + actor + " is requesting document review for "
-        + tokenId + ". Please check that correct document was submitted or clear up any errors.");
+      alert("ATTENTION! Buyer: " + actor + " is requesting document review for property ID: "
+        + tokenId + ". Seller has 3 days to review and resubmit documents.");
     }
     if (eventType == "Escrow Cancelled.") {
-      alert("Escrow for " + tokenId + " has been cancelled by " + actor +
+      alert("Escrow for property ID: " + tokenId + " has been cancelled by " + actor +
         ". Injured party has been compensated and the property is back on market.");
     }
   })
@@ -411,6 +411,7 @@ async function buyCryptoHouse(id, price, token) {
     let txInfo = await marketplaceInstance.methods.buyHouse(token, id).send({ from: user, value: price });
     console.log("buy house txInfo", txInfo);
     goToPortfolio();
+    $("#portfolioLoading").hide();
   }
   catch (err) {
     console.log(err);
@@ -424,35 +425,44 @@ async function escrowBuy(id, price, token) {
   try {
     let txInfo = await marketplaceInstance.methods.buyHouseWithEscrow(token, id).send({ from: user, value: price });
     console.log("escrowBuy txInfo", txInfo);
-    appendEscrowButtons(id);
     goToPortfolio();
+    $("#portfolioLoading").hide();
   }
   catch (err) {
     console.log(err);
   }
 }
 
+async function fetchEscrowInfo() {
+  let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
+  console.log("escrowByUser", escrow);
+  $("#portfolioLoading").hide();
+
+  if (user === escrow.buyer || user === escrow.seller) {
+    $(".escrowBuyer").show();
+    $("#portfolioTop").hide();
+  } else {
+    $(".escrowBuyer").hide();
+    $("#portfolioTop").show();
+  }
+  $("#escrowBuyerDisplay").empty();
+  appendEscrowButtons(escrow.tokenId);
+}
+
 async function appendEscrowButtons(id) {
   $("#escrowBuyerDisplay").append(
     `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo()"><i class="fas fa-info"></i> Escrow</div>
-    <div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}">Confirm <i class="fas fa-envelope-open"></i></div>
+    <div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}" onclick="deedConfirm(${id})">Confirm <i class="fas fa-envelope-open"></i></div>
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}">Request Review <i class="fas fa-search"></i></div>
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>
     <div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}">Cancel <i class="fas fa-file-signature"></i></div>
-    <div id="userEscrowInfoDisplay"></div>
-    <div class="table table-responsive" id="userCheckEscrowDisplayTable"></div>`
+    <div id="userEscrowInfoDisplay"></div>`
   );
 }
 
 // for individual escrow to get info
 async function houseEscrowInfo() {
   let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
-  console.log("escrowByUser", escrow);
-  if (user === escrow.buyer || user === escrow.seller) {
-    $(".escrowBuyer").show();
-  } else {
-    $(".escrowBuyer").hide();
-  }
   showEscrowInfo(escrow.tokenId, escrow.seller, escrow.buyer, escrow.state, escrow.amount, escrow.timelock, escrow.token);
 }
 
@@ -494,7 +504,7 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
           <td><b>Withdrawals permited currently?</b> ${checkWithdrawal}</td>
         </tr>
         <tr>
-          <td><b>Current State End Date:</b> ${escrowDate}</td>
+          <td><b>Current State Ends:</b> ${escrowDate}</td>
         </tr>
       </tbody>
     </table>`

@@ -57,20 +57,8 @@ contract TsaishenEscrow is Ownable, Storage{
             escrowByBuyer[_buyer].tokenId);
     }
 
-    function sellerDeposits(uint256 tokenId) public view returns (address, uint256) {  
-        return (escrowById[tokenId].seller, escrowById[tokenId].amount);
-    }
-
-    function buyerDeposits(uint256 tokenId) public view returns (address, uint256) {
-        return (escrowById[tokenId].buyer, escrowById[tokenId].amount);   
-    }
-
     function refundAllowed(uint256 tokenId) public view returns (bool) {
        return escrowById[tokenId].state == State.Refunding;
-    }
-
-    function escrowState(uint256 tokenId) public view returns (State) {
-        return escrowById[tokenId].state;
     }
 
     function withdrawalAllowed(uint256 tokenId) public view returns (bool){
