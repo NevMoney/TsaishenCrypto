@@ -353,7 +353,7 @@ $("#ownerCloseBtn").on("click", function () {
     $("#escrowDisplayTable").hide()
     $("#ownerCloseBtn").hide();
     $("#userDisplayTable").hide();
-})
+});
 
 // for individual house escrow info
 $("#escrowInfoBtn").on("click", function () {

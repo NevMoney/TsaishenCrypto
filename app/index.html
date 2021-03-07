@@ -2977,34 +2977,35 @@
         </div>
       </div>
 
-      <!-- House ID Input Modal
-      <div class="modal fade bd-example-modal-lg" id="inputHouseId" tabindex="-1" role="dialog" aria-labelledby="myLargeSaleModal" aria-hidden="true">
+      <!-- Owners Escrow House Modal -->
+      <div class="modal fade bd-example-modal-lg" id="usersEscrowsModal" tabindex="-1" role="dialog" aria-labelledby="myLargeBuyModal" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
+
             <div class="modal-header">
+              <h5 class="modal-title h3">Help them get it done!</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
+
             <div class="modal-body">
               <div class="container-fluid">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="row justify-content-center" align="center">
-                      <div class="col-lg-6 p-1">
-                        <input class="form-control" id="houseId" placeholder="Enter House Id">
-                      </div>
-                      <div class="col-lg-4 p-1">
-                        <button class="btn btn-primary light-b-shadow" id="getEscrowBtn"><b>Get Escrow Info</b></button>
-                      </div>                      
-                    </div>
+               
+                  <div class="col-md-12 justify-content-center" align="center">
+                    <div class="table table-responsive finalizingEscrowDisplay" id="escrowModalDisplay"></div>
                   </div>
-                </div>
+                  
+                  <hr>
+                    <p class="font-size-md text-muted text-center"><b>Close:</b> turns state to closed and gives 3 days to buyer.<br>
+                      <b>Payout:</b> completes the transaction (funds and property).
+                    </p>
               </div>
             </div>
+
           </div>
         </div>
-      </div>  -->
+      </div>
 
       <!-- NOT USING AT THE MOMENT!!! Escrow Info Modal -->
       <div class="modal fade" id="escrowInfoModal" tabindex="-1" role="dialog" aria-labelledby="escrowInfo" aria-hidden="true">
