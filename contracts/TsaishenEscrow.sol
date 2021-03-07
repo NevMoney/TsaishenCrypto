@@ -39,22 +39,8 @@ contract TsaishenEscrow is Ownable, Storage{
             escrowById[_tokenId].tokenId);
     }
 
-    function getEscrowByBuyer(address _buyer) public view returns(
-        IERC20 token,
-        address seller, 
-        address buyer, 
-        State state, 
-        uint256 amount, 
-        uint256 timelock,
-        uint256 tokenId){
-        return (
-            escrowByBuyer[_buyer].token,
-            escrowByBuyer[_buyer].seller, 
-            escrowByBuyer[_buyer].buyer, 
-            escrowByBuyer[_buyer].state, 
-            escrowByBuyer[_buyer].amount, 
-            escrowByBuyer[_buyer].timelock,
-            escrowByBuyer[_buyer].tokenId);
+    function getEscrowByBuyer(address _buyer) public view returns(uint256){
+        return escrowBuyerToId[_buyer];
     }
 
     function refundAllowed(uint256 tokenId) public view returns (bool) {
@@ -74,8 +60,8 @@ contract TsaishenEscrow is Ownable, Storage{
         _token.universalTransferFromSenderToThis(_amount);
 
         Escrow memory _escrow = Escrow(_token, payable(_seller), payable(_buyer), State.Active, _amount, now + _TIMELOCK, _tokenId);
+        escrowBuyerToId[_buyer] = _tokenId;
         escrowById[_tokenId] = _escrow;
-        escrowByBuyer[_buyer] = _escrow;
 
         emit Deposited("Funds deposited in escrow.", _seller, _amount);
     }
@@ -99,6 +85,11 @@ contract TsaishenEscrow is Ownable, Storage{
         else {
             escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _paymentToHarmedParty);
         }
+
+        address _buyer = escrowById[_tokenId].buyer;
+
+        delete escrowById[_tokenId];
+        delete escrowBuyerToId[_buyer];
     }
 
     // this extends escrow by 3 days
@@ -124,7 +115,8 @@ contract TsaishenEscrow is Ownable, Storage{
         // refund buyer
         escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund);
 
-        // return house to seller done in marketplace
+        delete escrowById[_tokenId];
+        delete escrowBuyerToId[_buyer];
 
         emit Withdrawn("Funds refunded to buyer.", _buyer, _refund);
     }
@@ -136,7 +128,7 @@ contract TsaishenEscrow is Ownable, Storage{
         escrowById[_tokenId].timelock = 0;
         
         _beneficiaryWithdraw(escrowById[_tokenId].seller, _tokenId, feeRecipient);
-    }
+    }   
 
     function _beneficiaryWithdraw(address payable _seller, uint256 _tokenId, address payable _feeRecipient) internal {
         // require(msg.sender == escrowById[_tokenId].seller || msg.sender == owner(), "TE: Not authorized.");
@@ -153,7 +145,10 @@ contract TsaishenEscrow is Ownable, Storage{
         // transfer proceeds to seller
         escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, paymentToSeller);
 
-        // transfer house to buyer done in marketplace
+        address _buyer = escrowById[_tokenId].buyer;
+
+        delete escrowById[_tokenId];
+        delete escrowBuyerToId[_buyer];
 
         emit Withdrawn("Funds transferred to seller.", _seller, paymentToSeller);
     }

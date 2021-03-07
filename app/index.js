@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xCfEB869F69431e42cdB54A4F4f105C19C080A601";
-var houseTokenAddress = "0x254dffcd3277C0b1660F6d42EFbB754edaBAbC2B";
-var marketplaceAddress = "0xC89Ce4735882C9F0f0FE26686c53074E09B0D550";
+var tsaishenUsersAddress = "0xC5aFE31AE505594B190AC71EA689B58139d1C354";
+var houseTokenAddress = "0x42D4BA5e542d9FeD87EA657f0295F1968A61c00A";
+var marketplaceAddress = "0x25AF99b922857C37282f578F428CB7f34335B379";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -35,7 +35,7 @@ $(document).ready(async () => {
   showAccount.innerHTML = accounts[0];
 
   ethereum.on("accountsChanged", (_accounts) => {
-    console.log("Account Changed!", accounts[0]);
+    // console.log("Account Changed!", accounts[0]);
     showAccount.innerHTML = _accounts;
     user = web3.utils.toChecksumAddress(_accounts[0]);
   });
@@ -80,6 +80,9 @@ $(document).ready(async () => {
     if (eventType == "Escrow closed. Buyer has 3 days to verify.") {
       alert("Escrow is closed for " + tokenId +
         ". Buyer has 3 days to verify documents before funds are released to " + actor);
+    }
+    if (eventType == "Seller uploaded docs.") {
+      alert("Seller " + actor + " reported docs are uploaded for house ID: " + tokenId + ". Buyer has 3 days to verify.");
     }
     if (eventType == "Buyer verified, house SOLD.") {
       alert("Congratulations! Buyer has verified the document delivery. House ID: " + tokenId +
@@ -230,7 +233,7 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
         </tr>
         `
       )
-      let inEscrow = true;
+      let inEscrow = false;
       // top part if(!isMarketplace) is irrelevant -- buttons always display
       if (!isMarketplace) {
         $("#houseDisplay").append(button);
@@ -451,28 +454,64 @@ async function escrowBuy(id, price, token) {
   }
 }
 
+async function sellerEscrowInfo() {
+  let userHomes = await usersInstance.methods.getUserHomes(user).call();
+  for (i = 0; i < userHomes.length; i++) {
+    let sellerEscrow = await marketplaceInstance.methods.escrowInfo(userHomes[i]).call();
+    // console.log("seller escrow", sellerEscrow);
+
+    $("#portfolioLoading").hide();
+
+    if (sellerEscrow.amount > 0) {
+      if (user === sellerEscrow.buyer || user === sellerEscrow.seller) {
+        $(".escrowBuyer").show();
+        $("#portfolioTop").hide();
+      } else {
+        $(".escrowBuyer").hide();
+        $("#portfolioTop").show();
+      }
+    
+      $("#escrowBuyerDisplay").empty();
+    
+      appendEscrowButtons(sellerEscrow.tokenId, sellerEscrow.buyer);
+    } else {
+        $(".escrowBuyer").hide();
+        $("#portfolioTop").show();
+    }
+  }
+}
+
 async function fetchEscrowInfo() {
   let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
-  console.log("escrowByUser", escrow);
+  let escrowInfo = await marketplaceInstance.methods.escrowInfo(escrow).call();
+  // console.log("escrowInfo", escrowInfo);
   $("#portfolioLoading").hide();
 
-  if (user === escrow.buyer || user === escrow.seller) {
-    $(".escrowBuyer").show();
-    $("#portfolioTop").hide();
+  if (escrowInfo.amount > 0) {
+    if (user === escrowInfo.buyer || user === escrowInfo.seller) {
+      $(".escrowBuyer").show();
+      $("#portfolioTop").hide();
+    } else {
+      $(".escrowBuyer").hide();
+      $("#portfolioTop").show();
+    }
+  
+    $("#escrowBuyerDisplay").empty();
+  
+    appendEscrowButtons(escrowInfo.tokenId, escrowInfo.buyer);
   } else {
-    $(".escrowBuyer").hide();
-    $("#portfolioTop").show();
+      $(".escrowBuyer").hide();
+      $("#portfolioTop").show();
   }
-  $("#escrowBuyerDisplay").empty();
-  appendEscrowButtons(escrow.tokenId, escrow.buyer);
+  
 }
 
 async function appendEscrowButtons(id, buyer) {
   $("#escrowBuyerDisplay").append(
-    `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo()"><i class="fas fa-info"></i> Escrow</div>
+    `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo(${id})">Escrow <i class="fas fa-info"></i></div>
     <div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}" onclick="deedConfirm(${id})">Confirm <i class="fas fa-envelope-open"></i></div>
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}" onclick="requestReview(${id})">Request Review <i class="fas fa-search"></i></div>
-    <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>
+    <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}" onclick="requestRefund(${id})"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>
     <div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}" onclick="cancelEscrow(${id})">Cancel <i class="fas fa-file-signature"></i></div>
     <div id="userEscrowInfoDisplay"></div>`
   );
@@ -489,9 +528,9 @@ async function appendEscrowButtons(id, buyer) {
 }
 
 // for individual escrow to get info
-async function houseEscrowInfo() {
-  let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
-  showEscrowInfo(escrow.tokenId, escrow.seller, escrow.buyer, escrow.state, escrow.amount, escrow.timelock, escrow.token);
+async function houseEscrowInfo(id) {
+  let escrowInfo = await marketplaceInstance.methods.escrowInfo(id).call();
+  showEscrowInfo(escrowInfo.tokenId, escrowInfo.seller, escrowInfo.buyer, escrowInfo.state, escrowInfo.amount, escrowInfo.timelock, escrowInfo.token);
 }
 
 async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
@@ -542,7 +581,9 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
 // for buyer to confirm delivery
 async function deedConfirm(id) {
   try {
-    await marketplaceInstance.methods.buyerVerify(id).send({ from: user });
+    let confirm = await marketplaceInstance.methods.buyerVerify(id).send({ from: user });
+    console.log("confirm delivery", confirm);
+    goToPortfolio();
   }
   catch (err) {
     console.log(err);
@@ -555,6 +596,7 @@ async function cancelEscrow(id) {
   try {
     let cancelHash = await marketplaceInstance.methods.cancelEscrowSale(id).send({ from: user, value: penalty });
     console.log("cancel escrow hash", cancelHash);
+    goToPortfolio();
   }
   catch (err) {
     console.log(err);
@@ -566,6 +608,30 @@ async function requestReview(id) {
   try {
     let reviewHash = await marketplaceInstance.methods.buyerReviewRequest(id).send({ from: user });
     console.log("review request hash", reviewHash);
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+// for buyer refund
+async function requestRefund(id) {
+  try {
+    let refundHash = await marketplaceInstance.methods.refundEscrow(id).send({ from: user });
+    console.log("review request hash", refundHash);
+    goToPortfolio();
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+// for seller to confirm delivery (if this failes to automatically run when deed is uploaded, I may need to add a button)
+async function deedUploaded(id) {
+  try {
+    let confirmed = await marketplaceInstance.methods.sellerComplete(id).send({ from: user });
+    console.log("review request hash", confirmed);
+    goToPortfolio();
   }
   catch (err) {
     console.log(err);
@@ -704,10 +770,6 @@ async function displayEscrows(houseId, seller, buyer, state, amount, timelock) {
       </table>`
     );
   }
-  // else {
-  //   $("#escrowDisplayTable").css("display", "block");
-  //   $("#escrowDisplayTable").text("No houses in escrow.");
-  // }
 }
 
 /** @Dev when adding new token, make sure you:

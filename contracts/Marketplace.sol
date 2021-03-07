@@ -255,6 +255,14 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("Escrow closed. Buyer has 3 days to verify.", offer.seller, tokenId);
     }    
 
+    function sellerComplete(uint256 tokenId) public {
+        require(msg.sender == escrowById[tokenId].seller, "Mp: Only seller.");
+
+        _close(tokenId);
+
+        emit MarketTransaction("Seller uploaded docs.", msg.sender, tokenId);
+    }
+
     // buyer to verifies receipt and escrow transfers complete
     function buyerVerify(uint256 tokenId) public payable nonReentrant {
         require(offerDetails[tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow.");
@@ -322,7 +330,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
 
         emit MarketTransaction("Escrow Cancelled.", msg.sender, tokenId);
     }   
-    
+
     //*** INTERNAL ***
     function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool) {
         return (_houseToken.ownerOf(_tokenId) == _address);
