@@ -1202,15 +1202,17 @@
         <p class="font-size-lg mb-2 mb-md-6 text-center">
           In one handy place.
         </p>
-        <p class="font-size-lg text-muted mb-4 mb-md-2 text-center">
-          If you don't see your assets, please check the following:<br><br>
-          
-          Connected to blockchain? &#127968; 
-          Uploaded a property? &#127968; 
-          Given sufficient time for the block production? &#127968; 
-          Using the same account you used to upload? 
-        </p>
-
+        <div id="portfolioTop">
+          <p class="font-size-lg text-muted mb-4 mb-md-2 text-center">
+            If you don't see your assets, please check the following:<br><br>
+            
+            Connected to blockchain? &#127968; 
+            Uploaded a property? &#127968; 
+            Given sufficient time for the block production? &#127968; 
+            Using the same account you used to upload? 
+          </p>
+        </div>
+        
         <!-- Contract Owner DISPLAY -->
         <div class="contractOwner container text-lg-left text-center py-md-11">
           <h3 class="display-4 mb-2 mb-md-6 text-center">Contract Owner Playground</h3>
@@ -1235,6 +1237,29 @@
           </div>
           <span class="visually-hidden text-primary-desat font-size-lg font-weight-bold">Adding to blockchain...</span>
         </div>
+
+        <!-- Escrow Buyer Display -->
+        <div class="escrowBuyer container text-lg-left text-center py-md-11">
+          <h3 class="display-3 mb-2 mb-md-6 text-center">Welcome Escrow Participant</h3>
+          <p class="font-size-lg text-center"><strong>Congrats</strong> for being in escrow. Here are a few items that 
+            we believe could be helpful to know:</p>
+            <ul>
+              <li>As a <strong>seller</strong>, you have <strong>10 days</strong> to complete and submit deed to transfer ownership. 
+                Click the "Upload" link on the top menu for more information.</li>
+              <li>Once seller is done, <strong>buyer</strong>, you will have <strong>3 days</strong> to review and verify seller's submission. 
+                Failure to complete the taks within set time period will automatically approve submission and complete transfer.</li>
+                <ol>
+                  <li><strong>All good?</strong> Click <u>Confirm</u> button to complete transaction.</li>
+                  <li><strong>Wrong document or incorrect information?</strong> <u>Request Review</u> button raises flag that there are issues. 
+                    Seller gets additional <strong>3 days</strong> to resubmit.</li>
+                </ol>
+              <li>If the seller fails to successfully complete their task within aloted time, buyer can request refund.</li>
+              <li><strong>Changed your mind?</strong> Click <u>Cancel</u> button below. Either party may request cancellation at any time after 
+                paying the cancellation fee (the harmed party gets the portion of the fee).</li>
+            </ul>
+            <br>
+            <div id="escrowBuyerDisplay"></div>
+        </div> 
 
         <!-- Asset Owner DISPLAY -->
         <div class="houseDisplay text-lg-left">
@@ -2952,7 +2977,36 @@
         </div>
       </div>
 
-      <!-- Escrow Info Modal -->
+      <!-- House ID Input Modal
+      <div class="modal fade bd-example-modal-lg" id="inputHouseId" tabindex="-1" role="dialog" aria-labelledby="myLargeSaleModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="row justify-content-center" align="center">
+                      <div class="col-lg-6 p-1">
+                        <input class="form-control" id="houseId" placeholder="Enter House Id">
+                      </div>
+                      <div class="col-lg-4 p-1">
+                        <button class="btn btn-primary light-b-shadow" id="getEscrowBtn"><b>Get Escrow Info</b></button>
+                      </div>                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>  -->
+
+      <!-- NOT USING AT THE MOMENT!!! Escrow Info Modal -->
       <div class="modal fade" id="escrowInfoModal" tabindex="-1" role="dialog" aria-labelledby="escrowInfo" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
@@ -2983,7 +3037,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> 
 
       <!-- Add/Remove Tokens Modal -->
       <div class="modal fade bd-example-modal-lg" id="tokenInputModal" tabindex="-1" role="dialog" aria-labelledby="myLargeTokenModal" aria-hidden="true">

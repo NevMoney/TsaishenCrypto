@@ -26,6 +26,7 @@ contract Storage {
     // marketplace mapping
     mapping (address => address) availableOracles;
     mapping(uint256 => Offer) internal offerDetails;
+    mapping(address => Escrow) escrowByUser;
     // marketplace array
     Offer [] offers;
     // escrow options

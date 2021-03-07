@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xB9bdBAEc07751F6d54d19A6B9995708873F3DE18";
-var houseTokenAddress = "0x4bf3A7dFB3b76b5B3E169ACE65f888A4b4FCa5Ee";
-var marketplaceAddress = "0xFcCeD5E997E7fb1D0594518D3eD57245bB8ed17E";
+var tsaishenUsersAddress = "0x4D32ECeC25d722C983f974134d649a20e78B1417";
+var houseTokenAddress = "0x0B6fc157C83a9A5a64776E2183959f75180eFF27";
+var marketplaceAddress = "0x970e1d481CEDbeaeFE776275F0d1b4E1B301bB3b";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -423,41 +423,91 @@ async function escrowBuy(id, price, token) {
   try {
     let txInfo = await marketplaceInstance.methods.buyHouseWithEscrow(token, id).send({ from: user, value: price });
     console.log("escrowBuy txInfo", txInfo);
+    appendEscrowButtons(id);
+    goToPortfolio();
   }
   catch (err) {
     console.log(err);
   }
 }
 
-// for individual escrow to get info
-async function houseEscrowInfo(id) {
-  let houseEscrow = await marketplaceInstance.methods.escrowInfo(id).call();
-  console.log(houseEscrow);
-
-  showEscrowInfo(houseEscrow.seller, houseEscrow.buyer, houseEscrow.state, houseEscrow.amount, houseEscrow.timelock);
+async function appendEscrowButtons(id) {
+  $("#escrowBuyerDisplay").append(
+    `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo(${id})"><i class="fas fa-info"></i> Escrow</div>
+    <div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}">Confirm <i class="fas fa-envelope-open"></i></div>
+    <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}">Request Review <i class="fas fa-search"></i></div>
+    <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>
+    <div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}">Cancel <i class="fas fa-file-signature"></i></div>
+    <div id="userEscrowInfoDisplay"></div>
+    <div class="table table-responsive" id="userCheckEscrowDisplayTable"></div>`
+  );
 }
 
-async function showEscrowInfo(seller, buyer, state, amount, time) {
+async function getEscrowUser() {
+  let userInfo = await usersInstance.methods.getUserInfo(user).call();
+  console.log("userInfo", userInfo);
+  let userHomes = userInfo.houses;
+  console.log("userHomes", userHomes);
+  for (i = 0; i < userHomes.length; i++) {
+    let homes = userHomes[i].toString();
+    let id = homes.substr(26);
+    // console.log("id", id);
+    let escrow = await marketplaceInstance.methods.escrowInfo(id).call();
+    appendEscrowButtons(id);
+    if (user === escrow.buyer || user === escrow.seller) {
+      $(".escrowBuyer").show();
+    } else {
+      $(".escrowBuyer").hide();
+    }
+    return homes;
+  }
+}
+
+
+// for individual escrow to get info
+async function houseEscrowInfo(id) {
+  // getEscrowUser();
+  let escrow = await marketplaceInstance.methods.escrowInfo(id).call();
+  console.log(escrow);
+  if (user === escrow.buyer || user === escrow.seller) {
+    $(".escrowBuyer").show();
+  } else {
+    $(".escrowBuyer").hide();
+  }
+  showEscrowInfo(id, escrow.seller, escrow.buyer, escrow.state, escrow.amount, escrow.timelock);
+}
+
+async function showEscrowInfo(id, seller, buyer, state, amount, time) {
   let checkRefund = await marketplaceInstance.methods.refundAllowed(id).call();
   let checkWithdrawal = await marketplaceInstance.methods.withdrawalAllowed(id).call();
   let escrowDate = new Date(time * 1000).toUTCString();
-  $("#escrowInfoDisplay").append(
+  amount = web3.utils.fromWei(amount);
+  
+  if (state == 0) {
+    state = "Active";
+  } else if (state == 1) {
+    state = "Refunding";
+  } else if (state == 2) {
+    state = "Closed";
+  }
+
+  $("#userEscrowInfoDisplay").append(
     `<table class="table">
       <tbody>
         <tr>
-          <td>Seller: ${seller}</td>
+          <td><b>Seller Address:</b> ${seller}</td>
+          <td><b>Buyer Address:</b> ${buyer}</td>
         </tr>
         <tr>
-          <td>Buyer: ${buyer}</td>
+          <td><b>Escrow Amount:</b> ${amount}</td>  
+          <td><b>Escrow State:</b> ${state}</td>
         </tr>
         <tr>
-          <td>Escrow Amount: ${amount}</td>  
-          <td>Escrow State: ${state}</td>
-          <td>Escrow State Ending: ${escrowDate}</td>
+          <td><b>Refund permitted currently?</b> ${checkRefund}</td>
+          <td><b>Withdrawals permited currently?</b> ${checkWithdrawal}</td>
         </tr>
         <tr>
-          <td>Can I request refund right now? ${checkRefund}</td>
-          <td>Can I withdraw funds right now? ${checkWithdrawal}</td>
+          <td><b>Current State End Date:</b> ${escrowDate}</td>
         </tr>
       </tbody>
     </table>`

@@ -10,56 +10,11 @@ $(document).ready(async () => {
 });  
 
 $(".marketLink").on("click", function () {
-    $("#upload-container").hide();
-    $("#deed-container").hide();
-    $("#homePage").hide();
-    $("#upload-what").hide();
-    $("#portfolio").hide();
-    $("#learnMore").hide();
-    $("#aboutPage").hide();
-    $("#escrowPage").hide();
-
-    $("#blockLink").removeClass("active");
-    $("#portfolioLink").removeClass("active");
-    $("#homeLink").removeClass("active");
-  
-    $("#marketLink").addClass("active");
-    $("#market-container").show();
-    
-    $("#tokenAlert").hide();
-    $("#tokenAlert2").hide();
-
     goToInventory();
 });
   
 $("#portfolioLink").on("click", function () {
-    $("#upload-container").hide();
-    $("#market-container").hide();
-    $("#homePage").hide();
-    $("#deed-container").hide();
-    $("#upload-what").hide();
-    $("#learnMore").hide();
-    $("#aboutPage").hide();
-    $("#escrowPage").hide();
-
-    $("#blockLink").removeClass("active");
-    $("#marketLink").removeClass("active");
-    $("#homeLink").removeClass("active");
-
-    $("#portfolioLink").addClass("active");
-    $("#portfolio").show();
-
-    $("#houseDiv").empty();
-    $("#houseDivSale").empty();
-    $(".portfolioDisplay").empty();
-
-    if (user === contractOwnerAddress) {
-        $(".contractOwner").show();
-    } else {
-        $(".contractOwner").hide();
-    }
-    
-    getHouses();   
+    goToPortfolio();
 });
 
 $(".blockLink").on("click", function () {
@@ -288,7 +243,8 @@ function goToPortfolio() {
         $(".contractOwner").hide();
     }
     
-    getHouses();   
+    getHouses();
+    getEscrowUser();
 }
 
 
