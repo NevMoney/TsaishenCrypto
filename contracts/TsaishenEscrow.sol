@@ -158,6 +158,14 @@ contract TsaishenEscrow is Ownable, Storage{
         emit Withdrawn("Funds transferred to seller.", _seller, paymentToSeller);
     }
 
+    function _close(uint256 _tokenId) internal {
+        require(escrowById[_tokenId].state == State.Active, "TE: Must be active.");
+        escrowById[_tokenId].state = State.Closed;
+        _extendTimelock(_tokenId);
+
+        emit RefundsClosed("Refund closed.", escrowById[_tokenId].buyer, _tokenId);
+    }  
+
     // -- onlyOwner --
     function _cancelTimelock(uint256 _tokenId) internal onlyOwner {
         escrowById[_tokenId].timelock = 0;
@@ -165,14 +173,6 @@ contract TsaishenEscrow is Ownable, Storage{
 
     function _resetState(uint256 _tokenId) internal onlyOwner {
         escrowById[_tokenId].state = State.Active;
-    }  
-
-    function _close(uint256 _tokenId) internal onlyOwner {
-        require(escrowById[_tokenId].state == State.Active, "TE: Must be active.");
-        escrowById[_tokenId].state = State.Closed;
-        _extendTimelock(_tokenId);
-
-        emit RefundsClosed("Refund closed.", escrowById[_tokenId].buyer, _tokenId);
     }  
 
 }

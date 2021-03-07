@@ -210,7 +210,7 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
                     
       $(".portfolioDisplay").append(
         `<tr>
-          <td><img width=250px src=${imageUrl}>
+          <td id="propertyImage${id}"><img width=250px src=${imageUrl}>
             <br><br>${button}</td>
           <td>${description}</td>
           <td><strong>Address:</strong> ${address}
@@ -230,7 +230,7 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
         </tr>
         `
       )
-
+      let inEscrow = true;
       // top part if(!isMarketplace) is irrelevant -- buttons always display
       if (!isMarketplace) {
         $("#houseDisplay").append(button);
@@ -239,18 +239,36 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
         $(`#selectSaleBtn${id}`).show();
       }
       else {
-          $("#houseSale").append(button);
-          $(`#selectSaleBtn${id}`).hide();
+        $("#houseSale").append(button);
+        $(`#selectSaleBtn${id}`).hide();
+        
     
           if (owner === user) {
+            $(`#buyBtn${id}`).hide();
+            $(`#cancelBtn${id}`).show();
+
+            if (inEscrow) {
               $(`#buyBtn${id}`).hide();
-              $(`#cancelBtn${id}`).show();
+              $(`#cancelBtn${id}`).hide();
+              $(`#propertyImage${id}`).addClass("inEscrow");
+              $(`#propertyImage${id}`).append("IN ESCROW");
+            }
           }
           else {
-              $(`#buyBtn${id}`).show();
+            $(`#buyBtn${id}`).show();
+            $(`#cancelBtn${id}`).hide();
+            
+            if (inEscrow) {
+              $(`#buyBtn${id}`).hide();
               $(`#cancelBtn${id}`).hide();
+              $(`#propertyImage${id}`).addClass("inEscrow");
+              $(`#propertyImage${id}`).append("IN ESCROW");
+            }
           }
       }
+
+      
+
     });
   });
 }
@@ -446,18 +464,28 @@ async function fetchEscrowInfo() {
     $("#portfolioTop").show();
   }
   $("#escrowBuyerDisplay").empty();
-  appendEscrowButtons(escrow.tokenId);
+  appendEscrowButtons(escrow.tokenId, escrow.buyer);
 }
 
-async function appendEscrowButtons(id) {
+async function appendEscrowButtons(id, buyer) {
   $("#escrowBuyerDisplay").append(
     `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo()"><i class="fas fa-info"></i> Escrow</div>
     <div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}" onclick="deedConfirm(${id})">Confirm <i class="fas fa-envelope-open"></i></div>
-    <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}">Request Review <i class="fas fa-search"></i></div>
+    <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}" onclick="requestReview(${id})">Request Review <i class="fas fa-search"></i></div>
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>
-    <div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}">Cancel <i class="fas fa-file-signature"></i></div>
+    <div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}" onclick="cancelEscrow(${id})">Cancel <i class="fas fa-file-signature"></i></div>
     <div id="userEscrowInfoDisplay"></div>`
   );
+
+  if (user == buyer) {
+    $(`#reviewRequestBtn${id}`).show();
+    $(`#buyerVerifyBtn${id}`).show();
+    $(`#refundBtn${id}`).show();
+  } else {
+    $(`#reviewRequestBtn${id}`).hide();
+    $(`#buyerVerifyBtn${id}`).hide();
+    $(`#refundBtn${id}`).hide();
+  }
 }
 
 // for individual escrow to get info
@@ -515,6 +543,29 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
 async function deedConfirm(id) {
   try {
     await marketplaceInstance.methods.buyerVerify(id).send({ from: user });
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+// for buyer/seller to cancel escrow
+async function cancelEscrow(id) {
+  let penalty = web3.utils.toWei("2", "ether");
+  try {
+    let cancelHash = await marketplaceInstance.methods.cancelEscrowSale(id).send({ from: user, value: penalty });
+    console.log("cancel escrow hash", cancelHash);
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+// for buyer to request review
+async function requestReview(id) {
+  try {
+    let reviewHash = await marketplaceInstance.methods.buyerReviewRequest(id).send({ from: user });
+    console.log("review request hash", reviewHash);
   }
   catch (err) {
     console.log(err);
