@@ -21,18 +21,40 @@ contract TsaishenEscrow is Ownable, Storage{
     uint256 fee = 3;
 
      // *** GETTER ***
-    function escrowInfo(uint256 tokenId) public view returns(
+    function escrowInfo(uint256 _tokenId) public view returns(
+        IERC20 token,
         address seller, 
         address buyer, 
         State state, 
         uint256 amount, 
-        uint256 timelock){
+        uint256 timelock,
+        uint256 tokenId){
         return (
-            escrowById[tokenId].seller, 
-            escrowById[tokenId].buyer, 
-            escrowById[tokenId].state, 
-            escrowById[tokenId].amount, 
-            escrowById[tokenId].timelock);
+            escrowById[_tokenId].token,
+            escrowById[_tokenId].seller, 
+            escrowById[_tokenId].buyer, 
+            escrowById[_tokenId].state, 
+            escrowById[_tokenId].amount, 
+            escrowById[_tokenId].timelock,
+            escrowById[_tokenId].tokenId);
+    }
+
+    function getEscrowByBuyer(address _buyer) public view returns(
+        IERC20 token,
+        address seller, 
+        address buyer, 
+        State state, 
+        uint256 amount, 
+        uint256 timelock,
+        uint256 tokenId){
+        return (
+            escrowByBuyer[_buyer].token,
+            escrowByBuyer[_buyer].seller, 
+            escrowByBuyer[_buyer].buyer, 
+            escrowByBuyer[_buyer].state, 
+            escrowByBuyer[_buyer].amount, 
+            escrowByBuyer[_buyer].timelock,
+            escrowByBuyer[_buyer].tokenId);
     }
 
     function sellerDeposits(uint256 tokenId) public view returns (address, uint256) {  
@@ -63,8 +85,9 @@ contract TsaishenEscrow is Ownable, Storage{
         // transfer funds from buyer
         _token.universalTransferFromSenderToThis(_amount);
 
-        Escrow memory _escrow = Escrow(_token, payable(_seller), payable(_buyer), State.Active, _amount, now + _TIMELOCK);
+        Escrow memory _escrow = Escrow(_token, payable(_seller), payable(_buyer), State.Active, _amount, now + _TIMELOCK, _tokenId);
         escrowById[_tokenId] = _escrow;
+        escrowByBuyer[_buyer] = _escrow;
 
         emit Deposited("Funds deposited in escrow.", _seller, _amount);
     }

@@ -433,7 +433,7 @@ async function escrowBuy(id, price, token) {
 
 async function appendEscrowButtons(id) {
   $("#escrowBuyerDisplay").append(
-    `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo(${id})"><i class="fas fa-info"></i> Escrow</div>
+    `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo()"><i class="fas fa-info"></i> Escrow</div>
     <div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}">Confirm <i class="fas fa-envelope-open"></i></div>
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}">Request Review <i class="fas fa-search"></i></div>
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>
@@ -443,41 +443,19 @@ async function appendEscrowButtons(id) {
   );
 }
 
-async function getEscrowUser() {
-  let userInfo = await usersInstance.methods.getUserInfo(user).call();
-  console.log("userInfo", userInfo);
-  let userHomes = userInfo.houses;
-  console.log("userHomes", userHomes);
-  for (i = 0; i < userHomes.length; i++) {
-    let homes = userHomes[i].toString();
-    let id = homes.substr(26);
-    // console.log("id", id);
-    let escrow = await marketplaceInstance.methods.escrowInfo(id).call();
-    appendEscrowButtons(id);
-    if (user === escrow.buyer || user === escrow.seller) {
-      $(".escrowBuyer").show();
-    } else {
-      $(".escrowBuyer").hide();
-    }
-    return homes;
-  }
-}
-
-
 // for individual escrow to get info
-async function houseEscrowInfo(id) {
-  // getEscrowUser();
-  let escrow = await marketplaceInstance.methods.escrowInfo(id).call();
-  console.log(escrow);
+async function houseEscrowInfo() {
+  let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
+  console.log("escrowByUser", escrow);
   if (user === escrow.buyer || user === escrow.seller) {
     $(".escrowBuyer").show();
   } else {
     $(".escrowBuyer").hide();
   }
-  showEscrowInfo(id, escrow.seller, escrow.buyer, escrow.state, escrow.amount, escrow.timelock);
+  showEscrowInfo(escrow.tokenId, escrow.seller, escrow.buyer, escrow.state, escrow.amount, escrow.timelock, escrow.token);
 }
 
-async function showEscrowInfo(id, seller, buyer, state, amount, time) {
+async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
   let checkRefund = await marketplaceInstance.methods.refundAllowed(id).call();
   let checkWithdrawal = await marketplaceInstance.methods.withdrawalAllowed(id).call();
   let escrowDate = new Date(time * 1000).toUTCString();
@@ -491,6 +469,14 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time) {
     state = "Closed";
   }
 
+  if (token == ethAddress) {
+    token = "ETH";
+  } else if (token == daiAddress) {
+    token = "DAI";
+  } else if (token == usdcAddress) {
+    token = "USDC";
+  }
+
   $("#userEscrowInfoDisplay").append(
     `<table class="table">
       <tbody>
@@ -499,7 +485,7 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time) {
           <td><b>Buyer Address:</b> ${buyer}</td>
         </tr>
         <tr>
-          <td><b>Escrow Amount:</b> ${amount}</td>  
+          <td><b>Escrow Amount:</b> ${amount} ${token}</td>  
           <td><b>Escrow State:</b> ${state}</td>
         </tr>
         <tr>

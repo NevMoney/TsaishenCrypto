@@ -26,7 +26,7 @@ contract Storage {
     // marketplace mapping
     mapping (address => address) availableOracles;
     mapping(uint256 => Offer) internal offerDetails;
-    mapping(address => Escrow) escrowByUser;
+    mapping(address => Escrow) escrowByBuyer;
     // marketplace array
     Offer [] offers;
     // escrow options
@@ -55,6 +55,7 @@ contract Storage {
         State state;
         uint256 amount;
         uint256 timelock;
+        uint256 tokenId;
     }
 
     struct Offer {
