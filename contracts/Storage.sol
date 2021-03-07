@@ -62,7 +62,6 @@ contract Storage {
         address payable seller;
         uint256 price;
         uint256 income;
-        uint256 loan;
         uint256 index;
         uint256 tokenId;
         OfferState offerstate;

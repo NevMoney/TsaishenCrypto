@@ -102,14 +102,14 @@ contract TsaishenEscrow is Ownable, Storage{
         uint256 _paymentToProducer = 1 ether;
         uint256 _paymentToHarmedParty = 1 ether;
 
-        require(escrowById[_tokenId].token.universalTransfer(feeRecipient, _paymentToProducer));
-        require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund));
+        escrowById[_tokenId].token.universalTransfer(feeRecipient, _paymentToProducer);
+        escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund);
 
         if(msg.sender == escrowById[_tokenId].buyer){
-            require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, _paymentToHarmedParty));
+            escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, _paymentToHarmedParty);
         }
         else {
-            require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _paymentToHarmedParty));
+            escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _paymentToHarmedParty);
         }
     }
 
@@ -134,7 +134,7 @@ contract TsaishenEscrow is Ownable, Storage{
         escrowById[_tokenId].amount = 0;
 
         // refund buyer
-        require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund));
+        escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].buyer, _refund);
 
         // return house to seller done in marketplace
 
@@ -160,10 +160,10 @@ contract TsaishenEscrow is Ownable, Storage{
         escrowById[_tokenId].amount = 0;
         
         // transfer fee to producer
-        require(escrowById[_tokenId].token.universalTransfer(_feeRecipient, transactionFee));
+        escrowById[_tokenId].token.universalTransfer(_feeRecipient, transactionFee);
 
         // transfer proceeds to seller
-        require(escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, paymentToSeller));
+        escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, paymentToSeller);
 
         // transfer house to buyer done in marketplace
 

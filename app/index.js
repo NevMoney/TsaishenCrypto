@@ -268,11 +268,11 @@ async function checkOffer(id) {
     console.log("checkOffer x", x);
     var price = x.price;
     var seller = x.seller;
-    var onSale = x.active;
-    var inEscrow = x.escrow;
+    var loan = x.loan;
+    var state = x.offerstate;
 
     price = web3.utils.fromWei(price);
-    var offer = { seller: seller, price: price, onSale: onSale };
+    var offer = { seller: seller, price: price, state: state };
     console.log("offer", offer);
     return offer;
   }
@@ -283,7 +283,7 @@ async function checkOffer(id) {
 
 async function sellCryptoHouse(id) {
   const offer = await checkOffer(id);
-  if (offer.onSale) return alert("This house is already listed for sale.");
+  if (offer.state != 0) return alert("This asset is already listed.");
 
   var price = $("#housePrice").val();
   const { BN } = web3.utils;
@@ -309,6 +309,7 @@ async function sellCryptoHouse(id) {
 
 async function getInventory() {
   try {
+    // perhaps we can call different function here!
     var arrayId = await marketplaceInstance.methods.getAllTokensOnSale().call();
     console.log("getInventory array: ", arrayId);
     for (i = 0; i < arrayId.length; i++){
@@ -316,7 +317,7 @@ async function getInventory() {
         const offer = await checkOffer(arrayId[i]);
         console.log("getInventory", offer, arrayId[i]);
 
-        if (offer.onSale) {
+        if (offer.state) {
           appendHouse(arrayId[i], offer.price, offer.seller);
         }
         
@@ -330,7 +331,7 @@ async function getInventory() {
 
 async function removeOffer(id) {
   const offer = await checkOffer(id);
-  if (!offer.onSale) return alert("Nothing to cancel. This house is not listed.");
+  if (!offer.state) return alert("Nothing to cancel. This house is not listed.");
   await marketplaceInstance.methods.removeOffer(id).send({ from: user });
   goToInventory();
 }

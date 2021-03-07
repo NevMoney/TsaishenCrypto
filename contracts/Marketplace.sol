@@ -81,7 +81,6 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         (address seller, 
         uint256 price, 
         uint256 income, 
-        uint256 loan, 
         uint256 index, 
         uint256 tokenId,
         OfferState offerstate) {
@@ -89,18 +88,18 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         (offerDetails[_tokenId].seller, 
         offerDetails[_tokenId].price, 
         offerDetails[_tokenId].income, 
-        offerDetails[_tokenId].loan, 
         offerDetails[_tokenId].index,
         offerDetails[_tokenId].tokenId,
         offerDetails[_tokenId].offerstate); 
     }
 
+    // may not need this function
     function getOfferState(uint256 tokenId) public view returns(OfferState){
         return offerDetails[tokenId].offerstate;
     }
     
     function getAllTokensOnSale() public view returns(uint256[] memory listOfOffers) {
-        uint256 forSaleList = offers.length;//this gives us the length of the offers array
+        uint256 forSaleList = offers.length;
 
         if(forSaleList == 0) {
             return new uint256[](0);
@@ -110,11 +109,10 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
             uint256 offerId;
 
             for(offerId = 0; offerId < forSaleList; offerId++)
-                if(offers[offerId].offerstate == OfferState.Active){
+                if(offers[offerId].offerstate == OfferState.Active || offers[offerId].offerstate == OfferState.Escrow){
                     result[offerId] = offers[offerId].tokenId;
                 }
             return result;
-
         }
     }
 
@@ -132,18 +130,15 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     function sellHouse(uint256 price, uint256 tokenId) public nonReentrant {
         require(_ownsHouse(msg.sender, tokenId), "Mp: Not authorized.");
         require(offerDetails[tokenId].offerstate == OfferState.Dormant, "Mp: Already active.");
-        // comment this out for local testing
         require(_houseToken.isApprovedForAll(msg.sender, address(this)), "Mp: Not approved.");
 
-        // get income amount from houseToken
+        // get income from houseToken
         ( , uint256 income, ) = _houseToken.getHouse(tokenId);
 
-        //create offer by inserting items into the array
         Offer memory _offer = Offer({
             seller: msg.sender,
             price: price,
             income: income,
-            loan: 0,
             offerstate: OfferState.Active,
             tokenId: tokenId,
             index: offers.length
@@ -195,7 +190,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         token.universalTransfer(offer.seller, cryptoHousePrice.sub(houseTransactionFee));
         
         // transfer house to buyer
-        _houseToken.transferFrom(offer.seller, msg.sender, tokenId);
+        _houseToken.safeTransferFrom(offer.seller, msg.sender, tokenId);
 
         // make offer inactive and take off market
         offers[offer.index].offerstate = OfferState.Dormant;
@@ -206,7 +201,8 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         _tsaishenUsers.addHouseToUser(msg.sender, tokenId);
         _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
 
-        // remove from mapping to prevent double sale
+        // remove from mapping/array
+        delete offers[offer.index];
         delete offerDetails[tokenId];
         emit MarketTransaction("House purchased", msg.sender, tokenId);
     }
@@ -233,10 +229,9 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     }
 
     // -- ESCROW MANAGEMENT --
-    function refundEscrow(uint256 tokenId) public {
+    function refundEscrow(uint256 tokenId) public payable nonReentrant{
         require(msg.sender == escrowById[tokenId].buyer || msg.sender == escrowById[tokenId].seller || msg.sender == owner(), "Mp: Not authorized.");
         require(now > escrowById[tokenId].timelock, "TM: Timelocked.");
-        // require(offerDetails[tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow.");
 
         if(now >= escrowById[tokenId].timelock){
             Offer storage offer = offerDetails[tokenId];
@@ -261,7 +256,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     }    
 
     // buyer to verifies receipt and escrow transfers complete
-    function buyerVerify(uint256 tokenId) public nonReentrant {
+    function buyerVerify(uint256 tokenId) public payable nonReentrant {
         require(offerDetails[tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow.");
         Offer storage offer = offerDetails[tokenId];
         
@@ -274,7 +269,8 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
         _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
 
-        //remove token from the mapping
+        //remove from the array/mapping
+        delete offers[offer.index];
         delete offerDetails[tokenId];  
 
         emit MarketTransaction("Buyer verified, house SOLD.", offer.seller, tokenId);
@@ -291,7 +287,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("3-day document update request issued.", escrowById[tokenId].buyer, tokenId);
     }
 
-    function finalizeEscrowTransaction(uint256 tokenId) public onlyOwner {
+    function finalizeEscrowTransaction(uint256 tokenId) public payable onlyOwner {
         require(offerDetails[tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow.");
         Offer storage offer = offerDetails[tokenId];
 
@@ -307,7 +303,8 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
         _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);       
 
-        //remove token from the mapping
+        //remove from array/mapping
+        delete offers[offer.index];
         delete offerDetails[tokenId];  
 
         emit MarketTransaction("House SOLD.", offer.seller, tokenId);
@@ -317,7 +314,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         require(msg.sender == escrowById[tokenId].buyer || msg.sender == escrowById[tokenId].seller, "Mp: Not authorized.");
         require(offerDetails[tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow.");
         Offer storage offer = offerDetails[tokenId];
-        balance.add(msg.value);
+        balance.add(msg.value);//don't know that i need this
 
         _cancelEscrowSale(tokenId);
         offers[offer.index].offerstate = OfferState.Active;
@@ -325,10 +322,9 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
 
         emit MarketTransaction("Escrow Cancelled.", msg.sender, tokenId);
     }   
-
+    
     //*** INTERNAL ***
     function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool) {
         return (_houseToken.ownerOf(_tokenId) == _address);
     }
-
 }
