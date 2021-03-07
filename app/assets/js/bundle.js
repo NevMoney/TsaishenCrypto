@@ -33,10 +33,10 @@
 
       function validateCheckbox() {
         if ($("#certification").prop("checked") == true) {
-            return "Ownership certified.";
+            return "Owner certified ownership.";
         }
         else if ($("#certification").prop("checked") == false){
-            return "CAUTION: Faled to certify ownership.";
+            return "CAUTION: Owner failed to certify ownership.";
         }
       }
 
