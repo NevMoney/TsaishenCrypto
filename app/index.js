@@ -352,7 +352,11 @@ async function getInventory() {
 
 async function removeOffer(id) {
   const offer = await checkOffer(id);
-  if (!offer.state) return alert("Nothing to cancel. This house is not listed.");
+  if (offer.state == 0) {
+    return alert("Nothing to cancel. This property is not listed.");
+  } else if (offer.state == 2) {
+    return alert("You can't cancel this listing. This property is in escrow. To cancel escrow, please visit Portfolio Page and cancel there.");
+  }
   await marketplaceInstance.methods.removeOffer(id).send({ from: user });
   goToInventory();
 }
