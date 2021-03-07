@@ -26,7 +26,8 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     mapping (address => mapping (address => uint256)) private _allowances;
 
     // *** CONSTRUCTOR ***
-    constructor(address _userContractAddress, address payable creator) public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "ipfs://") {
+    // while opensea.io says use "ipfs://" as baseUri it cannot be read outside Brave browser for now, thus creating challenges
+    constructor(address _userContractAddress, address payable creator) public ERC721PresetMinterPauserAutoId("Tsaishen Real Estate", "HOUS", "https://ipfs.io/ipfs/") {
         setUserContract(_userContractAddress);
         _creator = creator;
     }
@@ -64,7 +65,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
         _tsaishenUsers = TsaishenUsers(_userContractAddress);
     }
 
-    function withdrawAll() public onlyOwner nonReentrant{
+    function withdrawAll() public payable onlyOwner nonReentrant{
         msg.sender.transfer(address(this).balance);
     }
 

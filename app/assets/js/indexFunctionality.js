@@ -3,46 +3,18 @@ $(document).ready(async () => {
     $("#deed-container").hide();
     $("#upload-container").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
 });  
 
 $(".marketLink").on("click", function () {
-    $("#upload-container").hide();
-    $("#deed-container").hide();
-    $("#homePage").hide();
-    $("#upload-what").hide();
-    $("#portfolio-container").hide();
-    $("#learnMore").hide();
-    $("#aboutPage").hide();
-    $("#escrowPage").hide();
-
-    $("#blockLink").removeClass("active");
-    $("#portfolioLink").removeClass("active");
-    $("#homeLink").removeClass("active");
-  
-    $("#marketLink").addClass("active");
-    $("#market-container").show();
+    goToInventory();
 });
   
 $("#portfolioLink").on("click", function () {
-    $("#upload-container").hide();
-    $("#market-container").hide();
-    $("#homePage").hide();
-    $("#deed-container").hide();
-    $("#upload-what").hide();
-    $("#learnMore").hide();
-    $("#aboutPage").hide();
-    $("#escrowPage").hide();
-
-    $("#blockLink").removeClass("active");
-    $("#marketLink").removeClass("active");
-    $("#homeLink").removeClass("active");
-
-    $("#portfolioLink").addClass("active");
-    $("#portfolio-container").show();
+    goToPortfolio();
 });
 
 $(".blockLink").on("click", function () {
@@ -50,7 +22,7 @@ $(".blockLink").on("click", function () {
     $("#deed-container").hide();
     $("#homePage").hide();
     $("#upload-container").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -68,7 +40,7 @@ $("#homeLink").on("click", function () {
     $("#deed-container").hide();
     $("#upload-container").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -87,11 +59,12 @@ $(".uploadLinkBtn").on("click", function () {
     $("#deed-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
     $("#houseUploadedMsg").hide();
+    $("#newUserMsg").hide();
 
     $("#upload-container").show();    
 });
@@ -101,7 +74,7 @@ $(".deedLinkBtn").on("click", function () {
     $("#upload-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -114,7 +87,7 @@ $(".learnMoreBtn").on("click", function () {
     $("#upload-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#deed-container").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -127,7 +100,7 @@ $("#pricingBtn").on("click", function () {
     $("#upload-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#deed-container").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -140,7 +113,7 @@ $("#aboutLink").on("click", function () {
     $("#upload-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#deed-container").hide();
     $("#learnMore").hide();
     $("#escrowPage").hide();
@@ -153,7 +126,7 @@ $(".escrowLink").on("click", function () {
     $("#upload-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#deed-container").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
@@ -221,7 +194,7 @@ function goToInventory() {
     $("#deed-container").hide();
     $("#homePage").hide();
     $("#upload-what").hide();
-    $("#portfolio-container").hide();
+    $("#portfolio").hide();
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
@@ -235,48 +208,156 @@ function goToInventory() {
 
     $("#houseDiv").empty();
     $("#houseDivSale").empty();
+    $(".portfolioDisplay").empty();
+
+    $("#tokenAlert").hide();
+    $("#tokenAlert2").hide();
 
     getInventory();
 }
 
-//NOT WORKING!!!
-function validateCheckbox(){
-    if($("#certification").checked){
-        return true;
+function goToPortfolio() {
+    $("#upload-container").hide();
+    $("#market-container").hide();
+    $("#homePage").hide();
+    $("#deed-container").hide();
+    $("#upload-what").hide();
+    $("#learnMore").hide();
+    $("#aboutPage").hide();
+    $("#escrowPage").hide();
+
+    $("#blockLink").removeClass("active");
+    $("#marketLink").removeClass("active");
+    $("#homeLink").removeClass("active");
+
+    $("#portfolioLink").addClass("active");
+    $("#portfolio").show();
+
+    $("#houseDiv").empty();
+    $("#houseDivSale").empty();
+    $(".portfolioDisplay").empty();
+
+    if (user === contractOwnerAddress) {
+        $(".contractOwner").show();
+    } else {
+        $(".contractOwner").hide();
     }
-    return false;
+    
+    getHouses();
+    fetchEscrowInfo();
+    sellerEscrowInfo();
 }
+
+
+function certificationValidation() {
+    if ($("#certification").prop("checked") == false){
+      alert("WARNING: You have failed to certify ownership. Ownership certificaiton is shown to all. Please CANCEL upload, verify ownership, then proceed.");
+    }
+  }
+
+$("#file").on("click", function () {
+    certificationValidation();
+});
 
 var saleId;
 var salePrice;
+var saleToken;
     
 function selectHouseForSale(id) {
     saleId = id;
 }
 
 $("#sellBtn").on("click", function () {
-    sellHouse(saleId).then(() => {
+    sellCryptoHouse(saleId).then(() => {
         $("#sellHouseModal").modal("hide");
     });
 });
 
-function selectHouseToBuyWEth(id) {
+function selectHouseToBuy(id, price, token) {
     saleId = id;
-    checkOffer(saleId).then((offer) => {
-        salePrice = offer.price;
-        buyHomeInETH(saleId, salePrice);
-    });
+    console.log("selectHouse verification", id, price, token);
+    salePrice = web3.utils.toWei(price.toString());
+    saleToken = token;
+    console.log("selectHouseToBuy", saleId, salePrice, saleToken);
+    
+    displayPurchase(saleId, salePrice, saleToken);
 }
 
-function selectHouseToBuyWUsdc(id) {
-    saleId = id;
-    checkOffer(saleId).then((offer) => {
-        salePrice = offer.price;
-        buyHomeInUDSC(saleId, salePrice);
+$("#purchaseBtn").on("click", function () {
+    buyCryptoHouse(saleId, salePrice, saleToken).then(() => {
+        $("#buyHouseModal").modal("hide");
     });
-}
+});
+
+$("#escrowBuyBtn").on("click", function () {
+    escrowBuy(saleId, salePrice, saleToken).then(() => {
+        $("#buyHouseModal").modal("hide");
+    });
+});
 
 function cancelSale(id) {
     saleId = id;
     removeOffer(id);
 }
+
+// for owner to get all users
+$("#getAllUsersBtn").on("click", function () {
+    $("#ownerCloseBtn").show();
+    $("#userDisplayTable").empty();
+    getAllTsaishenUsers();
+});
+
+// for owner to get all escrow info
+$("#getEscrowInfoBtn").on("click", function () {
+    $("#ownerCloseBtn").show();
+    $("#escrowDisplayTable").empty();
+    getEscrowInfo();
+});
+
+$("#addTokenBtn").on("click", function () {
+    addNewToken().then(() => {
+        $("#tokenInputModal").modal("hide");
+    });
+});
+
+$("#removeTokenBtn").on("click", function () {
+    removeTokens().then(() => {
+        $("#tokenInputModal").modal("hide");
+    });
+});
+
+$("#balanceBtn").on("click", function () {
+    checkContractBalance(); 
+});
+
+$("#withdrawBtn").on("click", function () {
+    withdrawFunds(); 
+});
+
+$("#pauseBtn").on("click", function () {
+    pauseHouseTokenContract(); 
+});
+
+$("#unpauseBtn").on("click", function () {
+    unPauseHouseTokenContract(); 
+});
+
+$("#mintBtn").on("click", function () {
+    mintHouse(); 
+});
+
+$("#ownerCloseBtn").hide();
+
+$("#ownerCloseBtn").on("click", function () {
+    $("#balanceDisplay").hide();
+    $("#escrowDisplayTable").hide()
+    $("#ownerCloseBtn").hide();
+    $("#userDisplayTable").hide();
+})
+
+// for individual house escrow info
+$("#escrowInfoBtn").on("click", function () {
+    houseEscrowInfo().then(() => {
+        $("#escrowInfoModal").modal("show"); 
+    });
+});

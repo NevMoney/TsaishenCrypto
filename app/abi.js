@@ -34,6 +34,44 @@ var abi = {
             "internalType": "address",
             "name": "user",
             "type": "address"
+          }
+        ],
+        "name": "houseAdded",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          }
+        ],
+        "name": "houseDeleted",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
           },
           {
             "indexed": false,
@@ -1434,8 +1472,9 @@ var abi = {
         "inputs": [],
         "name": "withdrawAll",
         "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "stateMutability": "payable",
+        "type": "function",
+        "payable": true
       }
     ],
 
@@ -1492,19 +1531,19 @@ var abi = {
           {
             "indexed": false,
             "internalType": "string",
-            "name": "",
+            "name": "TxType",
             "type": "string"
           },
           {
             "indexed": false,
             "internalType": "address",
-            "name": "",
+            "name": "actor",
             "type": "address"
           },
           {
             "indexed": false,
             "internalType": "uint256",
-            "name": "",
+            "name": "tokenId",
             "type": "uint256"
           }
         ],
@@ -1609,37 +1648,17 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          }
-        ],
-        "name": "buyerDeposits",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
+            "name": "_tokenId",
             "type": "uint256"
           }
         ],
         "name": "escrowInfo",
         "outputs": [
+          {
+            "internalType": "contract IERC20",
+            "name": "token",
+            "type": "address"
+          },
           {
             "internalType": "address",
             "name": "seller",
@@ -1651,7 +1670,7 @@ var abi = {
             "type": "address"
           },
           {
-            "internalType": "enum TsaishenEscrow.State",
+            "internalType": "enum Storage.State",
             "name": "state",
             "type": "uint8"
           },
@@ -1664,6 +1683,11 @@ var abi = {
             "internalType": "uint256",
             "name": "timelock",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
           }
         ],
         "stateMutability": "view",
@@ -1673,17 +1697,17 @@ var abi = {
       {
         "inputs": [
           {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
+            "internalType": "address",
+            "name": "_buyer",
+            "type": "address"
           }
         ],
-        "name": "escrowState",
+        "name": "getEscrowByBuyer",
         "outputs": [
           {
-            "internalType": "enum TsaishenEscrow.State",
+            "internalType": "uint256",
             "name": "",
-            "type": "uint8"
+            "type": "uint256"
           }
         ],
         "stateMutability": "view",
@@ -1730,31 +1754,6 @@ var abi = {
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          }
-        ],
-        "name": "sellerDeposits",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
       },
       {
         "inputs": [
@@ -1841,11 +1840,6 @@ var abi = {
           },
           {
             "internalType": "uint256",
-            "name": "loan",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
             "name": "index",
             "type": "uint256"
           },
@@ -1855,9 +1849,29 @@ var abi = {
             "type": "uint256"
           },
           {
-            "internalType": "bool",
-            "name": "active",
-            "type": "bool"
+            "internalType": "enum Storage.OfferState",
+            "name": "offerstate",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "getOfferState",
+        "outputs": [
+          {
+            "internalType": "enum Storage.OfferState",
+            "name": "",
+            "type": "uint8"
           }
         ],
         "stateMutability": "view",
@@ -1866,7 +1880,7 @@ var abi = {
       },
       {
         "inputs": [],
-        "name": "getAllTokenOnSale",
+        "name": "getAllTokensOnSale",
         "outputs": [
           {
             "internalType": "uint256[]",
@@ -1955,8 +1969,9 @@ var abi = {
         ],
         "name": "buyHouse",
         "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "stateMutability": "payable",
+        "type": "function",
+        "payable": true
       },
       {
         "inputs": [
@@ -1973,8 +1988,9 @@ var abi = {
         ],
         "name": "buyHouseWithEscrow",
         "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "stateMutability": "payable",
+        "type": "function",
+        "payable": true
       },
       {
         "inputs": [
@@ -1986,8 +2002,9 @@ var abi = {
         ],
         "name": "refundEscrow",
         "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "stateMutability": "payable",
+        "type": "function",
+        "payable": true
       },
       {
         "inputs": [
@@ -2010,10 +2027,24 @@ var abi = {
             "type": "uint256"
           }
         ],
-        "name": "buyerVerify",
+        "name": "sellerComplete",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "buyerVerify",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function",
+        "payable": true
       },
       {
         "inputs": [
@@ -2038,34 +2069,9 @@ var abi = {
         ],
         "name": "finalizeEscrowTransaction",
         "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          }
-        ],
-        "name": "sellerWithdrawFunds",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          }
-        ],
-        "name": "buyerClaimRefund",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "stateMutability": "payable",
+        "type": "function",
+        "payable": true
       },
       {
         "inputs": [

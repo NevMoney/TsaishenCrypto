@@ -1,0 +1,1578 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Libs CSS -->
+    <link rel="stylesheet" href="./assets/fonts/Feather/feather.css">
+    <link rel="stylesheet" href="./assets/libs/@fancyapps/fancybox/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="./assets/libs/aos/dist/aos.css">
+    <link rel="stylesheet" href="./assets/libs/choices.js/public/assets/styles/choices.min.css">
+    <link rel="stylesheet" href="./assets/libs/flickity-fade/flickity-fade.css">
+    <link rel="stylesheet" href="./assets/libs/flickity/dist/flickity.min.css">
+    <link rel="stylesheet" href="./assets/libs/highlightjs/styles/vs2015.css">
+    <link rel="stylesheet" href="./assets/libs/jarallax/dist/jarallax.css">
+    <link rel="stylesheet" href="./assets/libs/quill/dist/quill.core.css" />
+    <link rel="stylesheet" href="./assets/css/myStyle.css" />
+
+    <!-- Map -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css" rel="stylesheet" />
+
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="./assets/css/theme.min.css">
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/4da3f1c584.js" crossorigin="anonymous"></script>
+
+    <link rel="shortcut icon" href="assets/img/Tsaishen Squares.png" />
+
+    <title>Tsaishen Crypto</title>
+
+  </head>
+  <body class="pt-10">
+
+    <!-- MODALS
+    ================================================== -->
+    <!-- Example -->
+    <div class="modal fade" id="modalExample" tabindex="-1" role="dialog" aria-labelledby="modalExampleTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+
+            <!-- Close -->
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+
+            <!-- Image -->
+            <div class="text-center">
+              <img src="./assets/img/illustrations/illustration-1.png" alt="..." class="img-fluid mb-3" style="width: 200px;">
+            </div>
+
+            <!-- Heading -->
+            <h2 class="font-weight-bold text-center mb-1" id="modalExampleTitle">
+              Schedule a demo with us
+            </h2>
+
+            <!-- Text -->
+            <p class="font-size-lg text-center text-muted mb-6 mb-md-8">
+              We can help you solve company communication.
+            </p>
+
+            <!-- Form -->
+            <form>
+              <div class="row">
+                <div class="col-12 col-md-6">
+
+                  <!-- First name -->
+                  <div class="form-label-group">
+                    <input type="text" class="form-control form-control-flush" id="registrationFirstNameModal" placeholder="First name">
+                    <label for="registrationFirstNameModal">First name</label>
+                  </div>
+
+                </div>
+                <div class="col-12 col-md-6">
+
+                  <!-- Last name -->
+                  <div class="form-label-group">
+                    <input type="text" class="form-control form-control-flush" id="registrationLastNameModal" placeholder="Last name">
+                    <label for="registrationLastNameModal">Last name</label>
+                  </div>
+
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-md-6">
+
+                  <!-- Email -->
+                  <div class="form-label-group">
+                    <input type="email" class="form-control form-control-flush" id="registrationEmailModal" placeholder="Email">
+                    <label for="registrationEmailModal">Email</label>
+                  </div>
+
+                </div>
+                <div class="col-12 col-md-6">
+
+                  <!-- Password -->
+                  <div class="form-label-group">
+                    <input type="password" class="form-control form-control-flush" id="registrationPasswordModal" placeholder="Password">
+                    <label for="registrationPasswordModal">Password</label>
+                  </div>
+
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+
+                  <!-- Submit -->
+                  <button class="btn btn-block btn-primary mt-3 lift">
+                    Request a demo
+                  </button>
+
+                </div>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signup: Horizontal  -->
+    <div class="modal fade" id="modalSignupHorizontal" tabindex="-1" role="dialog" aria-labelledby="modalSignupHorizontalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="card card-row">
+            <div class="row no-gutters">
+              <div class="col-12 col-md-6 bg-cover card-img-left" style="background-image: url(./assets/img/photos/photo-8.jpg);">
+
+                <!-- Image (placeholder) -->
+                <img src="./assets/img/photos/photo-8.jpg" alt="..." class="img-fluid d-md-none invisible">
+
+                <!-- Shape -->
+                <div class="shape shape-right shape-fluid-y svg-shim text-white d-none d-md-block">
+                  <svg viewbox="0 0 112 690" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M116 0H51v172C76 384 0 517 0 517v173h116V0z" fill="currentColor"/></svg>
+                </div>
+
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="card-body">
+
+                  <!-- Close -->
+                  <button type="button" class="modal-close close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+
+                  <!-- Heading -->
+                  <h2 class="mb-0 font-weight-bold text-center" id="modalSignupHorizontalTitle">
+                    Sign Up
+                  </h2>
+
+                  <!-- Text -->
+                  <p class="mb-6 text-center text-muted">
+                    Simplify your workflow in minutes.
+                  </p>
+
+                  <!-- Form -->
+                  <form class="mb-6">
+
+                    <!-- Email -->
+                    <div class="form-group">
+                      <label class="sr-only" for="modalSignupHorizontalEmail">
+                        Your email
+                      </label>
+                      <input type="email" class="form-control" id="modalSignupHorizontalEmail" placeholder="Your email">
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group mb-5">
+                      <label class="sr-only" for="modalSignupHorizontalPassword">
+                        Create a password
+                      </label>
+                      <input type="password" class="form-control" id="modalSignupHorizontalPassword" placeholder="Create a password">
+                    </div>
+
+                    <!-- Submit -->
+                    <button class="btn btn-block btn-primary" type="submit">
+                      Sign up
+                    </button>
+
+                  </form>
+
+                  <!-- Text -->
+                  <p class="mb-0 font-size-sm text-center text-muted">
+                    Already have an account? <a href="./signin-illustration.html">Log in</a>.
+                  </p>
+
+                </div>
+              </div>
+
+            </div> <!-- / .row -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signup: Vertical  -->
+    <div class="modal fade" id="modalSignupVertical" tabindex="-1" role="dialog" aria-labelledby="modalSignupVerticalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="card">
+
+            <!-- Close -->
+            <button type="button" class="modal-close close text-white" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+
+            <!-- Image -->
+            <img src="./assets/img/photos/photo-7.jpg" alt="..." class="card-img-top">
+
+            <!-- Shape -->
+            <div class="position-relative">
+              <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
+                <svg viewbox="0 0 2880 480" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M2160 0C1440 240 720 240 720 240H0v240h2880V0h-720z" fill="currentColor"/></svg>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="card-body">
+
+              <!-- Heading -->
+              <h2 class="mb-0 font-weight-bold text-center" id="modalSignupVerticalTitle">
+                Sign Up
+              </h2>
+
+              <!-- Text -->
+              <p class="mb-6 text-center text-muted">
+                Simplify your workflow in minutes.
+              </p>
+
+              <!-- Form -->
+              <form class="mb-6">
+
+                <!-- Email -->
+                <div class="form-group">
+                  <label class="sr-only" for="modalSignupVerticalEmail">
+                    Your email
+                  </label>
+                  <input type="email" class="form-control" id="modalSignupVerticalEmail" placeholder="Your email">
+                </div>
+
+                <!-- Password -->
+                <div class="form-group mb-5">
+                  <label class="sr-only" for="modalSignupVerticalPassword">
+                    Create a password
+                  </label>
+                  <input type="password" class="form-control" id="modalSignupVerticalPassword" placeholder="Create a password">
+                </div>
+
+                <!-- Submit -->
+                <button class="btn btn-block btn-primary" type="submit">
+                  Sign up
+                </button>
+
+              </form>
+
+              <!-- Text -->
+              <p class="mb-0 font-size-sm text-center text-muted">
+                Already have an account? <a href="./signin-illustration.html">Log in</a>.
+              </p>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signin: Horizontal  -->
+    <div class="modal fade" id="modalSigninHorizontal" tabindex="-1" role="dialog" aria-labelledby="modalSigninHorizontalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="card card-row">
+            <div class="row no-gutters">
+              <div class="col-12 col-md-6 bg-cover card-img-left" style="background-image: url(./assets/img/photos/photo-1.jpg);">
+
+                <!-- Image (placeholder) -->
+                <img src="./assets/img/photos/photo-1.jpg" alt="..." class="img-fluid d-md-none invisible">
+
+                <!-- Shape -->
+                <div class="shape shape-right shape-fluid-y svg-shim text-white d-none d-md-block">
+                  <svg viewbox="0 0 112 690" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M116 0H51v172C76 384 0 517 0 517v173h116V0z" fill="currentColor"/></svg>
+                </div>
+
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="card-body">
+
+                  <!-- Close -->
+                  <button type="button" class="modal-close close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+
+                  <!-- Heading -->
+                  <h2 class="mb-0 font-weight-bold text-center" id="modalSigninHorizontalTitle">
+                    Sign In
+                  </h2>
+
+                  <!-- Text -->
+                  <p class="mb-6 text-center text-muted">
+                    Simplify your workflow in minutes.
+                  </p>
+
+                  <!-- Form -->
+                  <form class="mb-6">
+
+                    <!-- Email -->
+                    <div class="form-group">
+                      <label class="sr-only" for="modalSigninHorizontalEmail">
+                        Your email
+                      </label>
+                      <input type="email" class="form-control" id="modalSigninHorizontalEmail" placeholder="Your email">
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group mb-5">
+                      <label class="sr-only" for="modalSigninHorizontalPassword">
+                        Enter your password
+                      </label>
+                      <input type="password" class="form-control" id="modalSigninHorizontalPassword" placeholder="Enter your password">
+                    </div>
+
+                    <!-- Submit -->
+                    <button class="btn btn-block btn-primary" type="submit">
+                      Sign in
+                    </button>
+
+                  </form>
+
+                  <!-- Text -->
+                  <p class="mb-0 font-size-sm text-center text-muted">
+                    Don't have an account yet? <a href="./signin-illustration.html">Sign up</a>.
+                  </p>
+
+                </div>
+              </div>
+
+            </div> <!-- / .row -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signup: Vertical  -->
+    <div class="modal fade" id="modalSigninVertical" tabindex="-1" role="dialog" aria-labelledby="modalSigninVerticalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="card">
+
+            <!-- Close -->
+            <button type="button" class="modal-close close text-white" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+
+            <!-- Image -->
+            <img src="./assets/img/photos/photo-21.jpg" alt="..." class="card-img-top">
+
+            <!-- Shape -->
+            <div class="position-relative">
+              <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
+                <svg viewbox="0 0 2880 480" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M2160 0C1440 240 720 240 720 240H0v240h2880V0h-720z" fill="currentColor"/></svg>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="card-body">
+
+              <!-- Heading -->
+              <h2 class="mb-0 font-weight-bold text-center" id="modalSigninVerticalTitle">
+                Sign In
+              </h2>
+
+              <!-- Text -->
+              <p class="mb-6 text-center text-muted">
+                Simplify your workflow in minutes.
+              </p>
+
+              <!-- Form -->
+              <form class="mb-6">
+
+                <!-- Email -->
+                <div class="form-group">
+                  <label class="sr-only" for="modalSigninVerticalEmail">
+                    Your email
+                  </label>
+                  <input type="email" class="form-control" id="modalSigninVerticalEmail" placeholder="Your email">
+                </div>
+
+                <!-- Password -->
+                <div class="form-group mb-5">
+                  <label class="sr-only" for="modalSigninVerticalPassword">
+                    Enter your password
+                  </label>
+                  <input type="password" class="form-control" id="modalSigninVerticalPassword" placeholder="Enter your password">
+                </div>
+
+                <!-- Submit -->
+                <button class="btn btn-block btn-primary" type="submit">
+                  Sign in
+                </button>
+
+              </form>
+
+              <!-- Text -->
+              <p class="mb-0 font-size-sm text-center text-muted">
+                Don't have an account yet? <a href="./signin-illustration.html">Sign up</a>.
+              </p>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example -->
+    <div class="modal fade" id="modalPayment" tabindex="-1" role="dialog" aria-labelledby="modalPaymentTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+
+            <!-- Close -->
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+
+            <!-- Heading -->
+            <h2 class="font-weight-bold text-center mb-1" id="modalPaymentTitle">
+              Add Payment
+            </h2>
+
+            <!-- Text -->
+            <p class="font-size-lg text-center text-muted mb-6 mb-md-8">
+              Simplify your workflow in minutes.
+            </p>
+
+            <!-- Form -->
+            <form>
+
+              <!-- Name -->
+              <div class="form-group">
+                <label for="modalPaymentName">Name on card</label>
+                <input class="form-control" id="modalPaymentName" type="text" placeholder="First Last">
+              </div>
+
+              <!-- Name -->
+              <div class="form-group">
+                <label for="modalPaymentNumbber">Card number</label>
+                <input class="form-control" id="modalPaymentNumbber" type="number" placeholder="4242 4242 4242 4242">
+              </div>
+
+              <!-- Name -->
+              <div class="form-group">
+                <label for="modalPaymentDate">Exp. Date</label>
+                <input class="form-control" id="modalPaymentDate" type="text" placeholder="03/2023">
+              </div>
+
+              <!-- Submit -->
+              <button class="btn btn-block btn-primary mt-3 lift">
+                Add Payment Method
+              </button>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <!-- NAVBAR
+    ================================================== -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-white border-bottom">
+      <div class="container-fluid">
+
+        <!-- Brand -->
+        <a class="navbar-brand" href="index.html">
+          <img src="./assets/img/Tsaishen.svg" class="navbar-brand-img" alt="Tsaishen">
+        </a>
+
+        <!-- Toggler -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Collapse -->
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+
+          <!-- Toggler -->
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fe fe-x"></i>
+          </button>
+
+          <!-- Navigation -->
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link active" id="homelink" href="index.html" >
+                Home
+              </a>
+            </li>
+            <li class="nav-item dropdown blockLink">
+              <a class="nav-link" id="blockLink" href="#" >
+                Upload
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link marketLink" id="marketLink" href="#" >
+                Marketplace
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="portfolioLink" href="#" >
+                Portfolio
+              </a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" id="servicesLink" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+                Services
+              </a>
+              <div class="dropdown-menu dropdown-menu-md" aria-labelledby="navbarDocumentation">
+                <div class="list-group list-group-flush">
+                  <a class="list-group-item" target="_blank" rel="noopener noreferrer" href="https://1dealaway.com">
+
+                    <!-- Icon -->
+                    <div class="icon icon-sm text-primary">
+                      <svg width="24" height="24" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><path d="M0 0h24v24H0z"/><path d="M8 3v.5A1.5 1.5 0 009.5 5h5A1.5 1.5 0 0016 3.5V3h2a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h2z" fill="#335EEA" opacity=".3"/><path d="M11 2a1 1 0 012 0h1.5a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-5a.5.5 0 01-.5-.5v-1a.5.5 0 01.5-.5H11z" fill="#335EEA"/><rect fill="#335EEA" opacity=".3" x="7" y="10" width="5" height="2" rx="1"/><rect fill="#335EEA" opacity=".3" x="7" y="14" width="9" height="2" rx="1"/></g></svg>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="ml-4">
+
+                      <!-- Heading -->
+                      <h6 class="font-weight-bold text-uppercase text-primary mb-0">
+                        Education <i class="fas fa-external-link-alt"></i>
+                      </h6>
+
+                      <!-- Text -->
+                      <p class="font-size-sm text-gray-700 mb-0">
+                        Real estate investor education
+                      </p>
+
+                    </div>
+
+                  </a>
+                  <a class="list-group-item" href="./docs/alerts.html">
+
+                    <!-- Icon -->
+                    <div class="icon icon-sm text-primary">
+                      <svg width="24" height="24" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><path d="M0 0h24v24H0z"/><rect fill="#335EEA" x="4" y="4" width="7" height="7" rx="1.5"/><path d="M5.5 13h4a1.5 1.5 0 011.5 1.5v4A1.5 1.5 0 019.5 20h-4A1.5 1.5 0 014 18.5v-4A1.5 1.5 0 015.5 13zm9-9h4A1.5 1.5 0 0120 5.5v4a1.5 1.5 0 01-1.5 1.5h-4A1.5 1.5 0 0113 9.5v-4A1.5 1.5 0 0114.5 4zm0 9h4a1.5 1.5 0 011.5 1.5v4a1.5 1.5 0 01-1.5 1.5h-4a1.5 1.5 0 01-1.5-1.5v-4a1.5 1.5 0 011.5-1.5z" fill="#335EEA" opacity=".3"/></g></svg>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="ml-4">
+
+                      <!-- Heading -->
+                      <h6 class="font-weight-bold text-uppercase text-primary mb-0">
+                        Deals <i class="fas fa-external-link-alt"></i>
+                      </h6>
+
+                      <!-- Text -->
+                      <p class="font-size-sm text-gray-700 mb-0">
+                        Find discounted deals
+                      </p>
+
+                    </div>
+
+                  </a>
+                  <a class="list-group-item" href="./docs/changelog.html">
+
+                    <!-- Icon -->
+                    <div class="icon icon-sm text-primary">
+                      <svg width="24" height="24" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><path d="M0 0h24v24H0z"/><path d="M5.857 2h7.88a1.5 1.5 0 01.968.355l4.764 4.029A1.5 1.5 0 0120 7.529v12.554c0 1.79-.02 1.917-1.857 1.917H5.857C4.02 22 4 21.874 4 20.083V3.917C4 2.127 4.02 2 5.857 2z" fill="#335EEA" opacity=".3"/><rect fill="#335EEA" x="6" y="11" width="9" height="2" rx="1"/><rect fill="#335EEA" x="6" y="15" width="5" height="2" rx="1"/></g></svg>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="ml-4">
+
+                      <!-- Heading -->
+                      <h6 class="font-weight-bold text-uppercase text-primary mb-0">
+                        Escrow
+                      </h6>
+
+                      <!-- Text -->
+                      <p class="font-size-sm text-gray-700 mb-0">
+                        Keep transactions safe
+                      </p>
+
+                    </div>
+
+                    <!-- Badge 
+                    <span class="badge badge-pill badge-primary-soft ml-auto">
+                      1.2.1
+                    </span> -->
+
+                  </a>
+                </div>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Button -->
+          <a class="navbar-btn btn btn-sm btn-primary lift ml-auto" href="https://themes.getbootstrap.com/product/landkit/" target="_blank">
+            Upload Now
+          </a>
+
+        </div>
+
+      </div>
+    </nav>
+
+    <!-- HOME PAGE 
+    ==================================================  -->
+    <div id="homePage">
+      <!-- welcome -->
+      <section class="pt-8 pb-11 pt-md-9 pb-md-12 py-lg-14 bg-light bg-between" style="background-image: url(assets/img/illustrations/illustration-1-cropped.png), url(assets/img/illustrations/illustration-3-cropped.png);">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-7 text-center" data-aos="fade-up">
+
+              <!-- Image (mobile) -->
+              <img src="assets/img/illustrations/illustration-3.png" alt="..." class="img-fluid mb-6 d-lg-none">
+              
+              <!-- Heading -->
+              <h1 class="display-2 font-weight-bold">
+                Secure Your House. <br>
+                With blockchain.
+              </h1>
+
+              <!-- Text -->
+              <p class="font-size-lg text-muted mb-6 mb-md-8">
+                Forward thinking people use Tsaishen to protect their home ownership and make faster, cheaper, and safer
+                real estate transactions with anyone in the world.
+              </p>
+
+              <!-- Button -->
+              <a href="#!" class="btn btn-primary mr-1 lift">
+                Get started <i class="fe fe-arrow-right ml-3"></i>
+              </a>
+              <a href="#!" class="btn btn-primary-soft lift">
+                Learn more
+              </a>
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- shape
+      ================================================== -->
+      <div class="position-relative">
+        <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
+          <svg viewbox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 48h2880V0h-720C1442.5 52 720 0 720 0H0v48z" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      <!-- simplify
+      ================================================== -->
+      <section class="pt-8 pt-md-11">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 text-center">
+
+              <!-- Preheading -->
+              <h6 class="text-uppercase text-primary font-weight-bold">
+                Take complete control of your biggest asset
+              </h6>
+
+              <!-- Heading -->
+              <h1 class="font-weight-bold">
+                Simplify <span class="text-uppercase text-info"><u>everything</u></span> real estate with blockchain technology.
+              </h1>
+
+              <!-- Text -->
+              <p class="font-size-lg text-muted mb-7">
+                For most people, their home is their biggest asset. Why trust the proof of ownership, listings, or transactions 
+                to other people? Take control of your assets and wealth, transfer the property fast, and save well over $100,000.
+              </p>
+
+            </div>
+          </div> <!-- / .row -->
+          <div class="row">
+            <div class="col-12 order-md-2">
+              
+              <!-- Macbook + iPhone -->
+              <div class="device-combo device-combo-macbook-iphonex mb-6 mb-md-0">
+
+                <!-- Macbook -->
+                <div class="device device-macbook">
+                  <img src="assets/img/covers/cover-6.jpg" class="device-screen" alt="...">
+                  <img src="assets/img/devices/macbook.svg" class="img-fluid" alt="...">
+                </div>
+
+                <!-- iPhone -->
+                <div class="device device-iphonex">
+                  <img src="assets/img/screenshots/mobile/rental.jpg" class="device-screen" alt="...">
+                  <img src="assets/img/devices/iphonex.svg" class="img-fluid" alt="...">
+                </div>
+                
+              </div>
+
+              <!-- Text 
+              <h1 class="display-2 font-weight-bold text-center" id="builtFor">
+                Built for <span class="text-info" data-toggle="typed" data-options='{"strings": ["home owners", "real estate investors", "house flippers", "property developers", "wholesalers", "real estate agents"]}'></span>...
+              </h1>
+              -->
+              
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- stats
+      ================================================== -->
+      <section class="pt-8 pt-md-11">
+        <div class="container">
+          <div class="row">
+            <div class="col-12 text-center">
+
+              <h2 class="font-weight-bold">
+                Can you trust blockchain?
+              </h2>
+              
+              <p class="font-size-lg text-muted mb-7">
+                Millions of people and billions of dollars already do. This new technology is ground-breaking, fast-growing, and it will take over EVERY industry we know of. It will completely
+                transform how we buy, sell, transfer, trade or do anything else. Blockchain today is where internet was in the early 1990's.
+                Here are the stats that explain why so many really smart people are switching to blockchain. Our question is, why don't you?
+              </p>
+              
+              
+              <!-- Card -->
+              <div class="card-group card-border card-border-lg border-primary shadow-light-lg">
+                <div class="card">
+                  <div class="card-body">
+
+                    <!-- Heading -->
+                    <h2 class="font-weight-bold text-center mb-0">
+                      <span data-toggle="countup" data-from="0" data-to="60" data-aos data-aos-id="countup:in"></span>M+
+                    </h2>
+
+                    <!-- Text -->
+                    <p class="text-center text-muted mb-0">
+                      Active users
+                    </p>
+                    
+                  </div>
+                </div>
+                <div class="card border-left-md">
+                  <div class="card-body">
+
+                    <!-- Heading -->
+                    <h2 class="font-weight-bold text-center mb-0">
+                      0
+                    </h2>
+
+                    <!-- Text -->
+                    <p class="text-center text-muted mb-0">
+                      Data breaches
+                    </p>
+                    
+                  </div>
+                </div>
+                <div class="card border-left-md">
+                  <div class="card-body">
+
+                    <!-- Heading -->
+                    <h2 class="font-weight-bold text-center mb-0">
+                      <span data-toggle="countup" data-from="0.00" data-to="100" data-decimals="2" data-aos data-aos-id="countup:in"></span>%
+                    </h2>
+
+                    <!-- Text -->
+                    <p class="text-center text-muted mb-0">
+                      Global uptime
+                    </p>
+                    
+                  </div>
+                </div>
+                <div class="card border-left-md">
+                  <div class="card-body">
+
+                    <!-- Heading -->
+                    <h2 class="font-weight-bold text-center mb-0">
+                      $<span data-toggle="countup" data-from="0" data-to="728" data-aos data-aos-id="countup:in"></span>B+
+                    </h2>
+
+                    <!-- Text -->
+                    <p class="text-center text-muted mb-0">
+                      Marketcap 
+                    </p>
+                    
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- get started
+      ================================================== -->
+      <section class="py-8 py-md-11">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 text-center">
+              
+              <!-- Preheading -->
+              <h6 class="text-uppercase text-gray-500 font-weight-bold">
+                Ridiculously Simple
+              </h6>
+
+              <!-- Heading -->
+              <h1 class="font-weight-bold">
+                On the blockchain in just a few clicks.
+              </h1>
+
+              <!-- Text -->
+              <p class="font-size-lg text-muted mb-7 mb-md-9">
+                Once you upload your house onto the blockchain (known as tokenization) you can transfer it onto
+                any web3 platform or crypto wallet without anyone's permission. Then you can hold onto it, sell
+                or transfer it to anyone in the world, or borrow against it <i>(coming soon)</i>.
+              </p>
+
+            </div>
+          </div> <!-- / .row -->
+          <div class="row no-gutters mb-7 mb-md-9">
+            <div class="col-12 col-md-4 text-center">
+              
+              <div class="row mb-5">
+                <div class="col">
+                  
+                  <!-- Placeholder -->
+
+                </div>
+                <div class="col-auto">
+                  
+                  <!-- Icon -->
+                  <div class="icon text-primary mb-3">
+                    <svg width="24" height="24" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><path d="M0 0h24v24H0z"/><path d="M12 11a4 4 0 110-8 4 4 0 010 8z" fill="#335EEA" opacity=".3"/><path d="M3 20.2c.388-4.773 4.262-7.2 8.983-7.2 4.788 0 8.722 2.293 9.015 7.2.012.195 0 .8-.751.8H3.727c-.25 0-.747-.54-.726-.8z" fill="#335EEA"/></g></svg>
+                  </div>
+
+                </div>
+                <div class="col">
+                  
+                  <!-- Divider -->
+                  <hr class="d-none d-md-block">
+
+                </div>
+              </div> <!-- / .row -->
+
+              <!-- Headin -->
+              <h3 class="font-weight-bold">
+                Create your account
+              </h3>
+
+              <!-- Text -->
+              <p class="text-muted mb-6 mb-md-0">
+                Our sign up is super-simple. Fill out the basic info about you, pass the AI enabled verification process, and you are in.
+              </p>
+
+            </div>
+            <div class="col-12 col-md-4 text-center">
+              
+              <div class="row mb-5">
+                <div class="col">
+                  
+                  <!-- Divider -->
+                  <hr class="d-none d-md-block">
+
+                </div>
+                <div class="col-auto">
+                  
+                  <!-- Icon -->
+                  <div class="icon text-primary mb-3">
+                    <svg width="24" height="24" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><path d="M0 0h24v24H0z"/><path d="M5.747 13.043A6 6 0 1114.811 6.5h2.439a3.75 3.75 0 010 7.5h-9c-.962 0-1.84-.362-2.503-.957z" fill="#335EEA" opacity=".3"/><path d="M9.032 19.492h1.956V21.5a.5.5 0 00.5.5h1.024a.5.5 0 00.5-.5v-2.008h1.956a.5.5 0 00.382-.823l-2.968-3.505a.5.5 0 00-.764 0L8.65 18.669a.5.5 0 00.382.823z" fill="#335EEA"/></g></svg>
+                  </div>
+
+                </div>
+                <div class="col">
+                  
+                  <!-- Divider -->
+                  <hr class="d-none d-md-block">
+
+                </div>
+              </div> <!-- / .row -->
+
+              <!-- Headin -->
+              <h3 class="font-weight-bold">
+                Upload your home
+              </h3>
+
+              <!-- Text -->
+              <p class="text-muted mb-6 mb-md-0">
+                Our simple 2-step process will take only minutes. Give basic info about your place, upload the document and done.
+              </p>
+
+            </div>
+            <div class="col-12 col-md-4 text-center">
+              
+              <div class="row mb-5">
+                <div class="col">
+                  
+                  <!-- Divider -->
+                  <hr class="d-none d-md-block">
+
+                </div>
+                <div class="col-auto">
+                  
+                  <!-- Icon -->
+                  <div class="icon text-primary mb-3">
+                    <svg width="24" height="24" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><path d="M0 0h24v24H0z"/><path d="M8 7a1 1 0 110-2h8a4 4 0 110 8H8a2 2 0 100 4h9a1 1 0 010 2H8a4 4 0 110-8h8a2 2 0 100-4H8z" fill="#335EEA" opacity=".3"/><path d="M9.707 8.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 1.414L7.414 6l2.293 2.293zM14.293 20.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 00-1.414 1.414L16.586 18l-2.293 2.293z" fill="#335EEA"/></g></svg>
+                  </div>
+
+                </div>
+                <div class="col">
+                  
+                  <!-- Placeholder -->
+
+                </div>
+              </div> <!-- / .row -->
+
+              <!-- Heading -->
+              <h3 class="font-weight-bold">
+                Choose when and where to transfer
+              </h3>
+
+              <!-- Text -->
+              <p class="text-muted mb-0">
+                You can hold onto your tokenized home forever. When ready, you can sell it or transfer it with a few clicks of a button.
+              </p>
+
+            </div>
+          </div> <!-- / .row -->
+          <div class="row">
+            <div class="col-12">
+              
+              <!-- Text -->
+              <p class="font-size-sm text-center text-gray-500 mb-0">
+                * To learn more see our Resource Center.
+              </p>
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- shape
+      ================================================== -->
+      <div class="position-relative">
+        <div class="shape shape-bottom shape-fluid-x svg-shim text-dark">
+          <svg viewbox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 48h2880V0h-720C1442.5 52 720 0 720 0H0v48z" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      <!-- solution
+      ================================================== -->
+      <section class="py-8 pt-md-11 pb-md-12 bg-dark">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 text-center">
+              
+              <!-- Preheading -->
+              <h6 class="text-uppercase text-success font-weight-bold">
+                All in one solution
+              </h6>
+
+              <!-- Heading -->
+              <h1 class="font-weight-bold text-white">
+                To handle your real estate needs.
+              </h1>
+
+              <!-- Text -->
+              <p class="font-size-lg text-gray-500 mb-7 mb-md-9">
+                A complete solution for <u><span class="text-warning" data-toggle="typed" data-options='{"strings": ["home owners", "real estate investors", "house flippers", "property developers", "wholesalers", "real estate agents"]}'></span></u>.
+              </p>
+
+            </div>
+          </div> <!-- / .row -->
+          <div class="row">
+            <div class="col-12 col-md-6 col-lg-3 mb-4">
+              
+              <!-- Heading -->
+              <h4 class="font-weight-bold text-white mb-5">
+                Safe
+              </h4>
+
+              <!-- List -->
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  Encrypted
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  Decentralized
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  Verifiable
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300 mb-6 mb-lg-0">
+                  Immutable
+                </p>
+
+              </div> <!-- / .row -->
+
+            </div>
+            <div class="col-12 col-md-6 col-lg-3 mb-4">
+              
+              <!-- Heading -->
+              <h4 class="font-weight-bold text-white mb-5">
+                Accessible
+              </h4>
+
+              <!-- List -->
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  Available non-stop
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  From wherever you are
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  With a computer
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300 mb-6 mb-lg-0">
+                  On your phone
+                </p>
+
+              </div> <!-- / .row -->
+
+            </div>
+            <div class="col-12 col-md-6 col-lg-3 mb-4">
+              
+              <!-- Heading -->
+              <h4 class="font-weight-bold text-white mb-5">
+                Fast
+              </h4>
+
+              <!-- List -->
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  Simple 2-step upload
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  On market in minutes
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  1-Button click sales 
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300 mb-6 mb-lg-0">
+                  Automated Escrow
+                </p>
+
+              </div> <!-- / .row -->
+
+            </div>
+            <div class="col-12 col-md-6 col-lg-3 mb-4">
+              
+              <!-- Heading -->
+              <h4 class="font-weight-bold text-white mb-5">
+                Cheap
+              </h4>
+
+              <!-- List -->
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  Save 57% or more
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  No middlemen
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300">
+                  No extra fees
+                </p>
+
+              </div>
+              <div class="d-flex">
+                  
+                <!-- Badge -->
+                <div class="badge badge-rounded-circle badge-success mt-1 mr-4">
+                  <i class="fe fe-check"></i>
+                </div>
+                
+                <!-- Text -->
+                <p class="text-gray-300 mb-0">
+                  Peer-to-peer Exchange
+                </p>
+
+              </div> <!-- / .row -->
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- pre-cta (using PRICING boxes)
+      ================================================== -->
+      <section class="mt-n8">
+        <div class="container">
+          <div class="row">
+            <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="50">
+              
+              <!-- Card -->
+              <div class="card shadow-light-lg mb-6 mb-md-0 lift lift-lg">
+                <div class="card-body">
+
+                  <!-- Badge 
+                  <span class="badge badge-pill badge-primary-desat badge-float badge-float-outside">
+                    $29/mo
+                  </span>
+                  -->
+
+                  <!-- Heading -->
+                  <h4 class="font-weight-bold">
+                    Proof of ownership
+                  </h4>
+
+                  <!-- Text -->
+                  <p class="text-muted">
+                    Upload your home on decentralized network and have a proof of ownerhsip at your fingertips.
+                  </p>
+
+                  <!-- Link -->
+                  <a href="#!" class="font-size-sm font-weight-bold text-decoration-none">
+                    Upload your home <i class="fe fe-arrow-right ml-3"></i>
+                  </a>
+                  
+                </div>
+              </div>
+
+            </div>
+            <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="100">
+              
+              <!-- Card -->
+              <div class="card shadow-light-lg mb-6 mb-md-0 lift lift-lg">
+                <div class="card-body">
+
+                  <!-- Badge 
+                  <span class="badge badge-pill badge-primary-desat badge-float badge-float-outside">
+                    $49/mo
+                  </span>
+                  -->
+
+                  <!-- Heading -->
+                  <h4 class="font-weight-bold">
+                    Fast transactions
+                  </h4>
+
+                  <!-- Text -->
+                  <p class="text-muted">
+                    Sell, gift, or transfer your property to someone else, globally with a few clicks of a button.
+                  </p>
+
+                  <!-- Link -->
+                  <a href="#!" class="font-size-sm font-weight-bold text-decoration-none">
+                    List your property <i class="fe fe-arrow-right ml-3"></i>
+                  </a>
+                  
+                </div>
+              </div>
+
+            </div>
+            <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="150">
+              
+              <!-- Card -->
+              <div class="card shadow-light-lg lift lift-lg">
+                <div class="card-body">
+
+                  <!-- Badge 
+                  <span class="badge badge-pill badge-primary-desat badge-float badge-float-outside">
+                    $79/mo
+                  </span>
+                  -->
+
+                  <!-- Heading -->
+                  <h4 class="font-weight-bold">
+                    Smart escrow
+                  </h4>
+
+                  <!-- Text -->
+                  <p class="text-muted">
+                    Avoid the expensive third-party transactions. Let the algorythm in smart escrow do all the work while you save.
+                  </p>
+
+                  <!-- Link -->
+                  <a href="#!" class="font-size-sm font-weight-bold text-decoration-none">
+                    Sell that house <i class="fe fe-arrow-right ml-3"></i>
+                  </a>
+                  
+                </div>
+              </div>
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+
+      <!-- cta
+      ================================================== -->
+      <section class="pt-6 pt-md-8">
+        <div class="container pb-6 pb-md-10 border-bottom">
+          <div class="row align-items-center">
+            <div class="col-12 col-md">
+              
+              <!-- Heading -->
+              <h3 class="font-weight-bold mb-1">
+                Secure your property in minutes.
+              </h3>
+
+              <!-- Text -->
+              <p class="font-size-lg text-muted mb-6 mb-md-0">
+                Faster, cheaper, safer way to do real estate.
+              </p>
+
+            </div>
+            <div class="col-12 col-md-auto">
+                  
+              <!-- Button -->
+              <a href="#!" class="btn btn-primary-soft mr-1 lift">
+                Learn more
+              </a>
+              
+              <a href="#!" class="btn btn-primary lift">
+                Get started
+              </a>
+
+            </div>
+          </div> <!-- / .row -->
+        </div> <!-- / .container -->
+      </section>
+    </div>
+
+
+    <!-- FOOTER
+    ================================================== -->
+    <footer class="py-8 py-md-8 bg-white">
+      <div class="container footer-brand">
+        <div class="row">
+          <div class="col-12 col-md-4 col-lg-3">
+        
+            <!-- Brand -->
+            <img src="./assets/img/Tsaishen.svg" alt="Tsaishen Logo" class="footer-brand img-fluid">
+
+            <!-- Text -->
+            <p class="text-gray-700 mb-2">
+              A better way to real estate.
+            </p>
+
+            <!-- Social -->
+            <ul class="list-unstyled list-inline list-social mb-6 mb-md-0">
+              <li class="list-inline-item list-social-item mr-3">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-telegram-plane margin"></i></a>
+              </li>
+              <li class="list-inline-item list-social-item mr-3">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-discord"></i></a>
+              </li>
+              <li class="list-inline-item list-social-item mr-3">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-twitter"></i></a>
+              </li>
+              <!-- 
+              <li class="list-inline-item list-social-item">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-github"></i></a>
+              </li> 
+              <li class="list-inline-item list-social-item">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-ethereum"></i></a>
+              </li>
+              -->
+              <li class="list-inline-item list-social-item">
+                <a href="#!" class="text-decoration-none"><i class="fab fa-facebook"></i></a>
+              </li>
+            </ul>
+
+          </div>
+          <div class="col-6 col-md-4 col-lg-3">
+        
+            <!-- Heading -->
+            <h6 class="font-weight-bold text-uppercase text-gray-700">
+              Tsaishen
+            </h6>
+
+            <!-- List -->
+            <ul class="list-unstyled text-muted mb-6 mb-md-8 mb-lg-0">
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Crypto House
+                </a>
+              </li>
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Discounted Properties
+                </a>
+              </li>
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Marketplace
+                </a>
+              </li>
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Escrow
+                </a>
+              </li>
+            </ul>
+
+          </div>
+
+          <div class="col-6 col-md-4 col-lg-3">
+        
+            <!-- Heading -->
+            <h6 class="font-weight-bold text-uppercase text-gray-700">
+              Community
+            </h6>
+
+            <!-- List -->
+            <ul class="list-unstyled text-muted mb-0">
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Tsaishen Token <small style="color: rgb(253, 121, 44);"><i>Coming Soon</i></small>
+                </a>
+              </li>
+              <!--
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Join Tsaishen
+                </a>
+              </li> -->
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Investors
+                </a>
+              </li>
+              <li>
+                <a href="#!" class="text-reset">
+                  Pricing
+                </a>
+              </li>
+            </ul>
+
+          </div>
+
+          <div class="col-6 col-md-4 col-lg-3">
+        
+            <!-- Heading -->
+            <h6 class="font-weight-bold text-uppercase text-gray-700">
+              Info
+            </h6>
+
+            <!-- List -->
+            <ul class="list-unstyled text-muted mb-6 mb-md-8 mb-lg-0">
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  About Us
+                </a>
+              </li>
+              <!--
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  How To Guide
+                </a>
+              </li> -->
+              <li class="mb-3">
+                <a href="#!" class="text-reset">
+                  Resource Center
+                </a>
+              </li>
+              <li>
+                <a href="#!" class="text-reset">
+                  Investor Education
+                </a>
+              </li>
+            </ul>
+
+          </div>
+          
+        </div> <!-- / .row -->
+        <div class="footer-bottom text-center">
+          <div class="row" id="privacyTerms">
+            <div class="col-6 text-right text-gray-500">
+              Copyright 2020 -
+              <script>
+                document.write(new Date().getFullYear())
+              </script> Tsaishen. All rights reserved
+            </div>
+            <div class="col-2 text-gray-500" id="privacy">
+              <a href="#" target="_blank" rel="noopener noreferrer"> <p>Privacy Policy</p></a>
+            </div>
+            <div class="col-1 text-gray-500" id="terms">
+              <a href="#" target="_blank" rel="noopener noreferrer"> <p>Terms</p></a> 
+            </div>
+          </div>
+        </div>  
+      </div> <!-- / .container -->
+    </footer>
+
+    <!-- JAVASCRIPT
+    ================================================== -->
+    <!-- Libs JS -->
+    <script src="./assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="./assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./assets/libs/@fancyapps/fancybox/dist/jquery.fancybox.min.js"></script>
+    <script src="./assets/libs/aos/dist/aos.js"></script>
+    <script src="./assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="./assets/libs/countup.js/dist/countUp.min.js"></script>
+    <script src="./assets/libs/dropzone/dist/min/dropzone.min.js"></script>
+    <script src="./assets/libs/flickity/dist/flickity.pkgd.min.js"></script>
+    <script src="./assets/libs/flickity-fade/flickity-fade.js"></script>
+    <script src="./assets/libs/highlightjs/highlight.pack.min.js"></script>
+    <script src="./assets/libs/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="./assets/libs/isotope-layout/dist/isotope.pkgd.min.js"></script>
+    <script src="./assets/libs/jarallax/dist/jarallax.min.js"></script>
+    <script src="./assets/libs/jarallax/dist/jarallax-video.min.js"></script>
+    <script src="./assets/libs/jarallax/dist/jarallax-element.min.js"></script>
+    <script src="./assets/libs/quill/dist/quill.min.js"></script>
+    <script src="./assets/libs/smooth-scroll/dist/smooth-scroll.min.js"></script>
+    <script src="./assets/libs/typed.js/lib/typed.min.js"></script>
+    <script src="./assets/js/indexFunctionality.js"></script>
+
+    <!-- Map -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js"></script>
+
+    <!-- Theme JS -->
+    <script src="./assets/js/theme.min.js"></script>
+
+    <!-- External Scripts -->
+    <script
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+    <script
+    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+    <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script> 
+
+      
+  </body>
+</html>

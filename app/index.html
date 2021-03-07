@@ -15,8 +15,8 @@
     <link rel="shortcut icon" href="assets/img/Tsaishen Squares.png" />
 
     <!-- Libs CSS -->
-    <link rel="stylesheet" href="Landkit-1.2.1/dist/assets/fonts/Feather/feather.css">
-    <link rel="stylesheet" href="Landkit-1.2.1/dist/assets/libs/@fancyapps/fancybox/dist/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="Landkit-1.2.1/src/assets/fonts/Feather/feather.css">
+    <link rel="stylesheet" href="Landkit-1.2.1/src/assets/libs/@fancyapps/fancybox/jquery.fancybox.min.css">
     <link rel="stylesheet" href="Landkit-1.2.1/dist/assets/libs/aos/dist/aos.css">
     <link rel="stylesheet" href="Landkit-1.2.1/dist/assets/libs/choices.js/public/assets/styles/choices.min.css">
     <link rel="stylesheet" href="Landkit-1.2.1/dist/assets/libs/flickity-fade/flickity-fade.css">
@@ -1003,10 +1003,14 @@
             </div>
             <div class="row g-2">
               <div class="col-md-2"><br>
+                <label for="county" class="form-label font-size-lg mb-2 mb-md-4">Property County</label>
+                  <input type="text" class="form-control" id="county" placeholder="Maricopa">
+              </div>
+              <div class="col-md-2"><br>
                 <label for="value" class="form-label font-size-lg mb-2 mb-md-4">Current Market Value</label>
                 <div class="input-group">
                   <span class="input-group-addon font-size-lg"><i class="fas fa-dollar-sign"></i> </span>
-                  <input type="number" class="form-control" id="marketValue" placeholder="$150,000" >
+                  <input type="number" class="form-control" id="marketValue" placeholder="$150,000">
                 </div>
               </div>
               <div class="col-md-2"><br>
@@ -1047,12 +1051,12 @@
               <label for="description" class="form-label font-size-lg mb-2 mb-md-4">Give a brief 1-3 sentence description of the place.</label>
               <textarea id="description" class="form-control" type="text" rows="3" cols="5" maxlength="300" autocapitalize="on"
                 placeholder="This house has a fully-fenced large back yard, fully-updated kitchen with granite countertops and a view of the lake."></textarea>
-              </div> 
+            </div> 
               <br>
 
             <div class="form-check">
               <input type="checkbox" class="form-check-input" id="certification">
-              <label class="form-check-label font-size-lg mb-2 mb-md-4" for="certification" aria-required="true">I certify that I own this property or have an authorization by the owner.</label>
+              <label class="form-check-label font-size-lg mb-2 mb-md-4" for="certification" aria-required="true">I certify under penalty of perjury that I own or have an authorization from the owner to upload and/or list this property.</label>
             </div>
 
             <hr class="my-4">
@@ -1074,7 +1078,16 @@
         <button id="upload" type="button" class="btn btn-dark" value="SUBMIT">Upload</button>
         <div id="ipfsResult" class="mt-4 font-size-lg mb-2 mb-md-4"></div>
         <!-- alert that house upload is successful -->
-        <div class="alert alert-info" id="houseUploadedMsg" role="alert"></div>
+        <div class="alert alert-warning alert-dismissible fade show" id="newUserMsg" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="alert alert-info alert-dismissible fade show" id="houseUploadedMsg" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
       </div>
       <div class="border-bottom-xl border-gray-300"></div>
 
@@ -1141,46 +1154,118 @@
     <!-- Marketplace -->
     <div id="market-container" class="py-8 py-md-11">
         <div class="marketplace-top">
+
+          <!-- Token Add Alert -->
+          <div class="alert alert-success alert-dismissible fade show" id="tokenAlert" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <div id="tokenAdded"></div>
+          </div>
+          <!-- Token Remove Alert -->
+          <div class="alert alert-warning alert-dismissible fade show" id="tokenAlert2" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <div id="tokenRemoved"></div>
+          </div>
+
           <h1 class="display-2 font-weight-bold text-center">
             Tsaishen Marketplace
           </h1><br>
             <p class="font-size-lg mb-2 mb-md-4 text-center">
-              Perfect spot to buy, sell, or trade your property.
+              Your place to buy and sell tokenized real property.
             </p>
             <p class="font-size-lg text-muted mb-4 mb-md-8 text-center">
               Don't see anything? Make sure you're connected to blockchain. 
             </p>
+
+            <!-- Spinner -->
+            <div class="text-center" id="marketplaceLoading">
+              <div class="spinner-border text-primary" role="status">   
+              </div>
+              <span class="visually-hidden text-primary-desat font-size-lg font-weight-bold">Give it a minute as minders add to blockchain...</span>
+            </div>
+
         </div>
         <br>
-        <div id="marketplace-bottom">
-            <div id="houseDivSale" class="row"></div>
-        </div>
-      
+        <!-- Display of Houses For Sale --> 
+        <div class="houseSale text-lg-left">
+          <div class="portfolioDisplay table table-responsive" id="houseDivSale"></div>
+        </div> 
+
     </div>
 
     <!-- Portfolio -->
-    <div id="portfolio-container" class="py-8 py-md-11">
-        <div class="portfolio-top">
-          <h1 class="display-2 font-weight-bold text-center">
-            Your Assets
-          </h1><br>
-          <p class="font-size-lg mb-2 mb-md-8 text-center">
-            All of your properties in one place.
-          </p>
+    <div id="portfolio" class="py-8 py-md-11">
+        <h1 class="display-2 font-weight-bold text-center">All Your Assets</h1>
+        <p class="font-size-lg mb-2 mb-md-6 text-center">
+          In one handy place.
+        </p>
+        <div id="portfolioTop">
           <p class="font-size-lg text-muted mb-4 mb-md-2 text-center">
-            Don't see any assets? Please check the following:<br><br>
+            If you don't see your assets, please check the following:<br><br>
             
             Connected to blockchain? &#127968; 
             Uploaded a property? &#127968; 
             Given sufficient time for the block production? &#127968; 
-            Using the same account you did to upload? 
+            Using the same account you used to upload? 
           </p>
         </div>
-        <br>
-        <div class="portfolio-bottom">
-            <div id="houseDiv" class="row"></div>
-        </div>
         
+        <!-- Contract Owner DISPLAY -->
+        <div class="contractOwner container text-lg-left text-center py-md-11">
+          <h3 class="display-4 mb-2 mb-md-6 text-center">Contract Owner Playground</h3>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="initializeBtn" onclick="ownerInitializeContracts()">Init. <i class="fas fa-file-signature"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="getAllUsersBtn"><i class="fas fa-users"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="getEscrowInfoBtn">Escrow</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="tokenBtn" data-toggle="modal" data-target="#tokenInputModal"><i class="far fa-plus-square"></i> Tokens</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="balanceBtn"><i class="fas fa-check"></i> Balance</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="withdrawBtn">Withdraw</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="pauseBtn"><i class="fas fa-pause"></i> HT</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="unpauseBtn"><i class="fas fa-play"></i> HT</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="mintBtn">Mint <i class="fas fa-home"></i></div>
+          <div id="balanceDisplay"></div>
+          <div class="btn btn-primary" id="ownerCloseBtn">CLOSE</div>
+          <div class="table table-responsive" id="userDisplayTable"></div>
+          <div class="table table-responsive" id="escrowDisplayTable"></div>
+        </div> 
+
+        <!-- Spinner -->
+        <div class="text-center" id="portfolioLoading">
+          <div class="spinner-border text-primary" role="status">   
+          </div>
+          <span class="visually-hidden text-primary-desat font-size-lg font-weight-bold">Adding to blockchain...</span>
+        </div>
+
+        <!-- Escrow Buyer Display -->
+        <div class="escrowBuyer container text-lg-left text-center py-md-11">
+          <h3 class="display-3 mb-2 mb-md-6 text-center">Welcome Escrow Participant</h3>
+          <p class="font-size-lg text-center"><strong>Congrats</strong> for being in escrow. Here are a few items that 
+            we believe could be helpful to know:</p>
+            <ul>
+              <li><strong>Seller</strong>, you have <strong>10 days</strong> to complete and submit deed to transfer ownership. 
+                Click the "Upload" link on the top menu for more information.</li>
+              <li>Once the seller is done, <strong>buyer</strong>, you have <strong>3 days</strong> to review and verify seller's submission. 
+                Failure to complete the taks within set time period will automatically approve submission and complete transfer.</li>
+                <ol>
+                  <li><strong>All good?</strong> Buyer, click <u>Confirm</u> button to complete transaction.</li>
+                  <li><strong>Wrong document or incorrect information?</strong> Buyer, click <u>Request Review</u> button toa raise flag that there are issues. 
+                    Seller will get additional <strong>3 days</strong> to correct and resubmit.</li>
+                </ol>
+              <li>If the seller fails to successfully complete their task within aloted time, buyer can request refund.</li>
+              <li><strong>Changed your mind?</strong> Either party may request cancellation at any time after 
+                paying the cancellation fee. Click <u>Cancel</u> button below. </li>
+            </ul>
+            <br>
+            <div id="escrowBuyerDisplay"></div>
+        </div> 
+
+        <!-- Asset Owner DISPLAY -->
+        <div class="houseDisplay text-lg-left">
+          <div class="portfolioDisplay table table-responsive" id="houseDiv"></div>
+        </div>   
+
     </div>
 
     <!-- Modal to Upload -->
@@ -2325,7 +2410,7 @@
             <!-- Headin -->
             <h1 id="bigHearts" class="display-2 mb-md-6">
               Small team. Big hearts. <br>
-              One <span class="text-info"><b><u>GIANT</u></b></span> goal.
+              One <span class="text-info"><b><u>GIANT</u></b></span> goal:
             </h1>
             <h5 class="display-4">
               <span class="text-success">Help you do real estate YOUR way!</span>
@@ -2719,110 +2804,117 @@
         </div>
       </div>
 
-    <!-- Thank You Modal -->
-    <div class="modal fade" id="thanksModal" tabindex="-1" role="dialog" aria-labelledby="thankYou" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
+      <!-- Thank You Modal -->
+      <div class="modal fade" id="thanksModal" tabindex="-1" role="dialog" aria-labelledby="thankYou" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
 
-            <!-- Close -->
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
+              <!-- Close -->
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
 
-            <!-- Image -->
-            <div class="text-center">
-              <img src="Landkit-1.2.1/dist/assets/img/illustrations/illustration-9.png" alt="..." class="img-fluid mb-3" style="width: 200px;">
+              <!-- Image -->
+              <div class="text-center">
+                <img src="Landkit-1.2.1/dist/assets/img/illustrations/illustration-9.png" alt="..." class="img-fluid mb-3" style="width: 200px;">
+              </div>
+
+              <!-- Heading -->
+              <h2 class="font-weight-bold text-center mb-1" >
+                Thank you!
+              </h2>
+
+              <!-- Text -->
+              <p class="font-size-lg text-center text-muted mb-6 mb-md-8">
+                Message received. We'll be in touch.
+              </p>
+
+              <button type="button" class="close btn btn-block btn-primary mt-3 lift" data-dismiss="modal" aria-label="Close">
+                OK
+              </button>
+
             </div>
-
-            <!-- Heading -->
-            <h2 class="font-weight-bold text-center mb-1" >
-              Thank you!
-            </h2>
-
-            <!-- Text -->
-            <p class="font-size-lg text-center text-muted mb-6 mb-md-8">
-              Message received. We'll be in touch.
-            </p>
-
-            <button type="button" class="close btn btn-block btn-primary mt-3 lift" data-dismiss="modal" aria-label="Close">
-              OK
-            </button>
-
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- MetaMask Modal -->
-    <div class="modal fade" id="metamaskModal" tabindex="-1" role="dialog" aria-labelledby="metamask" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
+      <!-- MetaMask Modal -->
+      <div class="modal fade" id="metamaskModal" tabindex="-1" role="dialog" aria-labelledby="metamask" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
 
-            <!-- Close -->
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
+              <!-- Close -->
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
 
-            <!-- Image -->
-            <div class="text-center">
-              <img src="assets/img/metamask-logo-svg-vector.svg" alt="MetaMask icon" class="img-fluid mb-3" style="width: 200px;">
+              <!-- Image -->
+              <div class="text-center">
+                <img src="assets/img/metamask-logo-svg-vector.svg" alt="MetaMask icon" class="img-fluid mb-3" style="width: 200px;">
+              </div>
+
+              <!-- Heading -->
+              <h2 class="font-weight-bold text-center mb-1" >
+                Hmmm... No Wallet!
+              </h2>
+
+              <!-- Text -->
+              <p class="font-size-lg text-center text-muted mb-6 mb-md-6">
+                <b>Let's fix that!</b> <br> 
+                Install the most popular FREE browser wallet: MetaMask. 
+              </p>
+              <p class="font-size-md text-center text-muted mb-6 mb-md-6">
+                Metamask is a browser extension wallet that will allow you to use all our 
+                blockchain features. Set up will only take a few minutes and will enable 
+                you to fully use our site.
+              </p>
+              <p class="font-size-md text-center text-muted mb-6 mb-md-6">
+                MetaMask page will open in new tab. When done, come back and let's continue.
+              </p>
+
+              <button type="button" id="metamaskDownloadBtn" class="btn btn-block btn-primary mt-3 lift mb-md-8" data-dismiss="modal" aria-label="Close">
+                  Install MetaMask &#x2913;
+              </button>
+
             </div>
-
-            <!-- Heading -->
-            <h2 class="font-weight-bold text-center mb-1" >
-              Hmmm... No Wallet!
-            </h2>
-
-            <!-- Text -->
-            <p class="font-size-lg text-center text-muted mb-6 mb-md-6">
-              <b>Let's fix that!</b> <br> 
-              Install the most popular FREE browser wallet: MetaMask. 
-            </p>
-            <p class="font-size-md text-center text-muted mb-6 mb-md-6">
-              Metamask is a browser extension wallet that will allow you to use all our 
-              blockchain features. Set up will only take a few minutes and will enable 
-              you to fully use our site.
-            </p>
-            <p class="font-size-md text-center text-muted mb-6 mb-md-6">
-              MetaMask page will open in new tab. When done, come back and let's continue.
-            </p>
-
-            <button type="button" id="metamaskDownloadBtn" class="btn btn-block btn-primary mt-3 lift mb-md-8" data-dismiss="modal" aria-label="Close">
-                Install MetaMask &#x2913;
-            </button>
-
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Sell House Modal -->
-    <div class="modal fade bd-example-modal-lg" id="sellHouseModal" tabindex="-1" role="dialog" aria-labelledby="myLargeSaleModal" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Let's sell this house!</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-md-12">
-                  
-                  <div class="row justify-content-center" align="center" id="sellBox">
-                    <div class="col-lg-3 p-1">
-                      <input class="form-control" id="housePrice" placeholder="Enter Amount">
-                      <div class="input-group-append">
-                        <!-- NEED TO CHANGE CURRENCY to input -->
-                        <span class="input-group-text form-inline" id="basic-addon2"><b>USD</b></span>
+      
+      <!-- Sell House Modal -->
+      <div class="modal fade bd-example-modal-lg" id="sellHouseModal" tabindex="-1" role="dialog" aria-labelledby="myLargeSaleModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title h3" id="saleModalLabel">Let's sell this house!</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="row justify-content-center" align="center" id="sellBox">
+                      <div class="col-lg-6 p-1">
+                        <div class="input-group-append">
+                          <input class="form-control" id="housePrice" placeholder="Enter Amount">
+                          <span class="input-group-text form-inline" id="basic-addon2"><b>USD</b></span>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-lg-2 p-1">
-                      <button class="btn btn-warning light-b-shadow" id="sellBtn"><b>List For Sale</b></button>
+                      <div class="col-lg-4 p-1">
+                        <button class="btn btn-warning light-b-shadow" id="sellBtn"><b>List For Sale</b></button>
+                      </div>
+                      <div class="col-lg-10">
+                        <br>
+                        <p class="font-size-sm text-muted text-center"><i><u>Please note:</u> listing the house will incur blockchain network fees. Additionally,
+                          cancellations or changes also incur network fees. Tsaishen does not receive any of these fees, they go to miners to ensure safety 
+                          of the network.</i>
+                        </p>
+                      </div>
+                      
                     </div>
                   </div>
                 </div>
@@ -2831,7 +2923,168 @@
           </div>
         </div>
       </div>
-    </div>
+
+      <!-- Buy House Modal -->
+      <div class="modal fade bd-example-modal-lg" id="buyHouseModal" tabindex="-1" role="dialog" aria-labelledby="myLargeBuyModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+
+            <div class="modal-header">
+              <h5 class="modal-title h3" id="buyModalLabel">Let's buy this house!</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <div class="container-fluid">
+               
+                  <div class="col-md-12 justify-content-center" align="center">
+                    <input class="form-control" id="buyerInput" placeholder="Say something...">
+                    <div class="table table-responsive finalizingPurchaseDisplay" id="buyModalDisplay"></div>
+
+                    <div class="row">
+                      <div class="col-md-6 justify-content-left">
+                        <button class="btn btn-success-soft light-b-shadow" id="purchaseBtn"><b>Buy House</b>
+                          <span class="displaySelectedCurrencyPrice"></span>
+                        </button>
+                        <span id="buyInfo" class="text-primary-desat font-weight-bold font-size-md" title="Direct Transfer"
+                            data-content="Only use with trusted parties as your funds will be sent to them immediatelly."
+                            data-placement="left" data-toggle="popover">&#9432;</span>
+                      </div>
+                      <div class="col-md-6 justify-content-right">
+                        <button class="btn btn-success light-b-shadow" id="escrowBuyBtn"><b>Escrow Buy</b>
+                          <span class="displaySelectedCurrencyPrice"></span>
+                        </button>
+                        <span id="escrowInfo" class="text-primary-desat font-weight-bold font-size-md" title="Tsaishen Escrow"
+                            data-content="Offers additional protection for buyers to ensure deed is shared before funds are sent."
+                            data-placement="left" data-toggle="popover">&#9432;</span>
+                      </div>
+                    </div>
+                                        
+                    <hr>
+                    <p class="font-size-sm text-muted text-center"><i><u>Please note:</u> your crypto wallet must have the above amount plus extra EHT for network fees. 
+                      Tsaishen does not receive any of the network fees. <b>Tsaishen Escrow</b> protects both parties and charges a minimal fee, which is taken from the 
+                      seller proceeds and only if sale was successful.</i>
+                    </p>
+                    
+                  </div>
+               
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- House ID Input Modal
+      <div class="modal fade bd-example-modal-lg" id="inputHouseId" tabindex="-1" role="dialog" aria-labelledby="myLargeSaleModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="row justify-content-center" align="center">
+                      <div class="col-lg-6 p-1">
+                        <input class="form-control" id="houseId" placeholder="Enter House Id">
+                      </div>
+                      <div class="col-lg-4 p-1">
+                        <button class="btn btn-primary light-b-shadow" id="getEscrowBtn"><b>Get Escrow Info</b></button>
+                      </div>                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>  -->
+
+      <!-- NOT USING AT THE MOMENT!!! Escrow Info Modal -->
+      <div class="modal fade" id="escrowInfoModal" tabindex="-1" role="dialog" aria-labelledby="escrowInfo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
+
+              <!-- Close -->
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+
+              <!-- Image -->
+              <div class="text-center">
+                <img src="Landkit-1.2.1/dist/assets/img/illustrations/illustration-7.png" alt="..." class="img-fluid mb-3" style="width: 200px;">
+              </div>
+
+              <!-- Heading -->
+              <h2 class="font-weight-bold text-center mb-1" >
+                Property Escrow Information
+              </h2>
+
+              <!-- Table -->
+              <div class="table table-responsive" id="escrowInfoDisplay"></div>
+
+              <button type="button" class="close btn btn-block btn-primary mt-3 lift" data-dismiss="modal" aria-label="Close">
+                OK
+              </button>
+
+            </div>
+          </div>
+        </div>
+      </div> 
+
+      <!-- Add/Remove Tokens Modal -->
+      <div class="modal fade bd-example-modal-lg" id="tokenInputModal" tabindex="-1" role="dialog" aria-labelledby="myLargeTokenModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title h3" id="tokenModalLabel">Add / Remove acceptable tokens!</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-md-12 justify-content-center" align="center">
+                    <div class="input-group-append">
+                      <input class="form-control" id="tokenAddressInput" placeholder="Token address">
+                      <input class="form-control" id="oracleAddressInput" placeholder="Oracle address (only if adding)">
+                    </div>
+                    <br>
+                    <div class="col-md-4 justify-content-center" align="center">
+                      <input class="form-control" id="tokenName" placeholder="Insert Token Symbol">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <br>
+                  <p class="font-size-sm text-muted text-center"><i><u>Double Check:</u> Is the token contract address in the Address field?
+                  Is the oracle address in the oracle field? Are you using a testnet or mainnet? When ready proceed!</i>
+                  </p>
+                  <hr>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 justify-content-left" align="left">
+                    <button class="btn btn-danger light-b-shadow" id="removeTokenBtn"><b>Remove Token</b></button>
+                  </div>
+                  <div class="col-md-6 justify-content-right" align="right">
+                    <button class="btn btn-success light-b-shadow" id="addTokenBtn"><b>Add Token</b></button>
+                  </div>
+                </div>
+                
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
     <!-- Escrow Page -->
     <div id="escrowPage" class="py-8 py-md-11">m 
@@ -3533,7 +3786,6 @@
     <script src="./abi.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
     <script src="assets/js/indexFunctionality.js"></script>
-    <script src="assets/js/bignumber.min.js"></script>
 
   </body>
 </html>

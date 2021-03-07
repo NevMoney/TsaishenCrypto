@@ -1,22 +1,32 @@
 {
   "name": "TsaishenCrypto",
   "version": "1.0.0",
-  "description": "",
+  "description": "Real Estate on blockchain",
   "main": "truffle-config.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "flat": "truffle-flattener contracts/HouseToken.sol > flats/HouseToken.sol"
+    "flat": "truffle-flattener contracts/HouseToken.sol > flats/HouseToken.sol",
+    "ganache": "ganache-cli -p 7545 -i 5777 -d"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/NevMoney/TsaishenCrypto.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart",
+    "contracts",
+    "real",
+    "estate",
+    "escrow",
+    "Tsaishen"
+  ],
+  "author": "Nev K & Tsaishen",
+  "license": "BSD Copyright @ Nev Kraguljevic & Tsaishen 2021. This software uses open source libraries and proprietary development. No user can copy, share, amend the software without prior written authorization of the author.",
   "bugs": {
     "url": "https://github.com/NevMoney/TsaishenCrypto/issues"
   },
@@ -29,5 +39,8 @@
     "debug": "^4.3.1",
     "dotenv": "^8.2.0",
     "truffle-assertions": "^0.9.2"
+  },
+  "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.10"
   }
 }
