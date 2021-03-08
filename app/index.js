@@ -123,9 +123,8 @@ $(document).ready(async () => {
     .on("error", console.error);
 });
 
-function appendCryptoHouse(id, url, isMarketplace, price, seller) {
-  // getHouses();
-  renderCryptoHouse(id, url, isMarketplace, price, seller)
+function appendCryptoHouse(id, url, price, seller, state) {
+  renderCryptoHouse(id, url, price, seller, state)
   // houseButtons(id, url, isMarketplace, price, seller);
   $("#marketplaceLoading").hide();
 }
@@ -148,7 +147,7 @@ async function getHouses() {
       // console.log("house info ", house);
       // console.log(url);
       
-      appendCryptoHouse(id, url, false, NaN, user);  
+      appendCryptoHouse(id, url, NaN, user, 0);  
     }
   }
   catch (err) {
@@ -157,11 +156,11 @@ async function getHouses() {
 }
 
 // get data from JSON and render display
-function renderCryptoHouse(id, url, isMarketplace, price, owner) {
+function renderCryptoHouse(id, url, price, owner, state) {
   fetch(url).then(function (res) {
     res.json().then(function (data) {
       // console.log("JSON file: ", data);
-      console.log("renderCryptoHouse", id, url, isMarketplace, price, owner);
+      console.log("renderCryptoHouse", id, url, price, owner, state);
 
       $("#portfolioLoading").hide();
       
@@ -233,54 +232,44 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
         </tr>
         `
       )
-      let inEscrow = false;
-      // top part if(!isMarketplace) is irrelevant -- buttons always display
-      if (!isMarketplace) {
+      // state 0 - not for sale, state 1 - active for sale, state 2 - in escrow
+      if (state == 0) {
         $("#houseDisplay").append(button);
         $(`#buyBtn${id}`).hide();
         $(`#cancelBtn${id}`).show();
         $(`#selectSaleBtn${id}`).show();
       }
-      else {
+      else if (state == 1) {
         $("#houseSale").append(button);
         $(`#selectSaleBtn${id}`).hide();
         
-    
-          if (owner === user) {
-            $(`#buyBtn${id}`).hide();
-            $(`#cancelBtn${id}`).show();
+        if (owner === user) {
+          $(`#buyBtn${id}`).hide();
+          $(`#cancelBtn${id}`).show();
+        }
+        else {
+          $(`#buyBtn${id}`).show();
+          $(`#cancelBtn${id}`).hide();
+        }
 
-            if (inEscrow) {
-              $(`#buyBtn${id}`).hide();
-              $(`#cancelBtn${id}`).hide();
-              $(`#propertyImage${id}`).addClass("inEscrow");
-              $(`#propertyImage${id}`).append("IN ESCROW");
-            }
-          }
-          else {
-            $(`#buyBtn${id}`).show();
-            $(`#cancelBtn${id}`).hide();
-            
-            if (inEscrow) {
-              $(`#buyBtn${id}`).hide();
-              $(`#cancelBtn${id}`).hide();
-              $(`#propertyImage${id}`).addClass("inEscrow");
-              $(`#propertyImage${id}`).append("IN ESCROW");
-            }
-          }
       }
-
-      
+      else if (state == 2) {
+        $(`#buyBtn${id}`).hide();
+        $(`#cancelBtn${id}`).hide();
+        $(`#selectSaleBtn${id}`).hide();
+        $(`#propertyImage${id}`).addClass("inEscrow");
+        $(`#propertyImage${id}`).append("IN ESCROW");
+      }    
 
     });
   });
 }
 
-async function appendHouse(id, price, seller) {
+async function appendHouse(id, price, seller, state) {
   // console.log("appendHouse ID", id, "aH price", price, "aH seller", seller);
   var house = await houseTokenInstance.methods.getHouse(id).call();
   console.log("appendHouse", house);
-  appendCryptoHouse(id, house.uri, true, price, seller);
+  appendCryptoHouse(id, house.uri, price, seller, state);
 }
 
 async function checkOffer(id) {
@@ -339,7 +328,7 @@ async function getInventory() {
         console.log("getInventory", offer, arrayId[i]);
 
         if (offer.state) {
-          appendHouse(arrayId[i], offer.price, offer.seller);
+          appendHouse(arrayId[i], offer.price, offer.seller, offer.state);
         }
         
       }
