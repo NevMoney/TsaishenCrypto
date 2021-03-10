@@ -13,6 +13,7 @@
       let ipfsFileHash;
       let ipfsDeed;
     
+      // function to create house hash
       function hashFile(file) {
         console.log(file);
         //console.log(file.name);
@@ -31,6 +32,7 @@
         };
       }
 
+      // function to validate if uploader certified ownership
       function validateCheckbox() {
         if ($("#certification").prop("checked") == true) {
             return "Owner certified ownership.";
@@ -40,6 +42,7 @@
         }
       }
 
+      // function to create deed hash
       function hashDeed(deed) {
         console.log(deed);
         console.log(deed.name);
@@ -58,6 +61,7 @@
         };
       }
     
+      // house upload function (puts it in IPFS and creates JSON file)
       $("#upload").click((async () => {
   
         const addFileToIpfs = await
@@ -68,8 +72,7 @@
           progress: (prog) => console.log(`received: ${prog}`),
         });
     
-        $("#upload").hide();
-    
+        $("#upload").hide();   
         ipfsHash = added.cid.toString();
     
         const propertyData = JSON.stringify({
@@ -149,7 +152,6 @@
         });
     
         const insert = await ipfs.add(propertyData);
-    
         ipfsFileHash = insert.cid.toString();
     
         var amount = web3.utils.toWei("1", "ether");
@@ -171,7 +173,7 @@
         id = receipt.events.Transfer.returnValues.tokenId;
 
         const ipfsLink =
-          "<a target='_blank' rel='noopener noreferrer' href='https://gateway.ipfs.io/ipfs/" +
+          "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
           ipfsFileHash +
           "'>" +
           ipfsFileHash +
@@ -193,9 +195,19 @@
       $("#nextStep").show();
     
       ipfsDeed = adding.cid.toString();
-    
+
+      let houseArray = await usersInstance.methods.getUserHomes(user).call();
+      for (i = 0; i < houseArray.length; i++) {
+        house = await houseTokenInstance.methods.getHouse(houseArray[i]).call();
+      
+        let id = houseArray[i];
+        let confirmed = await marketplaceInstance.methods.sellerComplete(id, ipfsDeed).send({ from: user });
+        console.log("review request hash", confirmed);
+        
+      }
+        
       const ipfsDeedLink =
-        "<a target='_blank' rel='noopener noreferrer' href='https://gateway.ipfs.io/ipfs/" +
+        "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
         ipfsDeed + "'>" + ipfsDeed + "</a>";
     
       $("#ipfsDeedResult").html(ipfsDeedLink);
