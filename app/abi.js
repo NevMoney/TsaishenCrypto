@@ -703,6 +703,31 @@ var abi = {
         "type": "event"
       },
       {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "updated",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "_owner",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "Updated",
+        "type": "event"
+      },
+      {
         "inputs": [],
         "name": "DEFAULT_ADMIN_ROLE",
         "outputs": [
@@ -1422,6 +1447,19 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "destroyHouse",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
             "name": "id",
             "type": "uint256"
           }
@@ -1469,12 +1507,43 @@ var abi = {
         "constant": true
       },
       {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_marketplace",
+            "type": "address"
+          }
+        ],
+        "name": "setMarketplaceAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "withdrawAll",
         "outputs": [],
         "stateMutability": "payable",
         "type": "function",
         "payable": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_ipfsHash",
+            "type": "string"
+          }
+        ],
+        "name": "updateUri",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       }
     ],
 
@@ -1617,6 +1686,25 @@ var abi = {
           }
         ],
         "name": "RefundsEnabled",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "soldPrice",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "Sold",
         "type": "event"
       },
       {
@@ -1862,16 +1950,46 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "tokenId",
+            "name": "_tokenId",
             "type": "uint256"
           }
         ],
-        "name": "getOfferState",
+        "name": "getDeedInfo",
         "outputs": [
           {
-            "internalType": "enum Storage.OfferState",
-            "name": "",
-            "type": "uint8"
+            "internalType": "address",
+            "name": "seller",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "buyer",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "index",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "salePrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deedDate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "deedHash",
+            "type": "string"
           }
         ],
         "stateMutability": "view",
@@ -1927,6 +2045,24 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "ipfsHash",
+            "type": "string"
+          }
+        ],
+        "name": "updateHouseUri",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
             "name": "price",
             "type": "uint256"
           },
@@ -1950,6 +2086,24 @@ var abi = {
           }
         ],
         "name": "removeOffer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_deedHash",
+            "type": "string"
+          }
+        ],
+        "name": "addDeed",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -2023,8 +2177,13 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "tokenId",
+            "name": "_tokenId",
             "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_deedHash",
+            "type": "string"
           }
         ],
         "name": "sellerComplete",

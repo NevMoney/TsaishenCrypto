@@ -1,9 +1,16 @@
 // ---- CONTRACT OWNER FUNCTIONS ----
 async function ownerInitializeContracts() {
-    await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send(); 
-    await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
-    // console.log("Marketplace: ", marketplaceAddress);
-    // console.log("HouseToken: ", houseTokenAddress);
+    try {
+        await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send(); 
+        await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
+        await houseTokenInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
+        console.log("Marketplace: ", marketplaceAddress);
+        console.log("HouseToken: ", houseTokenAddress);
+        console.log("MP in HT");
+    }
+    catch (err) {
+        console.log(err);
+    }
 }
   
 async function getAllTsaishenUsers() {

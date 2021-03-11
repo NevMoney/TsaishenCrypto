@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xC5aFE31AE505594B190AC71EA689B58139d1C354";
-var houseTokenAddress = "0x42D4BA5e542d9FeD87EA657f0295F1968A61c00A";
-var marketplaceAddress = "0x25AF99b922857C37282f578F428CB7f34335B379";
+var tsaishenUsersAddress = "0xCfEB869F69431e42cdB54A4F4f105C19C080A601";
+var houseTokenAddress = "0x254dffcd3277C0b1660F6d42EFbB754edaBAbC2B";
+var marketplaceAddress = "0xC89Ce4735882C9F0f0FE26686c53074E09B0D550";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -267,9 +267,14 @@ function renderCryptoHouse(id, url, price, owner, state) {
 
 async function appendHouse(id, price, seller, state) {
   // console.log("appendHouse ID", id, "aH price", price, "aH seller", seller);
-  var house = await houseTokenInstance.methods.getHouse(id).call();
-  console.log("appendHouse", house);
-  appendCryptoHouse(id, house.uri, price, seller, state);
+  try {
+    var house = await houseTokenInstance.methods.getHouse(id).call();
+    console.log("appendHouse", house);
+    appendCryptoHouse(id, house.uri, price, seller, state);
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
 
 async function checkOffer(id) {
@@ -340,25 +345,35 @@ async function getInventory() {
 }
 
 async function removeOffer(id) {
-  const offer = await checkOffer(id);
-  if (offer.state == 0) {
-    return alert("Nothing to cancel. This property is not listed.");
-  } else if (offer.state == 2) {
-    return alert("You can't cancel this listing. This property is in escrow. To cancel escrow, please visit Portfolio Page and cancel there.");
+  try {
+    const offer = await checkOffer(id);
+    if (offer.state == 0) {
+      return alert("Nothing to cancel. This property is not listed.");
+    } else if (offer.state == 2) {
+      return alert("You can't cancel this listing. This property is in escrow. To cancel escrow, please visit Portfolio Page and cancel there.");
+    }
+    await marketplaceInstance.methods.removeOffer(id).send({ from: user });
+    goToInventory();
   }
-  await marketplaceInstance.methods.removeOffer(id).send({ from: user });
-  goToInventory();
+  catch (err) {
+    console.log(err);
+  }
 }
 
 async function getRecentTokenPrice(id, price, token) {
-  // console.log("getRecentTokenPriceID", id, "recentTokenPrice", price, "tokenAdd", token);
-  let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(token).call();
-  let recentPrice, priceTime;
-  [recentPrice, priceTime] = Object.values(oracleObject);
-  let conversion = recentPrice / 100000000;
-  let priceInCrypto = (price / conversion);
-  // console.log("token price and time: ", priceInCrypto, priceTime);
-  return priceInCrypto;
+  try {
+    // console.log("getRecentTokenPriceID", id, "recentTokenPrice", price, "tokenAdd", token);
+    let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(token).call();
+    let recentPrice, priceTime;
+    [recentPrice, priceTime] = Object.values(oracleObject);
+    let conversion = recentPrice / 100000000;
+    let priceInCrypto = (price / conversion);
+    // console.log("token price and time: ", priceInCrypto, priceTime);
+    return priceInCrypto;
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
 
 async function selectToken(id) {

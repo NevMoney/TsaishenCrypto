@@ -172,13 +172,13 @@ async function sellerEscrowInfo() {
   
 // for seller to confirm delivery (if this failes to automatically run when deed is uploaded
 // I may need to add a button)
-  async function deedUploaded(id) {
-    try {
-      let confirmed = await marketplaceInstance.methods.sellerComplete(id).send({ from: user });
-      console.log("review request hash", confirmed);
-      goToPortfolio();
-    }
-    catch (err) {
-      console.log(err);
-    }
-  }
+  // async function deedUploaded(id) {
+  //   try {
+  //     let confirmed = await marketplaceInstance.methods.sellerComplete(id).send({ from: user });
+  //     console.log("review request hash", confirmed);
+  //     goToPortfolio();
+  //   }
+  //   catch (err) {
+  //     console.log(err);
+  //   }
+  // }
