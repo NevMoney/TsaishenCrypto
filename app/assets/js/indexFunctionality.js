@@ -1,3 +1,7 @@
+var saleId;
+var salePrice;
+var saleToken;
+
 $(document).ready(async () => {
     $("#market-container").hide();
     $("#deed-container").hide();
@@ -7,7 +11,7 @@ $(document).ready(async () => {
     $("#learnMore").hide();
     $("#aboutPage").hide();
     $("#escrowPage").hide();
-});  
+});
 
 $(".marketLink").on("click", function () {
     goToInventory();
@@ -248,7 +252,6 @@ function goToPortfolio() {
     sellerEscrowInfo();
 }
 
-
 function certificationValidation() {
     if ($("#certification").prop("checked") == false){
       alert("WARNING: You have failed to certify ownership. Ownership certificaiton is shown to all. Please CANCEL upload, verify ownership, then proceed.");
@@ -258,10 +261,6 @@ function certificationValidation() {
 $("#file").on("click", function () {
     certificationValidation();
 });
-
-var saleId;
-var salePrice;
-var saleToken;
     
 function selectHouseForSale(id) {
     saleId = id;
@@ -344,6 +343,18 @@ $("#unpauseBtn").on("click", function () {
 
 $("#mintBtn").on("click", function () {
     mintHouse(); 
+});
+
+$("#burnBtn").on("click", function () {
+    burnHouseToken(); 
+});
+
+$("#updateUriBtn").on("click", function () {
+    ownerUpdateUri(); 
+});
+
+$("#getDeedInfoBtn").on("click", function () {
+    fetchDeedInfo();
 });
 
 $("#ownerCloseBtn").hide();

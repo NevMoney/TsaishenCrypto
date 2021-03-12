@@ -2093,24 +2093,6 @@ var abi = {
       {
         "inputs": [
           {
-            "internalType": "uint256",
-            "name": "_tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "_deedHash",
-            "type": "string"
-          }
-        ],
-        "name": "addDeed",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
             "internalType": "contract IERC20",
             "name": "token",
             "type": "address"

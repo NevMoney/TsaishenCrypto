@@ -45,7 +45,7 @@
       // function to create deed hash
       function hashDeed(deed) {
         console.log(deed);
-        console.log(deed.name);
+        // console.log(deed.name);
         $("#deed-container").hide(deed.name);
         $("#nextStep").hide();
         $("#deedFileName").show();
@@ -55,7 +55,7 @@
         deedReader.readAsArrayBuffer(deed);
         deedReader.onloadend = () => {
           buffer = Buffer(deedReader.result);
-          console.log(buffer);
+          // console.log(buffer);
           const hash = window.web3.utils.sha3(buffer);
           console.log("deedHash", hash);
         };
@@ -196,23 +196,17 @@
     
       ipfsDeed = adding.cid.toString();
 
-      let houseArray = await usersInstance.methods.getUserHomes(user).call();
-      for (i = 0; i < houseArray.length; i++) {
-        house = await houseTokenInstance.methods.getHouse(houseArray[i]).call();
-      
-        let id = houseArray[i];
-        let confirmed = await marketplaceInstance.methods.sellerComplete(id, ipfsDeed).send({ from: user });
-        console.log("review request hash", confirmed);
-        
-      }
-        
-      const ipfsDeedLink =
-        "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
-        ipfsDeed + "'>" + ipfsDeed + "</a>";
+      // const ipfsDeedLink =
+      //   "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
+      //   ipfsDeed + "'>" + ipfsDeed + "</a>";
     
-      $("#ipfsDeedResult").html(ipfsDeedLink);
+      // $("#ipfsDeedResult").html(ipfsDeedLink);
+
+      $("#ipfsDeedResult").html(ipfsDeed);
+
+      return ipfsDeed;
     };
-    
+         
     const showModal = (title, content) => {
       const modal = `
         <div class="modal-dialog modal-dialog-centered">

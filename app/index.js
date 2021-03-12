@@ -58,6 +58,21 @@ $(document).ready(async () => {
   })
     .on("error", console.error);
   
+  houseTokenInstance.events.Updated().on("data", function (event) {
+    let eventType = event.returnValues["updated"].toString();
+    let owner = event.returnValues._owner;
+    // let houseId = event.returnValues.3; //NEED TO CHECK THIS
+    if (eventType == "House deleted") {
+      $("#houseUploadedMsg").append(`HOUS token owner, ${owner} has successfully destroyed their HOUS token for property ID ENTER ID HERE.`);
+      $("#houseUploadedMsg").show();
+    }
+    if (eventType == "Updated uri") {
+      $("#houseUploadedMsg").append(`HOUS token owner, ${owner} of property ID ENTER ID HERE has successfully updated property information.`);
+      $("#houseUploadedMsg").show();
+    }
+  })
+    .on("error", console.error);
+  
   marketplaceInstance.events.MarketTransaction().on("data", (event) => {
     var eventType = event.returnValues["TxType"].toString();
     var tokenId = event.returnValues["tokenId"];

@@ -185,28 +185,6 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("Offer removed", msg.sender, tokenId);
     }
 
-    // -- house transaction --
-    function addDeed(uint256 _tokenId, string memory _deedHash) public {
-        require(msg.sender == escrowById[_tokenId].seller || msg.sender == owner(), "Mp: Not authorized");
-
-        ( , uint256 salePrice, , , , ) = getOffer(_tokenId);
-
-        Deed memory _deed = Deed({
-            seller: escrowById[_tokenId].seller,
-            buyer: escrowById[_tokenId].buyer,
-            tokenId: _tokenId,
-            index: deeds.length,
-            salePrice: salePrice,
-            deedDate: now, 
-            deedHash: _deedHash
-        });
-
-        deedInfo[_tokenId] = _deed;
-        deeds.push(_deed);
-
-        emit MarketTransaction("Deed added.", msg.sender, _tokenId);
-    }
-
     function buyHouse (IERC20 token, uint256 tokenId) public payable nonReentrant{
         // access offer
         Offer storage offer = offerDetails[tokenId];  
@@ -305,7 +283,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         require(offerDetails[_tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow");
         require(escrowById[_tokenId].state == State.Active, "Mp: Escrow not active");
 
-        addDeed(_tokenId, _deedHash);
+        _addDeed(_tokenId, _deedHash);
         _close(_tokenId);
 
         emit MarketTransaction("Seller uploaded docs.", msg.sender, _tokenId);
@@ -384,5 +362,26 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     //*** INTERNAL ***
     function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool) {
         return (_houseToken.ownerOf(_tokenId) == _address);
+    }
+
+    // -- house transaction --
+    function _addDeed(uint256 _tokenId, string memory _deedHash) internal {
+        
+        ( , uint256 salePrice, , , , ) = getOffer(_tokenId);
+
+        Deed memory _deed = Deed({
+            seller: escrowById[_tokenId].seller,
+            buyer: escrowById[_tokenId].buyer,
+            tokenId: _tokenId,
+            index: deeds.length,
+            salePrice: salePrice,
+            deedDate: now, 
+            deedHash: _deedHash
+        });
+
+        deedInfo[_tokenId] = _deed;
+        deeds.push(_deed);
+
+        emit MarketTransaction("Deed added.", msg.sender, _tokenId);
     }
 }

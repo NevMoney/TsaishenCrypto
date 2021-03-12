@@ -245,3 +245,25 @@ async function mintHouse() {
     let minted = await houseTokenInstance.methods.mint(user).send();
     console.log("house minted", minted);
 }
+
+async function burnHouseToken() {
+    try {
+        let burn = await houseTokenInstance.methods.destroyHouse(id).send({ from: user });
+        console.log("house burn", burn);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+// NEED to get an ID and IPFS hash first
+async function ownerUpdateUri() {
+    try {
+        let update = await houseTokenInstance.methods.updateUri(id, ipfsHash).send({ from: user });
+        console.log("ownerUpdateUri", update);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
