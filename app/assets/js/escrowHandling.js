@@ -191,8 +191,12 @@ async function fetchDeedInfo(id) {
 async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
   let escrowInfo = await marketplaceInstance.methods.escrowInfo(id).call();
   let token = escrowInfo.token;
-  let deedDate = new Date(date * 1000).toUTCString();
-  price = web3.utils.fromWei(price);
+  let deedDate = new Date(date * 1000).toLocaleString();
+  let showPrice = new Intl.NumberFormat().format(price);
+  let indexDisplay = Number(index) + 1;
+  const ipfsDeedLink =
+        "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
+        hash + "'>" + hash + "</a>";
 
   if (token == ethAddress) {
     token = "ETH";
@@ -208,25 +212,26 @@ async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
       <tbody>
         <tr>
           <td><b>Seller:</b> ${seller}</td>
-          <td><b>Buyer:</b> ${buyer}</td>
+          <td><b>Buyer:</b><br> ${buyer}</td>
         </tr>
         <tr>
-          <td><b>Sale Price:</b> ${price} ${token}</td>  
-          <td><b>Sale Date:</b> ${deedDate}</td>
+          <td><b>Sale Price:</b> $${showPrice}</td>
+          <td><b>Purchased With:</b> ${token}</td>
         </tr>
         <tr>
-          <td><b>Property ID</b> ${id}</td>
-          <td><b>Deed Index:</b> ${index}</td>
+          <td><b>Deed Upload Date:</b> ${deedDate}</td>  
+          <td><b>Deed Link:</b> ${ipfsDeedLink}</td>
         </tr>
         <tr>
-          <td><b>Deed Hash</b> ${hash}</td>
+          <td><b>Property ID</b> ${id}</td>  
+          <td><b>Deeds for this property:</b> ${indexDisplay}</td>
         </tr>
       </tbody>
     </table>`
   );
 }
 
-async function uploadDeed(id) {
+async function uploadDeed() {
   // show upload information
   $("#market-container").hide();
   $("#upload-container").hide();
@@ -238,48 +243,4 @@ async function uploadDeed(id) {
   $("#escrowPage").hide();
   
   $("#deed-container").show();
-  
-  // getHash(id);
 }
-
-async function getHash(id) {
-  let deed = ipfsDeedResult.innerHTML;
-  console.log(id);
-  console.log(deed);
-  goToPortfolio();
-  $("#escrowBuyerDisplay").append(
-    `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="ipfsDeedBtn${id}" onclick="">IPFS Deed ${deed} ${id}</div>`
-  );
-  let package = { deed: deed, id: id };
-  return package;
-}
-
-// async function sellerCompleteSale(id, deed) {
-//   console.log("uploadedDeed", uploadedDeed, "id", id);
-//   // try {
-//   //   let deed = await marketplaceInstance.methods.sellerComplete(id, uploadedDeed).send({ from: user }); 
-//   //     console.log("uploadDeed", deed);
-//   // }
-//   // catch (err) {
-//   //     console.log(err);
-//   // }
-// }
-
-// async function deedUploaded(id) {
-//   try {
-//     let confirmed = await marketplaceInstance.methods.sellerComplete(id).send({ from: user });
-//     console.log("review request hash", confirmed);
-//     goToPortfolio();
-//   }
-//   catch (err) {
-//     console.log(err);
-//   }
-// }
-
-// let houseArray = await usersInstance.methods.getUserHomes(user).call();
-//   for (i = 0; i < houseArray.length; i++) {
-//     house = await houseTokenInstance.methods.getHouse(houseArray[i]).call();
-//     let id = houseArray[i];
-//     return (ipfsDeed, id);
-//   }
-  
