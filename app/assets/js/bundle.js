@@ -172,13 +172,14 @@
 
         id = receipt.events.Transfer.returnValues.tokenId;
 
-        const ipfsLink =
-          "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
-          ipfsFileHash +
-          "'>" +
-          ipfsFileHash +
-          "</a>";
-        $("#ipfsResult").html(ipfsLink);
+        // const ipfsLink =
+        //   "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
+        //   ipfsFileHash +
+        //   "'>" +
+        //   ipfsFileHash +
+        //   "</a>";
+        // $("#ipfsResult").html(ipfsLink);
+        $("#fileName>h5").hide();
 
         console.log("data hash: " + ipfsFileHash);
       

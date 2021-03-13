@@ -267,3 +267,52 @@ async function ownerUpdateUri() {
     }
 }
 
+async function ownerAddHouseToUser() {
+    try {
+        
+        console.log("ownerUpdateUri", update);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+async function ownerRemoveHouseFromUser() {
+    try {
+        
+        console.log("ownerUpdateUri", update);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+async function ownerAddUser() {
+    try {
+        
+        console.log("ownerUpdateUri", update);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+async function ownerRemoveUser() {
+    try {
+        
+        console.log("ownerUpdateUri", update);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+async function ownerUpdateDeed() {
+    try {
+        
+        console.log("ownerUpdateUri", update);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}

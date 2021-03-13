@@ -1236,14 +1236,14 @@
           <div class="btn btn-dark mr-1 lift mb-md-6" id="pauseBtn"><i class="fas fa-pause"></i> HT</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="unpauseBtn"><i class="fas fa-play"></i> HT</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="mintBtn">Mint <i class="fas fa-home"></i></div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="burnBtn">Burn <i class="fab fa-gripfire"></i></div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="updateUriBtn"><i class="fas fa-upload"></i> URI <i class="fas fa-code"></i></div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="getDeedInfoBtn">Deed <i class="fas fa-info"></i></div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="addDeedBtn"><i class="far fa-plus-square"></i> Deed</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="addUserBtn"><i class="far fa-plus-square"></i> <i class="fas fa-users"></i></div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="deletUserBtn"><i class="far fa-minus-square"></i> <i class="fas fa-users"></i></div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="addHouseToUserBtn"><i class="far fa-plus-square"></i> <i class="fas fa-home"></i> <i class="fas fa-users"></i></div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="deleteHouseFromUserBtn"><i class="far fa-minus-square"></i> <i class="fas fa-home"></i> <i class="fas fa-users"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="burnBtn" data-toggle="modal" data-target="#inputInfoModal">Burn <i class="fab fa-gripfire"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="updateUriBtn" data-toggle="modal" data-target="#inputInfoModal"><i class="fas fa-upload"></i> URI <i class="fas fa-code"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="getDeedInfoBtn" data-toggle="modal" data-target="#inputInfoModal">Deed <i class="fas fa-info"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="addDeedBtn" data-toggle="modal" data-target="#inputInfoModal"><i class="far fa-plus-square"></i> Deed</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="addUserBtn" data-toggle="modal" data-target="#inputInfoModal"><i class="far fa-plus-square"></i> <i class="fas fa-users"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="deletUserBtn" data-toggle="modal" data-target="#inputInfoModal"><i class="far fa-minus-square"></i> <i class="fas fa-users"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="addHouseToUserBtn" data-toggle="modal" data-target="#inputInfoModal"><i class="far fa-plus-square"></i> <i class="fas fa-home"></i> <i class="fas fa-users"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="deleteHouseFromUserBtn" data-toggle="modal" data-target="#inputInfoModal"><i class="far fa-minus-square"></i> <i class="fas fa-home"></i> <i class="fas fa-users"></i></div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="userCountBtn"><i class="fas fa-users"></i> #</div>
           <div id="balanceDisplay"></div>
           <div class="btn btn-primary" id="ownerCloseBtn">CLOSE</div>
@@ -2898,6 +2898,65 @@
                   Install MetaMask &#x2913;
               </button>
 
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Info Modal -->
+      <div class="modal fade bd-example-modal-lg" id="inputInfoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeTokenModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title h3">Owner Functions Input</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-md-12 justify-content-center" align="left">
+                    <h5>Tokens & Users</h5>
+                    <div class="input-group-append" id="tokensAndUsers">
+                      <input class="form-control" id="houseIdInput" placeholder="House ID">
+                      <input class="form-control" id="userAddressInput" placeholder="User Address (only if adding house to user)">                      
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 justify-content-right" align="left">
+                        <button class="btn btn-danger-soft light-b-shadow" id="burnTokenBtn"><i class="fab fa-free-code-camp"></i> <i class="fas fa-coins"></i></button>
+                      </div>
+                      <div class="col-md-4 justify-content-right" align="center">
+                        <button class="btn btn-success-soft light-b-shadow" id="addTokenToUserBtn"><i class="fas fa-plus"></i> <i class="fas fa-house-user"></i></button>
+                      </div>
+                      <div class="col-md-4 justify-content-right" align="right">
+                        <button class="btn btn-danger-soft light-b-shadow" id="deleteTokenFromUserBtn"><i class="fas fa-minus"></i> <i class="fas fa-house-user"></i></button>
+                      </div>
+                    </div>
+                    <hr>
+                    <h5>Add & Delete Users</h5>
+                    <div class="input-group-append" id="addRemoveUsers">
+                      <input class="form-control" id="addresOfUserInput" placeholder="User Address">
+                      <button class="btn btn-success-soft light-b-shadow" id="addUserToContractBtn"><i class="fas fa-user-plus"></i></button>
+                      <button class="btn btn-danger-soft light-b-shadow" id="removeUserBtn"><i class="fas fa-user-minus"></i></button>
+                    </div>
+                    <hr>
+                    <h5>Update House URI or Deed</h5>
+                    <div class="input-group-append" id="houseTokenUrls">
+                      <input class="form-control" id="houseIdInsert" placeholder="House ID">
+                      <input class="form-control" id="houseUrlInput" placeholder="IPFS hash">
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6 justify-content-right" align="left">
+                        <button class="btn btn-primary-soft light-b-shadow" id="updateHouseListingBtn"><i class="fas fa-file-upload"></i> URI</button>
+                      </div>
+                      <div class="col-md-6 justify-content-right" align="right">
+                        <button class="btn btn-primary-soft light-b-shadow" id="updateHouseDeedBtn"><i class="fas fa-file-upload"></i> Deed</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

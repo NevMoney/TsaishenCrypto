@@ -366,6 +366,34 @@ $("#ownerCloseBtn").on("click", function () {
     $("#userDisplayTable").hide();
 });
 
+$("#burnTokenBtn").on("click", function () {
+    burnHouseToken();
+});
+
+$("#addTokenToUserBtn").on("click", function () {
+    ownerAddHouseToUser();
+});
+
+$("#deleteTokenFromUserBtn").on("click", function () {
+    ownerRemoveHouseFromUser()
+});
+
+$("#addUserToContractBtn").on("click", function () {
+    ownerAddUser();
+});
+
+$("#removeUserBtn").on("click", function () {
+    ownerRemoveUser();
+});
+
+$("#updateHouseListingBtn").on("click", function () {
+    ownerUpdateUri();
+});
+
+$("#updateHouseDeedBtn").on("click", function () {
+    ownerUpdateDeed();
+});
+
 // for individual house escrow info
 $("#escrowInfoBtn").on("click", function () {
     houseEscrowInfo().then(() => {
