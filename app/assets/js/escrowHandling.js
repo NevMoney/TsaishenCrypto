@@ -5,6 +5,7 @@ async function sellerEscrowInfo() {
     // console.log("seller escrow", sellerEscrow);
 
     $("#portfolioLoading").hide();
+    $("#nextStep").hide();
 
     if (sellerEscrow.amount > 0) {
       if (user === sellerEscrow.buyer || user === sellerEscrow.seller) {
@@ -237,60 +238,23 @@ async function uploadDeed(id) {
   $("#escrowPage").hide();
   
   $("#deed-container").show();
-
-  // append hash from bundle.js
-  // $("#sellerDeedUploadInfoDisplay").append(
-  //   `<input id="deed" type="file" name="deed" class="inputfile" />
-  //   <label for="deed" id="deedLabel${id}">Upload Deed ${id}</label>
-    
-  //   <div id="deedFileName" s>
-  //     <h5></h5>
-  //     <button id="deedUpload" type="button" class="btn btn-dark" value="SUBMIT">Upload</button>
-      
-  //     <div id="ipfsDeedResult" class="mt-4" onclick="getHash()"></div>
-  //     <div id="nextStep">
-  //       <br>
-  //       <p>Here is your deed transfer link, cryptographically protected on a decentralized network. 
-  //         Save it for your records.</p>
-  //       <p><b>What Happens Next?</b></p>
-  //       <ul>
-  //         <li>We'll notify the buyer right away, so they can inspect the document (please note they have 3 
-  //           calendar days). If there are any issues, we'll be sure to let you know immediately.</li>
-  //         <li>Once they confirm everything is in order or 3 days have passed, whichever comes first, the funds 
-  //           will be automatically transfered into your wallet.</li>
-  //         <li>Finally, we recommend you check with the land-registry in about 6-12 weeks to ensure that the buyer 
-  //           has mailed the deed for recording and transfer is complete. If you discover that property is still in 
-  //           your name, feel free to mail it on their behalf.</li>
-  //       </ul>
-        
-  //       <p>Thanks for using Tsaishen Crypto. We sincerely hope that this was the fastest, cheapest, and
-  //         simplest house selling process ever. <i>We secretly hope it was fun, too!</i> 
-  //         If so, will you kindly leave us <a href="https://TRUSTPILOT REVIEW LINK" target="_blank" rel="noopener noreferrer" style="color: gray;">
-  //           a raving review <i class="fas fa-external-link-alt"></i></a> ?
-  //         If there were any issues, please <a href ="mailto:tsaishenco@gmail.com"> tell us </a>
-  //         so that we can fix them.
-  //       </p>
-  //     </div>
-  //   </div>`
-  // );
   
   // getHash(id);
 }
 
-// async function getHash(id) {
-//   let deed = ipfsDeedResult.innerHTML;
-//   console.log(id);
-//   console.log(deed);
-//   goToPortfolio();
-//   $("#escrowBuyerDisplay").append(
-//     `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="ipfsDeedBtn${id}" onclick="">IPFS Deed ${deed} ${id}</div>`
-//   );
-//   let package = { deed: deed, id: id };
-//   return package;
-// }
+async function getHash(id) {
+  let deed = ipfsDeedResult.innerHTML;
+  console.log(id);
+  console.log(deed);
+  goToPortfolio();
+  $("#escrowBuyerDisplay").append(
+    `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="ipfsDeedBtn${id}" onclick="">IPFS Deed ${deed} ${id}</div>`
+  );
+  let package = { deed: deed, id: id };
+  return package;
+}
 
-// async function sellerCompleteSale(id) {
-//   let uploadedDeed = await getHash(id);
+// async function sellerCompleteSale(id, deed) {
 //   console.log("uploadedDeed", uploadedDeed, "id", id);
 //   // try {
 //   //   let deed = await marketplaceInstance.methods.sellerComplete(id, uploadedDeed).send({ from: user }); 

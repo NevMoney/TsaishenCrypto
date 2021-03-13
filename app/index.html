@@ -1131,13 +1131,15 @@
           <h5></h5>
           <button id="deedUpload" type="button" class="btn btn-dark" value="SUBMIT">Upload</button>
           
-          <div id="ipfsDeedResult" class="mt-4"></div>
+          
           <div id="nextStep">
             <br>
-            <p>Here is your deed transfer link, cryptographically protected on a decentralized network. 
-              Save it for your records.</p>
-            <p><b>What Happens Next?</b></p>
-            <ul>
+            <p class="font-size-lg">Here is the link to your deed transfer. Take another look to confirm it's correct and save it for your records: 
+              <div id="ipfsDeedResult" class="mt-4"></div>
+            </p>
+            <div id="finishDeedUpload"></div>
+            <p class="display-4"><b>What Happens Next?</b></p>
+            <ul class="font-size-lg">
               <li>We'll notify the buyer right away, so they can inspect the document (please note they have 3 
                 calendar days). If there are any issues, we'll be sure to let you know immediately.</li>
               <li>Once they confirm everything is in order or 3 days have passed, whichever comes first, the funds 
@@ -3020,8 +3022,8 @@
         </div>
       </div>
 
-      <!-- NOT USING AT THE MOMENT!!! Escrow Info Modal -->
-      <div class="modal fade" id="escrowInfoModal" tabindex="-1" role="dialog" aria-labelledby="escrowInfo" aria-hidden="true">
+      <!-- Finalize Sale Modal -->
+      <div class="modal fade bd-example-modal-lg" id="finalizeSaleModal" tabindex="-1" role="dialog" aria-labelledby="finalizeSale" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-body">
@@ -3031,22 +3033,13 @@
                 <span aria-hidden="true">×</span>
               </button>
 
-              <!-- Image -->
-              <div class="text-center">
-                <img src="Landkit-1.2.1/dist/assets/img/illustrations/illustration-7.png" alt="..." class="img-fluid mb-3" style="width: 200px;">
-              </div>
-
               <!-- Heading -->
               <h2 class="font-weight-bold text-center mb-1" >
-                Property Escrow Information
+                Confirm Property For Which You're Upload Deed
               </h2>
 
               <!-- Table -->
-              <div class="table table-responsive" id="escrowInfoDisplay"></div>
-
-              <button type="button" class="close btn btn-block btn-primary mt-3 lift" data-dismiss="modal" aria-label="Close">
-                OK
-              </button>
+              <div class="table table-responsive" id="allMyHouses"></div>
 
             </div>
           </div>
