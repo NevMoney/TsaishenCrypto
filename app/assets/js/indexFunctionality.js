@@ -345,10 +345,6 @@ $("#mintBtn").on("click", function () {
     mintHouse(); 
 });
 
-$("#burnBtn").on("click", function () {
-    burnHouseToken(); 
-});
-
 $("#updateUriBtn").on("click", function () {
     ownerUpdateUri(); 
 });
@@ -367,31 +363,45 @@ $("#ownerCloseBtn").on("click", function () {
 });
 
 $("#burnTokenBtn").on("click", function () {
-    burnHouseToken();
+    burnHouseToken().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
 });
 
 $("#addTokenToUserBtn").on("click", function () {
-    ownerAddHouseToUser();
+    ownerAddHouseToUser().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
 });
 
 $("#deleteTokenFromUserBtn").on("click", function () {
-    ownerRemoveHouseFromUser()
+    ownerRemoveHouseFromUser().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
 });
 
 $("#addUserToContractBtn").on("click", function () {
-    ownerAddUser();
+    ownerAddUser().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
 });
 
 $("#removeUserBtn").on("click", function () {
-    ownerRemoveUser();
+    ownerRemoveUser().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
 });
 
 $("#updateHouseListingBtn").on("click", function () {
-    ownerUpdateUri();
+    ownerUpdateUri().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
 });
 
 $("#updateHouseDeedBtn").on("click", function () {
-    ownerUpdateDeed();
+    ownerUpdateDeed().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
 });
 
 // for individual house escrow info

@@ -244,12 +244,19 @@ async function mintHouse() {
     // use this is to create ZERO house
     let minted = await houseTokenInstance.methods.mint(user).send();
     console.log("house minted", minted);
+    console.log(minted.events.Transfer.returnValues);
+    let to = minted.events.Transfer.returnValues.to;
+    let id = minted.events.Transfer.returnValues.tokenId;
+    $("#balanceDisplay").append(
+        `<p>House ID ${id} is minted for: ${to}</p>`);
 }
 
 async function burnHouseToken() {
+    var id = $("#houseIdInput").val();
     try {
         let burn = await houseTokenInstance.methods.destroyHouse(id).send({ from: user });
         console.log("house burn", burn);
+        alert("House token burned.");
     }
     catch (err) {
         console.log(err);
@@ -258,9 +265,12 @@ async function burnHouseToken() {
 
 // NEED to get an ID and IPFS hash first
 async function ownerUpdateUri() {
+    var id = $("#houseIdInput").val();
+    var url = $("#houseUrlInput").val();
     try {
-        let update = await houseTokenInstance.methods.updateUri(id, ipfsHash).send({ from: user });
+        let update = await houseTokenInstance.methods.updateUri(id, url).send({ from: user });
         console.log("ownerUpdateUri", update);
+        alert("House URI was successfully updated");
     }
     catch (err) {
         console.log(err);
@@ -268,9 +278,12 @@ async function ownerUpdateUri() {
 }
 
 async function ownerAddHouseToUser() {
+    var id = $("#houseIdInput").val();
+    var address = $("#addresOfUserInput").val();
     try {
-        
-        console.log("ownerUpdateUri", update);
+        let added = await usersInstance.methods.addHouseToUser(address, id).send({ from: user });
+        console.log("added house to user", added);
+        alert("House added to user");
     }
     catch (err) {
         console.log(err);
@@ -278,9 +291,12 @@ async function ownerAddHouseToUser() {
 }
 
 async function ownerRemoveHouseFromUser() {
+    var id = $("#houseIdInput").val();
+    var address = $("#addresOfUserInput").val();
     try {
-        
-        console.log("ownerUpdateUri", update);
+        let removed = await usersInstance.methods.deleteHouseFromUser(address, id).send({ from: user });
+        console.log("removed house from user", removed);
+        alert("House removed from user");
     }
     catch (err) {
         console.log(err);
@@ -288,9 +304,11 @@ async function ownerRemoveHouseFromUser() {
 }
 
 async function ownerAddUser() {
+    var address = $("#addresOfUserInput").val();
     try {
-        
-        console.log("ownerUpdateUri", update);
+        let userAdded = await usersInstance.methods.addUser(address).send({ from: user });
+        console.log("added user", userAdded);
+        alert("User added");
     }
     catch (err) {
         console.log(err);
@@ -298,9 +316,11 @@ async function ownerAddUser() {
 }
 
 async function ownerRemoveUser() {
+    var address = $("#addresOfUserInput").val();
     try {
-        
-        console.log("ownerUpdateUri", update);
+        let userDeleted = await usersInstance.methods.deleteUser(address).send({ from: user });
+        console.log("added user", userDeleted);
+        alert("User removed");
     }
     catch (err) {
         console.log(err);
