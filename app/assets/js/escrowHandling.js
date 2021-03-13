@@ -86,7 +86,7 @@ async function houseEscrowInfo(id) {
 async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
   let checkRefund = await marketplaceInstance.methods.refundAllowed(id).call();
   let checkWithdrawal = await marketplaceInstance.methods.withdrawalAllowed(id).call();
-  let escrowDate = new Date(time * 1000).toUTCString();
+  let escrowDate = new Date(time * 1000).toLocaleString();
   amount = web3.utils.fromWei(amount);
   
   if (state == 0) {
@@ -115,14 +115,15 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
         </tr>
         <tr>
           <td><b>Escrow Amount:</b> ${amount} ${token}</td>  
-          <td><b>Escrow State:</b> ${state}</td>
+          <td><b>Escrow Is Now:</b> ${state}</td>
         </tr>
         <tr>
-          <td><b>Refund permitted currently?</b> ${checkRefund}</td>
-          <td><b>Withdrawals permited currently?</b> ${checkWithdrawal}</td>
+          <td><b>Refunds permitted?</b> ${checkRefund}*</td>
+          <td><b>Funds/Next Step Unlock Date:</b> ${escrowDate}</td>
         </tr>
         <tr>
-          <td><b>Current State Ends:</b> ${escrowDate}</td>
+          <td><b>Withdrawals permited?</b> ${checkWithdrawal}*</td>
+          <td><i>* Please note that this could change with above date.</i></td>
         </tr>
       </tbody>
     </table>`

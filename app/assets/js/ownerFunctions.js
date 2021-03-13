@@ -225,7 +225,7 @@ async function checkContractBalance() {
 }
 
 async function withdrawFunds() {
-    let withdrawal = await houseTokenInstance.methods.withdrawAll().send({ to: user });
+    let withdrawal = await houseTokenInstance.methods.withdrawAll().send({ to: creatorAddress });
     console.log("Funds sent", withdrawal);
 }
 
