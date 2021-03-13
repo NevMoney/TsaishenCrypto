@@ -133,7 +133,7 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
 // for buyer to confirm delivery
 async function deedConfirm(id) {
   try {
-    let confirm = await marketplaceInstance.methods.buyerVerify(id).send({ from: user });
+    let confirm = await marketplaceInstance.methods.buyerVerify(id).send();
     console.log("confirm delivery", confirm);
     goToPortfolio();
   }

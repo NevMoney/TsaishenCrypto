@@ -214,46 +214,6 @@ var abi = {
         "inputs": [
           {
             "internalType": "address",
-            "name": "borrower",
-            "type": "address"
-          }
-        ],
-        "name": "borrowedMoney",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "lender",
-            "type": "address"
-          }
-        ],
-        "name": "lentMoney",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
             "name": "user",
             "type": "address"
           }

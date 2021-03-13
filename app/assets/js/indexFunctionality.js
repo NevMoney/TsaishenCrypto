@@ -350,7 +350,7 @@ $("#updateUriBtn").on("click", function () {
 });
 
 $("#getDeedInfoBtn").on("click", function () {
-    fetchDeedInfo();
+    ownerDeedInfo();
 });
 
 $("#ownerCloseBtn").hide();
@@ -402,6 +402,11 @@ $("#updateHouseDeedBtn").on("click", function () {
     ownerUpdateDeed().then(() => {
         $("#inputInfoModal").modal("hide");
     });
+});
+
+$("#userCountBtn").on("click", function () {
+    getUserCount();
+    $("#ownerCloseBtn").show();
 });
 
 // for individual house escrow info

@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xCfEB869F69431e42cdB54A4F4f105C19C080A601";
-var houseTokenAddress = "0x254dffcd3277C0b1660F6d42EFbB754edaBAbC2B";
-var marketplaceAddress = "0xC89Ce4735882C9F0f0FE26686c53074E09B0D550";
+var tsaishenUsersAddress = "0x4339316e04CFfB5961D1c41fEF8E44bfA2A7fBd1";
+var houseTokenAddress = "0xdAA71FBBA28C946258DD3d5FcC9001401f72270F";
+var marketplaceAddress = "0xf19A2A01B70519f67ADb309a994Ec8c69A967E8b";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses

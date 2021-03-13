@@ -1134,23 +1134,24 @@
           
           <div id="nextStep">
             <br>
-            <p class="font-size-lg">Here is the link to your deed transfer. Take another look to confirm it's correct and save it for your records: 
+            <p class="font-size-lg">Here is the link to your deed transfer. Take another look to confirm it's correct, 
+              save it for your records and the click the button below to finalize: 
               <div id="ipfsDeedResult" class="mt-4"></div>
             </p>
             <div id="finishDeedUpload"></div>
             <p class="display-4"><b>What Happens Next?</b></p>
             <ul class="font-size-lg">
-              <li>We'll notify the buyer right away, so they can inspect the document (please note they have 3 
-                calendar days). If there are any issues, we'll be sure to let you know immediately.</li>
+              <li>Once you finalize the deed upload to the blockchain, the buyer will have 3 days to inspect and approve. 
+                If there are any issues, they will be able to let you know (please check regularly in the Portfolio's Escrow section).</li>
               <li>Once they confirm everything is in order or 3 days have passed, whichever comes first, the funds 
-                will be automatically transfered into your wallet.</li>
-              <li>Finally, we recommend you check with the land-registry in about 6-12 weeks to ensure that the buyer 
-                has mailed the deed for recording and transfer is complete. If you discover that property is still in 
-                your name, feel free to mail it on their behalf.</li>
+                will transfer can occur.</li>
+              <li>We recommend you check with the land-registry in about 6-12 weeks to ensure that the buyer 
+                has mailed the deed for recording. If you discover that property is still in your name, please know that
+                you can mail it on their behalf.</li>
             </ul>
             <!-- fix review link-->
             <p>Thanks for using Tsaishen Crypto. We sincerely hope that this was the fastest, cheapest, and
-              simplest house selling process ever. <i>We secretly hope it was fun, too!</i> 
+              simplest house selling process ever. <i>We secretly hope it was a bit fun, too!</i> 
               If so, will you kindly leave us <a href="https://TRUSTPILOT REVIEW LINK" target="_blank" rel="noopener noreferrer" style="color: gray;">
                 a raving review <i class="fas fa-external-link-alt"></i></a> ?
               If there were any issues, please <a href ="mailto:tsaishenco@gmail.com"> tell us </a>
@@ -1231,18 +1232,19 @@
           <div class="btn btn-dark mr-1 lift mb-md-6" id="getAllUsersBtn"><i class="fas fa-users"></i></div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="userCountBtn"><i class="fas fa-users"></i> #</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="getEscrowInfoBtn">Escrow</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="getDeedInfoBtn" data-toggle="modal" data-target="#inputInfoModal">Deed <i class="fas fa-info"></i></div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="tokenBtn" data-toggle="modal" data-target="#tokenInputModal">Tokens</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="getDeedInfoBtn">Deed <i class="fas fa-info"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="tokenBtn" data-toggle="modal" data-target="#tokenInputModal"><i class="fas fa-plus"></i> <i class="fas fa-coins"></i></div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="balanceBtn"><i class="fas fa-check"></i> Bal</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="withdrawBtn"><i class="fas fa-hand-holding-usd"></i></div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="mintBtn">Mint <i class="fas fa-home"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="ownerFunctionsBtn" data-toggle="modal" data-target="#inputInfoModal">Admin <i class="fas fa-code-branch"></i></div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="pauseBtn"><i class="fas fa-pause"></i> HT</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="unpauseBtn"><i class="fas fa-play"></i> HT</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="ownerFunctionsBtn" data-toggle="modal" data-target="#inputInfoModal">Admin <i class="fas fa-code-branch"></i></div>
           <div id="balanceDisplay"></div>
           <div class="btn btn-primary" id="ownerCloseBtn">CLOSE</div>
           <div class="table table-responsive" id="userDisplayTable"></div>
           <div class="table table-responsive" id="escrowDisplayTable"></div>
+          <div class="table table-responsive" id="deedDisplayTable"></div>
         </div> 
 
         <!-- Spinner -->
@@ -1255,24 +1257,26 @@
         <!-- Escrow Buyer Display -->
         <div class="escrowBuyer container text-lg-left text-center py-md-11">
           <h3 class="display-3 mb-2 mb-md-6 text-center">Welcome Escrow Participant</h3>
-          <p class="font-size-lg text-center"><strong>Congrats</strong> for being in escrow. Here are a few items that 
-            we believe could be helpful to know:</p>
-            <ul>
-              <li><strong>Seller</strong>, you have <strong>10 days</strong> to complete and submit deed to transfer ownership. 
-                Click the "Upload" link on the top menu for more information.</li>
-              <li>Once the seller is done, <strong>buyer</strong>, you have <strong>3 days</strong> to review and verify seller's submission. 
-                Failure to complete the taks within set time period will automatically approve submission and complete transfer.</li>
-                <ol>
-                  <li><strong>All good?</strong> Buyer, click <u>Confirm</u> button to complete transaction.</li>
-                  <li><strong>Wrong document or incorrect information?</strong> Buyer, click <u>Request Review</u> button toa raise flag that there are issues. 
-                    Seller will get additional <strong>3 days</strong> to correct and resubmit.</li>
-                </ol>
-              <li>If the seller fails to successfully complete their task within aloted time, buyer can request refund.</li>
-              <li><strong>Changed your mind?</strong> Either party may request cancellation at any time after 
-                paying the cancellation fee. Click <u>Cancel</u> button below. </li>
-            </ul>
-            <br>
-            <div id="escrowBuyerDisplay"></div>
+          <p class="font-size-lg text-center"><strong>Congrats</strong> for being in escrow. Here are a few items to know:</p>
+          <ul class="font-size-lg">
+            <li><strong>Seller</strong>, you have <strong>10 days</strong> to prepare and submit deed to transfer ownership. 
+              Use the light green Upload button.</li>
+            <li>Once the deed is uploaded, <strong>buyer</strong>, you have <strong>3 days</strong> to review and verify documents. 
+              You can find document link by clicking the Deed button (it will show up once available for review).</li>
+              <ol>
+                <li><strong>All good?</strong> Click <u>Confirm</u> button to complete the transaction.</li>
+                <li><strong>Wrong document or incorrect information?</strong> Click <u>Request Review</u> to raise flag that there are issues. 
+                  Seller will get <strong>3 additional days</strong> to correct and resubmit (you will notice upload date change as well as the link).</li>
+              </ol>
+            <li>Buyer can request refund should the seller fail to successfully complete their task within aloted time.</li>
+            <li><strong>Changed your mind?</strong> Either party may request cancellation at any time. Click <u>Cancel</u> button below. 
+              <i>Please note there is a fee associated with cancelling.</i></li>
+          </ul>
+          <p class="font-size-lg text-center">If you have questions for each other or wish to connect with other platform users, feel free to use our 
+            <a href="https://discord.gg/ZE5QCbh2je" target="_blank" rel="noopener noreferrer" class="text-decoration-none" style="color: gray;">Discord
+              <i class="fas fa-external-link-alt"></i></a> server. <i>And remember, <b>time is of the essence</b>.</i></p>
+          <br>
+          <div id="escrowBuyerDisplay"></div>
         </div> 
 
         <!-- Asset Owner DISPLAY -->
@@ -3073,7 +3077,7 @@
         </div>
       </div>
 
-      <!-- Finalize Sale Modal -->
+      <!-- Seller Finalize Sale Modal -->
       <div class="modal fade bd-example-modal-lg" id="finalizeSaleModal" tabindex="-1" role="dialog" aria-labelledby="finalizeSale" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">

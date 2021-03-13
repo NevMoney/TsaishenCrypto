@@ -225,7 +225,7 @@ async function checkContractBalance() {
 }
 
 async function withdrawFunds() {
-    let withdrawal = await houseTokenInstance.methods.withdrawAll().send({ to: creatorAddress });
+    let withdrawal = await houseTokenInstance.methods.withdrawAll().send({ to: user });
     console.log("Funds sent", withdrawal);
 }
 
@@ -244,7 +244,7 @@ async function mintHouse() {
     // use this is to create ZERO house
     let minted = await houseTokenInstance.methods.mint(user).send();
     console.log("house minted", minted);
-    console.log(minted.events.Transfer.returnValues);
+    // console.log(minted.events.Transfer.returnValues);
     let to = minted.events.Transfer.returnValues.to;
     let id = minted.events.Transfer.returnValues.tokenId;
     $("#balanceDisplay").append(
@@ -257,20 +257,6 @@ async function burnHouseToken() {
         let burn = await houseTokenInstance.methods.destroyHouse(id).send({ from: user });
         console.log("house burn", burn);
         alert("House token burned.");
-    }
-    catch (err) {
-        console.log(err);
-    }
-}
-
-// NEED to get an ID and IPFS hash first
-async function ownerUpdateUri() {
-    var id = $("#houseIdInput").val();
-    var url = $("#houseUrlInput").val();
-    try {
-        let update = await houseTokenInstance.methods.updateUri(id, url).send({ from: user });
-        console.log("ownerUpdateUri", update);
-        alert("House URI was successfully updated");
     }
     catch (err) {
         console.log(err);
@@ -327,9 +313,108 @@ async function ownerRemoveUser() {
     }
 }
 
-async function ownerUpdateDeed() {
+async function getUserCount() {
+    let userNumber = await usersInstance.methods.userCount().call();
+    console.log(userNumber);
+    $("#balanceDisplay").append(
+        `<p>Currnet number of users: ${userNumber}</p>`);
+}
+
+async function ownerDeedInfo() {
+    let userList = await usersInstance.methods.getAllUsers().call();
+
+    for (i = 0; i < userList.length; i++) {
+        let list = userList[i].toString();
+        list = list.substr(26);
+        let begin = "0x";
+        let tUserAdd = begin.concat(list);
+        let tsaishenUserInfo = await usersInstance.methods.getUserInfo(tUserAdd).call();
+        // console.log("users object" + i + ":", tsaishenUserInfo);
+        let homeArray = tsaishenUserInfo.houses;
+        // console.log("homes array" + i + ":", homeArray);
+
+        for (n = 0; n < homeArray.length; n++) {
+            let homes = homeArray[n].toString();
+            homes = homes.substr(26);
+            // console.log("homes" + n + ":", homes);
+
+            let deedInfo = await marketplaceInstance.methods.getDeedInfo(homes).call();
+            console.log("fetchDeedInfo", deedInfo);
+            
+            displayDeedInfo(deedInfo.tokenId, deedInfo.seller, deedInfo.buyer, deedInfo.salePrice, deedInfo.deedDate, deedInfo.deedHash, deedInfo.index);
+        }
+    }
+}
+
+async function displayDeedInfo(id, seller, buyer, price, date, link, index) {
+    const ipfsDeedLink =
+        "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
+        link + "'>" + link + "</a>";
+    let deedDate = new Date(date * 1000).toLocaleString();
+    let showPrice = new Intl.NumberFormat().format(price);
+    let escrowInfo = await marketplaceInstance.methods.escrowInfo(id).call();
+    let token = escrowInfo.token;
+
+    if (token == ethAddress) {
+        token = "ETH";
+    } else if (token == daiAddress) {
+        token = "DAI";
+    } else if (token == usdcAddress) {
+        token = "USDC";
+    }
+
+    $("#deedDisplayTable").show();
+
+    if (price > 0) {
+        $("#deedDisplayTable").append(
+        `<table class="table table-responsive">
+            <thead class="thead-dark">
+            <th scope="col">House ID</th>
+            <th scope="col">Index</th>
+            <th scope="col">Date</th>
+            <th scope="col">Price</th>
+            <th scope="col">Token</th>
+            <th scope="col">Link</th>
+            <th scope="col">Seller</th>
+            <th scope="col">Buyer</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="btn">${id}</td>
+                <td>${index}</td>
+                <td>${deedDate}</td>
+                <td>$ ${showPrice}</td>
+                <td>${token}</td>
+                <td>${ipfsDeedLink}</td>
+                <td>${seller}</td>
+                <td>${buyer}</td>
+            </tr>
+            </tbody>
+        </table>`
+        );
+    }
+}
+
+
+// NEED to get an ID and IPFS hash first
+async function ownerUpdateUri() {
+    var id = $("#houseIdInput").val();
+    var url = $("#houseUrlInput").val();
     try {
-        
+        let update = await houseTokenInstance.methods.updateUri(id, url).send({ from: user });
+        console.log("ownerUpdateUri", update);
+        alert("House URI was successfully updated");
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+async function ownerUpdateDeed() {
+    var id = $("#houseIdInput").val();
+    var url = $("#houseUrlInput").val();
+    try {
+        let update = await marketplaceInstance.methods.sellerComplete(id, url).send({ from: user });
         console.log("ownerUpdateUri", update);
     }
     catch (err) {
