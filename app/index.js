@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xCfEB869F69431e42cdB54A4F4f105C19C080A601";
-var houseTokenAddress = "0x254dffcd3277C0b1660F6d42EFbB754edaBAbC2B";
-var marketplaceAddress = "0xC89Ce4735882C9F0f0FE26686c53074E09B0D550";
+var tsaishenUsersAddress = "0x04ECd1849a3B252A9f55F0A3D610cF450BE6bbD2";
+var houseTokenAddress = "0x352ebD84619597F4ec3d18Bea793143eAa2f4c46";
+var marketplaceAddress = "0x5568CA4C8fc2ACd7D3f814A03a54A84Af9167CbC";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -46,6 +46,15 @@ $(document).ready(async () => {
   houseTokenInstance = await new web3.eth.Contract(abi.HouseToken, houseTokenAddress, { from: user });
   marketplaceInstance = await new web3.eth.Contract(abi.Marketplace, marketplaceAddress, { from: user });
   // console.log("users ", usersInstance, "house ", houseTokenInstance, "marketplace ", marketplaceInstance);
+
+  $("#market-container").hide();
+  $("#deed-container").hide();
+  $("#upload-container").hide();
+  $("#upload-what").hide();
+  $("#portfolio").hide();
+  $("#learnMore").hide();
+  $("#aboutPage").hide();
+  $("#escrowPage").hide();
 
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
@@ -338,9 +347,8 @@ async function sellCryptoHouse(id) {
 
 async function getInventory() {
   try {
-    // perhaps we can call different function here!
     var arrayId = await marketplaceInstance.methods.getAllTokensOnSale().call();
-    console.log("getInventory array: ", arrayId);
+    // console.log("getInventory array: ", arrayId);
     for (i = 0; i < arrayId.length; i++){
       if (arrayId[i] != 0) {
         const offer = await checkOffer(arrayId[i]);

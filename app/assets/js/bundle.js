@@ -184,6 +184,112 @@
         console.log("data hash: " + ipfsFileHash);
       
       }));
+
+      // admin upload function
+      $("#dynamicUpload").click((async () => {
+  
+        const addFileToIpfs = await
+          // console.log("adding to IPFS...");
+          $("#dynamicUpload").html("Uploading");
+    
+        const add = await ipfs.add(buffer, {
+          progress: (prog) => console.log(`received: ${prog}`),
+        });
+    
+        $("#dynamicUpload").hide();   
+        let imageHash = add.cid.toString();
+    
+        const houseData = JSON.stringify({
+          name: "Tsaishen Crypto House",
+          description: $("#description").val(),
+          image: 'https://ipfs.io/ipfs/' + imageHash,
+          // will need to tweak this once I figure out the actual URL
+          external_url: "",
+          attributes: [
+            {
+              key: "address",
+              trait_type: "Address",
+              value: $("#address").val()
+            },
+            {
+              key: "county",
+              trait_type: "County",
+              value: $("#county").val()
+            },
+            {
+              key: "bedrooms",
+              trait_type: "Bedrooms",
+              value: $("#bedrooms").val()
+            },
+            {
+              key: "bathrooms",
+              trait_type: "Bathrooms",
+              value: $("#bathrooms").val()
+            },
+            {
+              key: "yearBuilt",
+              trait_type: "Year Built",
+              value: $("#yearBuilt").val()
+            },
+            {
+              key: "houseSize",
+              trait_type: "House Size",
+              value: $("#houseSize").val()
+            },
+            {
+              key: "lotSize",
+              trait_type: "Lot Size",
+              value: $("#lotSize").val()
+            },
+            {
+              key: "parcelNumber",
+              trait_type: "Parcel Number",
+              value: $("#parcelNumber").val()
+            },
+            {
+              key: "marketValue",
+              trait_type: "Market Value",
+              value: $("#marketValue").val()
+            },
+            {
+              key: "currentIncome",
+              trait_type: "Monthly Income",
+              value: $("#currentIncome").val()
+            },
+            {
+              key: "propertyType",
+              trait_type: "Property Type",
+              value: $("#propertyType").val()
+            },
+            {
+              key: "propertyLink",
+              trait_type: "Public View Link",
+              value: $("#zillow").val()
+            },
+            {
+              key: "videoLink",
+              trait_type: "Video Link",
+              value: $("#video").val()
+            }
+          ],
+          certification: validateCheckbox(), 
+        });
+    
+        const inserted = await ipfs.add(houseData);
+        let fileHashIpfs = inserted.cid.toString();
+    
+        const linked =
+          "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
+          fileHashIpfs +
+          "'>" +
+          fileHashIpfs +
+          "</a>";
+        $("#ipfsResult").html(linked);
+        $("#fileName>h5").hide();
+
+        console.log("data hash: " + fileHashIpfs);
+      
+      }));
       
     const addDeedToIpfs = async () => {
       $("#deedUpload").html("Uploading");
@@ -198,9 +304,9 @@
     
       ipfsDeed = adding.cid.toString();
 
-      const ipfsDeedLink =
-        "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
-        ipfsDeed + "'>" + ipfsDeed + "</a>";
+      // const ipfsDeedLink =
+      //   "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
+      //   ipfsDeed + "'>" + ipfsDeed + "</a>";
     
       $("#ipfsDeedResult").html(ipfsDeed);
       $("#finishDeedUpload").append(

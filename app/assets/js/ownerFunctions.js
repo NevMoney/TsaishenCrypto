@@ -249,6 +249,7 @@ async function mintHouse() {
     let id = minted.events.Transfer.returnValues.tokenId;
     $("#balanceDisplay").append(
         `<p>House ID ${id} is minted for: ${to}</p>`);
+    $("#ownerCloseBtn").show();
 }
 
 async function burnHouseToken() {
@@ -395,7 +396,6 @@ async function displayDeedInfo(id, seller, buyer, price, date, link, index) {
     }
 }
 
-
 // NEED to get an ID and IPFS hash first
 async function ownerUpdateUri() {
     var id = $("#houseIdInput").val();
@@ -419,5 +419,29 @@ async function ownerUpdateDeed() {
     }
     catch (err) {
         console.log(err);
+    }
+}
+
+function ownerUploadUriInfo() {
+    $("#market-container").hide();
+    $("#deed-container").hide();
+    $("#homePage").hide();
+    $("#upload-what").hide();
+    $("#portfolio").hide();
+    $("#learnMore").hide();
+    $("#aboutPage").hide();
+    $("#escrowPage").hide();
+    $("#houseUploadedMsg").hide();
+    $("#newUserMsg").hide();
+
+    $("#upload-container").show();
+    $("#dynamicUpload").append(
+        `<button id="uploadFree" type="button" class="btn btn-primary" value="SUBMIT">Owner Upload</button>`
+    );
+    
+    if (user === contractOwnerAddress) {
+        $("#dynamicUpload").show();
+    } else {
+        $("#dynamicUpload").hide();
     }
 }

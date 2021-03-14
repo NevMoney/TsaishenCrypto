@@ -35,12 +35,11 @@ interface AggregatorV3Interface {
 contract Marketplace is ReentrancyGuard, TsaishenEscrow {
 
     event MarketTransaction (string TxType, address actor, uint256 tokenId);
-    event Sold (uint256 soldPrice, uint256 tokenId);
 
     HouseToken private _houseToken;
     TsaishenUsers private _tsaishenUsers;
-    uint256 housePrice = 100000000; //1USD (in function, must multiple by the price in GUI)
-    uint256 txFee = 2; //2% transaction fee
+    uint256 housePrice = 100000000; //1USD
+    uint256 txFee = 2; 
     uint256 private balance;
     
     // *** MODIFIER ***
@@ -226,7 +225,6 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         delete offers[offer.index];
         delete offerDetails[tokenId];
         emit MarketTransaction("House purchased", msg.sender, tokenId);
-        emit Sold (offer.price, tokenId);
     }
  
     function buyHouseWithEscrow (IERC20 token, uint256 tokenId) public payable nonReentrant{
@@ -308,7 +306,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         delete offerDetails[tokenId];  
 
         emit MarketTransaction("Buyer verified, house SOLD.", msg.sender, tokenId);
-        emit Sold (offer.price, tokenId);
+        // emit Sold (offer.price, tokenId);
     }
 
     // buyer notices error in documents and requests change/review
@@ -343,7 +341,6 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         delete offerDetails[tokenId];  
 
         emit MarketTransaction("House SOLD.", offer.seller, tokenId);
-        emit Sold (offer.price, tokenId);
     }
 
     function cancelEscrowSale(uint256 tokenId) public payable costs(2 ether) {
@@ -364,7 +361,6 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         return (_houseToken.ownerOf(_tokenId) == _address);
     }
 
-    // -- house transaction --
     function _addDeed(uint256 _tokenId, string memory _deedHash) internal {
         
         ( , uint256 salePrice, , , , ) = getOffer(_tokenId);

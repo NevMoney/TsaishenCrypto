@@ -2,17 +2,6 @@ var saleId;
 var salePrice;
 var saleToken;
 
-$(document).ready(async () => {
-    $("#market-container").hide();
-    $("#deed-container").hide();
-    $("#upload-container").hide();
-    $("#upload-what").hide();
-    $("#portfolio").hide();
-    $("#learnMore").hide();
-    $("#aboutPage").hide();
-    $("#escrowPage").hide();
-});
-
 $(".marketLink").on("click", function () {
     goToInventory();
 });
@@ -70,7 +59,13 @@ $(".uploadLinkBtn").on("click", function () {
     $("#houseUploadedMsg").hide();
     $("#newUserMsg").hide();
 
-    $("#upload-container").show();    
+    $("#upload-container").show();
+    
+    if (user === contractOwnerAddress) {
+        $("#dynamicUpload").show();
+    } else {
+        $("#dynamicUpload").hide();
+    }
 });
 
 $(".deedLinkBtn").on("click", function () {
@@ -351,7 +346,6 @@ $("#unpauseBtn").on("click", function () {
 
 $("#mintBtn").on("click", function () {
     mintHouse();
-    $("#ownerCloseBtn").show();
 });
 
 $("#getDeedInfoBtn").on("click", function () {
@@ -413,4 +407,8 @@ $("#updateHouseDeedBtn").on("click", function () {
 $("#userCountBtn").on("click", function () {
     getUserCount();
     $("#ownerCloseBtn").show();
+});
+
+$("#updateUriBtn").on("click", function () {
+    ownerUploadUriInfo();
 });

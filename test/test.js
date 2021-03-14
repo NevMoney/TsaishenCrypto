@@ -302,22 +302,8 @@ contract("Positive tests", (accounts) => {
             console.log("Skip forward 10 days...");
             await time.advanceBlock();
             await time.increase(864000);
-            var info = await marketplaceInstance.escrowInfo(1);
-            var state = info.state.toString();
-            console.log("state", state);
-            var tokenId = info.tokenId.toString();
-            console.log("tokenId", tokenId);
-            var amount = info.amount.toString();
-            console.log("amount", amount);
             await marketplaceInstance.refundEscrow(1);
             console.log("refundEscrow runs...");
-            var info2 = await marketplaceInstance.escrowInfo(1);
-            var state2 = info2.state.toString();
-            console.log("state now", state2);
-            var tokenId2 = info2.tokenId.toString();
-            console.log("tokenId now", tokenId2);
-            var amount = info2.amount.toString();
-            console.log("amount now", amount);
             let userBalance = await tsaishenTokenInstance.balanceOf(user3);
             assert.equal(web3.utils.fromWei(userBalance,'ether'),0.8,"user balance should be 0.8");
             let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
@@ -326,14 +312,13 @@ contract("Positive tests", (accounts) => {
         it("Should NOT refund money in escrow for house1 to user3 now", async () => {
             var info = await marketplaceInstance.escrowInfo(1);
             var state = info.state.toString();
-            console.log("state now2", state);
+            console.log("state should be 1", state);
             var tokenId = info.tokenId.toString();
-            console.log("tokenId now2", tokenId);
+            console.log("tokenId should be 0", tokenId);
             var amount = info.amount.toString();
-            console.log("amount now2", amount);
+            console.log("amount should be 0", amount);
             await truffleAssert.reverts(marketplaceInstance.refundEscrow(1),"Must be active.");
         });
-        return;
         it("Should put money in escrow for house3 from user3", async () => {
             await approveMarketPlace(marketplaceInstance,tsaishenTokenInstance, 3, user3);
             await marketplaceInstance.buyHouseWithEscrow(tsaishenTokenInstance.address, 3, {from: user3});
@@ -384,64 +369,64 @@ contract("Positive tests", (accounts) => {
         });
     });
 
-    // describe("TsaishenUsers::UserInfo", () => {
-    //     it("Should get correct Details for User 1", async () => {
-    //         await usersInstance.deleteHouseFromUser(user1,0);
-    //         let x = await usersInstance.getUserInfo(user1);
-    //         console.log(x);
-    //         assert.isFalse(x.houseOwner);
-    //         assert.equal(x.houses.length, 0, "should be 0");
-    //     });
-    //     it("Should get correct Details for User 2", async () => {
-    //         let x = await usersInstance.getUserInfo(user2);
-    //         assert.isTrue(x.houseOwner);
-    //         assert.equal(x.houses.length, 3, "should be 3");
-    //     });
-    //     it("Should get correct Details for User 3", async () => {
-    //         let x = await usersInstance.getUserInfo(user3);
-    //         assert.isTrue(x.houseOwner);
-    //         assert.equal(x.houses.length, 2, "should be 2");
-    //     });
-    // });
+    describe("TsaishenUsers::UserInfo", () => {
+        it("Should get correct Details for User 1", async () => {
+            await usersInstance.deleteHouseFromUser(user1,0);
+            let x = await usersInstance.getUserInfo(user1);
+            console.log(x);
+            assert.isFalse(x.houseOwner);
+            assert.equal(x.houses.length, 0, "should be 0");
+        });
+        it("Should get correct Details for User 2", async () => {
+            let x = await usersInstance.getUserInfo(user2);
+            assert.isTrue(x.houseOwner);
+            assert.equal(x.houses.length, 3, "should be 3");
+        });
+        it("Should get correct Details for User 3", async () => {
+            let x = await usersInstance.getUserInfo(user3);
+            assert.isTrue(x.houseOwner);
+            assert.equal(x.houses.length, 2, "should be 2");
+        });
+    });
 });
 
-// contract("Reverted tests", (accounts) => {
+contract("Reverted tests", (accounts) => {
     
-//     var usersInstance;
-//     var houseTokenInstance;
-//     var marketplaceInstance;
-//     var tsaishenTokenInstance;
+    var usersInstance;
+    var houseTokenInstance;
+    var marketplaceInstance;
+    var tsaishenTokenInstance;
     
-//     var owner = accounts[0];
-//     var creator = accounts[1];
-//     var user1 = accounts[2];
-//     var user2 = accounts[3];
+    var owner = accounts[0];
+    var creator = accounts[1];
+    var user1 = accounts[2];
+    var user2 = accounts[3];
 
-//     before(async () => {
+    before(async () => {
         
-//         usersInstance = await TsaishenUsers.new();
-//         houseTokenInstance = await HouseToken.new(usersInstance.address, owner);
-//         marketplaceInstance = await Marketplace.new(usersInstance.address, houseTokenInstance.address, owner);
-//         tsaishenTokenInstance = await TsaishenToken.new();
+        usersInstance = await TsaishenUsers.new();
+        houseTokenInstance = await HouseToken.new(usersInstance.address, owner);
+        marketplaceInstance = await Marketplace.new(usersInstance.address, houseTokenInstance.address, owner);
+        tsaishenTokenInstance = await TsaishenToken.new();
 
-//         await marketplaceInstance.addOracle(tsaishenTokenInstance.address, '0x0000000000000000000000000000000000000001')
-//         await usersInstance.setHouseTokenAddress(houseTokenInstance.address);
-//         await usersInstance.setMarketplaceAddress(marketplaceInstance.address)
-//         console.log(marketplaceInstance.address);
-//         console.log("House Token address: " + houseTokenInstance.address);
-//     });
+        await marketplaceInstance.addOracle(tsaishenTokenInstance.address, '0x0000000000000000000000000000000000000001')
+        await usersInstance.setHouseTokenAddress(houseTokenInstance.address);
+        await usersInstance.setMarketplaceAddress(marketplaceInstance.address)
+        console.log(marketplaceInstance.address);
+        console.log("House Token address: " + houseTokenInstance.address);
+    });
 
-//     describe("HouseToken", () => {
-//         it("Negative test for house token 0", async () => {
-//             await truffleAssert.reverts(houseTokenInstance.getHouse(0), "ERC721Metadata: URI query for nonexistent token");
-//         });
-//         it("Negative test for owning house", async () => {
-//             let res = await houseTokenInstance.ownsHouse(owner);
-//             assert.equal(res, false, "shouldn't own a house");
-//         });
-//         it("Negative test less than 1 ether cost", async () => {
-//             await truffleAssert.reverts(houseTokenInstance.createHouse(1, 1, "tokenURI", { value: 10, from: accounts[2] }), "HT: Insufficient funds.");
-//         });
-//     });
+    describe("HouseToken", () => {
+        it("Negative test for house token 0", async () => {
+            await truffleAssert.reverts(houseTokenInstance.getHouse(0), "ERC721Metadata: URI query for nonexistent token");
+        });
+        it("Negative test for owning house", async () => {
+            let res = await houseTokenInstance.ownsHouse(owner);
+            assert.equal(res, false, "shouldn't own a house");
+        });
+        it("Negative test less than 1 ether cost", async () => {
+            await truffleAssert.reverts(houseTokenInstance.createHouse(1, 1, "tokenURI", { value: 10, from: accounts[2] }), "HT: Insufficient funds.");
+        });
+    });
 
-// });
+});

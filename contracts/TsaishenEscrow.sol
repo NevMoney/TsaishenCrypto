@@ -131,7 +131,6 @@ contract TsaishenEscrow is Ownable, Storage{
     }   
 
     function _beneficiaryWithdraw(address payable _seller, uint256 _tokenId, address payable _feeRecipient) internal {
-        // require(msg.sender == escrowById[_tokenId].seller || msg.sender == owner(), "TE: Not authorized.");
         require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
         require(escrowById[_tokenId].state == State.Closed, "TE: Must be closed.");
 

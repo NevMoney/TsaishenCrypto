@@ -1076,6 +1076,7 @@
       <div id="fileName" style="display: none">
         <h5></h5>
         <button id="upload" type="button" class="btn btn-dark" value="SUBMIT">Upload</button>
+        <div id="dynamicUpload"></div>
         <div id="ipfsResult" class="mt-4 font-size-lg mb-2 mb-md-4"></div>
         <!-- alert that house upload is successful -->
         <div class="alert alert-warning alert-dismissible fade show" id="newUserMsg" role="alert">
@@ -1218,9 +1219,11 @@
           <div class="btn btn-dark mr-1 lift mb-md-6" id="balanceBtn"><i class="fas fa-check"></i> Bal</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="withdrawBtn"><i class="fas fa-hand-holding-usd"></i></div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="mintBtn">Mint <i class="fas fa-home"></i></div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="ownerFunctionsBtn" data-toggle="modal" data-target="#inputInfoModal">Admin <i class="fas fa-code-branch"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="updateUriBtn"><i class="far fa-edit"></i> URI</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="pauseBtn"><i class="fas fa-pause"></i> HT</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="unpauseBtn"><i class="fas fa-play"></i> HT</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="ownerFunctionsBtn" data-toggle="modal" data-target="#inputInfoModal">Admin <i class="fas fa-code-branch"></i></div>
+          
           <div id="balanceDisplay"></div>
           <div class="btn btn-primary" id="ownerCloseBtn">CLOSE</div>
           <div class="table table-responsive" id="userDisplayTable"></div>

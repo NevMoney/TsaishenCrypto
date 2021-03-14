@@ -13,8 +13,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
     using SafeMath for uint256;
 
     event Minted(address _owner, uint256 id, string uri);
-    event Updated(string updated,address _owner, uint256);
-
+    
     TsaishenUsers private _tsaishenUsers;
     address public _contractOwner;
     bool public _initialized;
@@ -60,7 +59,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
 
         delete houseInfo[tokenId];
         _tsaishenUsers.deleteHouseFromUser(msg.sender, tokenId);
-        emit Updated("House deleted", msg.sender, tokenId);
+        emit Minted(msg.sender, tokenId, "Token burned");
     }
 
     // *** GETTER ***
@@ -93,7 +92,7 @@ contract HouseToken is ERC721PresetMinterPauserAutoId, Ownable, ReentrancyGuard,
 
         _setTokenURI(_tokenId, _ipfsHash);
         houseInfo[_tokenId] = house;
-        emit Updated("Updated uri", msg.sender, _tokenId);
+        emit Minted(msg.sender, _tokenId, "Updated uri");
     }
 
     // === PRIVATE ===
