@@ -1128,39 +1128,20 @@
         </div>
   
         <div id="deedFileName" style="display: none">
-          <h5></h5>
+          <h5 id="uploadedFileName"></h5>
           <button id="deedUpload" type="button" class="btn btn-dark" value="SUBMIT">Upload</button>
-          
           
           <div id="nextStep">
             <br>
-            <p class="font-size-lg">Here is the link to your deed transfer. Take another look to confirm it's correct, 
-              save it for your records and the click the button below to finalize: 
+            <p class="font-size-lg">Here is the cryptographic has of your deed transfer:
               <div id="ipfsDeedResult" class="mt-4"></div>
+              Review your document and then finalize.
             </p>
             <div id="finishDeedUpload"></div>
-            <p class="display-4"><b>What Happens Next?</b></p>
-            <ul class="font-size-lg">
-              <li>Once you finalize the deed upload to the blockchain, the buyer will have 3 days to inspect and approve. 
-                If there are any issues, they will be able to let you know (please check regularly in the Portfolio's Escrow section).</li>
-              <li>Once they confirm everything is in order or 3 days have passed, whichever comes first, the funds 
-                will transfer can occur.</li>
-              <li>We recommend you check with the land-registry in about 6-12 weeks to ensure that the buyer 
-                has mailed the deed for recording. If you discover that property is still in your name, please know that
-                you can mail it on their behalf.</li>
-            </ul>
-            <!-- fix review link-->
-            <p>Thanks for using Tsaishen Crypto. We sincerely hope that this was the fastest, cheapest, and
-              simplest house selling process ever. <i>We secretly hope it was a bit fun, too!</i> 
-              If so, will you kindly leave us <a href="https://TRUSTPILOT REVIEW LINK" target="_blank" rel="noopener noreferrer" style="color: gray;">
-                a raving review <i class="fas fa-external-link-alt"></i></a> ?
-              If there were any issues, please <a href ="mailto:tsaishenco@gmail.com"> tell us </a>
-              so that we can fix them.
-            </p>
           </div>
-        
+
         </div>
-  
+
     </div>
 
     <!-- Marketplace -->
@@ -1255,6 +1236,26 @@
         </div>
 
         <!-- Escrow Buyer Display -->
+        <div id="escrowFinalSteps" class="container">
+          <p class="display-4 mb-2 mb-md-6 text-center">What Happens Next?</p>
+          <ul class="font-size-lg">
+            <li>Once you finalize the deed upload to the blockchain, the buyer will have 3 days to inspect and approve. 
+              If there are any issues, they will be able to let you know (please check regularly in the Portfolio's Escrow section).</li>
+            <li>Once they confirm everything is in order or 3 days have passed, whichever comes first, the funds 
+              will transfer can occur.</li>
+            <li>We recommend you check with the land-registry in about 6-12 weeks to ensure that the buyer 
+              has mailed the deed for recording. If you discover that property is still in your name, please know that
+              you can mail it on their behalf.</li>
+          </ul>
+          <!--fix review link-->
+          <p>Thanks for using Tsaishen Crypto. We sincerely hope that this was the fastest, cheapest, and
+            simplest house selling process ever. <i>We secretly hope it was a bit fun, too!</i> 
+            If so, will you kindly leave us <a href="https://TRUSTPILOT REVIEW LINK" target="_blank" rel="noopener noreferrer" style="color: gray;">
+              a raving review <i class="fas fa-external-link-alt"></i></a> ?
+            If there were any issues, please <a href ="mailto:tsaishenco@gmail.com"> tell us </a>
+            so that we can fix them.
+          </p>
+        </div>
         <div class="escrowBuyer container text-lg-left text-center py-md-11">
           <h3 class="display-3 mb-2 mb-md-6 text-center">Welcome Escrow Participant</h3>
           <p class="font-size-lg text-center"><strong>Congrats</strong> for being in escrow. Here are a few items to know:</p>
@@ -2970,7 +2971,7 @@
                     <div class="row justify-content-center" align="center" id="sellBox">
                       <div class="col-lg-6 p-1">
                         <div class="input-group-append">
-                          <input class="form-control" id="housePrice" placeholder="Enter Amount">
+                          <input class="form-control" id="housePriceInput" placeholder="Enter Amount">
                           <span class="input-group-text form-inline" id="basic-addon2"><b>USD</b></span>
                         </div>
                       </div>
@@ -3100,6 +3101,42 @@
           </div>
         </div>
       </div> 
+
+      <!-- Confirm House Modal -->
+      <div class="modal fade bd-example-modal-lg" id="confirmHouseModal" tabindex="-1" role="dialog" aria-labelledby="myLargeSaleModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title h3">Confirm Your House Selection!</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="row justify-content-center" align="center" id="confirmBox">
+                      <div class="col-lg-6 p-1">
+                        <div id="sellerConfirmHouseDisplay"></div>
+                      </div>
+                    </div>
+                    <div class="row justify-content-center" align="center">
+                      <button class="btn btn-primary light-b-shadow" id="confirmBtn"><b>Confirm</b></button>
+                    </div>
+                    <div class="col-lg-10">
+                      <br>
+                      <p class="font-size-sm text-muted text-center"><i><u>Please note:</u> once confirmed, this cannot be undone.</i>
+                      </p>
+                    </div>
+                     
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Add/Remove Tokens Modal -->
       <div class="modal fade bd-example-modal-lg" id="tokenInputModal" tabindex="-1" role="dialog" aria-labelledby="myLargeTokenModal" aria-hidden="true">

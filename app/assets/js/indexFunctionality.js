@@ -246,6 +246,8 @@ function goToPortfolio() {
     } else {
         $(".contractOwner").hide();
     }
+
+    $("#escrowFinalSteps").hide();
     
     getHouses();
     fetchEscrowInfo();
@@ -294,19 +296,25 @@ $("#escrowBuyBtn").on("click", function () {
     });
 });
 
+// for individual house escrow info
+$("#escrowInfoBtn").on("click", function () {
+    houseEscrowInfo().then(() => {
+        $("#escrowInfoModal").modal("show"); 
+    });
+});
+
 function cancelSale(id) {
     saleId = id;
     removeOffer(id);
 }
 
-// for owner to get all users
+// --- ADMIN USE BUTTONS & FUNCTIONS ---
 $("#getAllUsersBtn").on("click", function () {
     $("#ownerCloseBtn").show();
     $("#userDisplayTable").empty();
     getAllTsaishenUsers();
 });
 
-// for owner to get all escrow info
 $("#getEscrowInfoBtn").on("click", function () {
     $("#ownerCloseBtn").show();
     $("#escrowDisplayTable").empty();
@@ -342,15 +350,13 @@ $("#unpauseBtn").on("click", function () {
 });
 
 $("#mintBtn").on("click", function () {
-    mintHouse(); 
-});
-
-$("#updateUriBtn").on("click", function () {
-    ownerUpdateUri(); 
+    mintHouse();
+    $("#ownerCloseBtn").show();
 });
 
 $("#getDeedInfoBtn").on("click", function () {
     ownerDeedInfo();
+    $("#ownerCloseBtn").show();
 });
 
 $("#ownerCloseBtn").hide();
@@ -407,11 +413,4 @@ $("#updateHouseDeedBtn").on("click", function () {
 $("#userCountBtn").on("click", function () {
     getUserCount();
     $("#ownerCloseBtn").show();
-});
-
-// for individual house escrow info
-$("#escrowInfoBtn").on("click", function () {
-    houseEscrowInfo().then(() => {
-        $("#escrowInfoModal").modal("show"); 
-    });
 });

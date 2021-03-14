@@ -232,7 +232,7 @@ async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
   );
 }
 
-async function uploadDeed() {
+async function uploadDeed(id) {
   // show upload information
   $("#market-container").hide();
   $("#upload-container").hide();
@@ -244,4 +244,23 @@ async function uploadDeed() {
   $("#escrowPage").hide();
   
   $("#deed-container").show();
+  $("#finishDeedUpload").append(
+    `<div class="btn btn-primary mr-1 lift mb-md-6" id="finalizeSaleBtn${id}" onclick="combineResults(${id})">Finalize Sale</div>`
+  );
+}
+
+const showIpfsDeed = document.querySelector('#ipfsDeedResult');
+
+async function combineResults(id) {
+  let deedHash = showIpfsDeed.innerHTML;
+  console.log("combine results id", id, "deedHash", deedHash);
+  try {
+    let deed = await marketplaceInstance.methods.sellerComplete(id, deedHash).send({ from: user });
+    console.log("uploadDeed", deed);
+  }
+  catch (err) {
+    console.log(err);
+  }
+  goToPortfolio();
+  $("#escrowFinalSteps").show();
 }

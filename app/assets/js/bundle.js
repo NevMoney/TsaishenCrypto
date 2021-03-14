@@ -193,6 +193,7 @@
       });
     
       $("#deedUpload").hide();
+      $("#uploadedFileName").hide();
       $("#nextStep").show();
     
       ipfsDeed = adding.cid.toString();
@@ -201,56 +202,12 @@
         "<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/" +
         ipfsDeed + "'>" + ipfsDeed + "</a>";
     
-      $("#ipfsDeedResult").html(ipfsDeedLink);
-
+      $("#ipfsDeedResult").html(ipfsDeed);
       $("#finishDeedUpload").append(
-        `<div class="btn btn-primary mr-1 lift mb-md-6" id="finalizeSaleBtn${ipfsDeed}" data-toggle="modal" data-target="#finalizeSaleModal">Finalize Sale</div>`
+        `<a target='_blank' rel='noopener noreferrer' href='https://ipfs.io/ipfs/${ipfsDeed}'><button class="btn btn-primary-soft mr-1 lift mb-md-6">Review Your Upload</button></a>`
       );
-      
-      arrayId = await usersInstance.methods.getUserHomes(user).call();
-      for (i = 0; i < arrayId.length; i++) {
-        house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
-      
-        let id = arrayId[i];
-        let url = house.uri;
-
-        fetch(url).then(function (res) {
-          res.json().then(function (data) {
-            imageUrl = data.image;
-            address = data.attributes[0].value;
-            $("#allMyHouses").append(
-              `<tr>
-                <td id="finalizeSaleImg${id}"><img width=250px src=${imageUrl}>
-              </tr>
-              <tr>
-                <td id="finalizeSaleAdd${id}"><strong>Address:</strong> ${address}</td>
-              </tr>
-              <tr>
-                <td class="btn btn-primary mr-1 lift mb-md-6" id="finalizeSaleModalBtn${id, ipfsDeed}">This House ${id}</td>
-              </tr>`
-            );
-            
-            $(`#finalizeSaleModalBtn${id, ipfsDeed}`).on("click", function () {
-              sellerCompleteSale(id, ipfsDeed);
-              console.log("console button clicked. ID", id);
-            });
-
-            // $(`#finalizeSaleModalBtn${id, ipfsDeed}`).click(() => sellerCompleteSale(id, ipfsDeed));
-          });
-        });
-      }
     };
-      
-    async function sellerCompleteSale(id, ipfsDeed) {
-      console.log("uploadedDeed", ipfsDeed, "id", id);
-      // try {
-      //   let deed = await marketplaceInstance.methods.sellerComplete(id, ipfsDeed).send({ from: user }); 
-      //     console.log("uploadDeed", deed);
-      // }
-      // catch (err) {
-      //     console.log(err);
-      // }
-    }
+    
          
     const showModal = (title, content) => {
       const modal = `
