@@ -58,29 +58,23 @@ $(document).ready(async () => {
 
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
+    let eventType = event.returnValues["uri"].toString();
     let owner = event.returnValues._owner;
     let houseId = event.returnValues.id;
     let houseUri = event.returnValues.uri;
     $("#houseUploadedMsg").append(`<strong>Congratulations ${owner}!</strong> You have successfully uploaded real property onto 
       the blockchain. <u>Your property ID is ${houseId}</u>. Head on over the Portfolio page and take a look.`);
     $("#houseUploadedMsg").show();
-  })
-    .on("error", console.error);
-  
-  houseTokenInstance.events.Updated().on("data", function (event) {
-    let eventType = event.returnValues["updated"].toString();
-    let owner = event.returnValues._owner;
-    // let houseId = event.returnValues.3; //NEED TO CHECK THIS
-    if (eventType == "House deleted") {
-      $("#houseUploadedMsg").append(`HOUS token owner, ${owner} has successfully destroyed their HOUS token for property ID ENTER ID HERE.`);
-      $("#houseUploadedMsg").show();
-    }
     if (eventType == "Updated uri") {
-      $("#houseUploadedMsg").append(`HOUS token owner, ${owner} of property ID ENTER ID HERE has successfully updated property information.`);
+      $("#houseUploadedMsg").append(`Property ID ${houseId} owner with address: ${owner} has updated property information to ${houseUri}.`);
+      $("#houseUploadedMsg").show();
+    }
+    if (eventType == "Token burned") {
+      $("#houseUploadedMsg").append(`HOUS token owner, ${owner} has burned property ID: ${houseId}.`);
       $("#houseUploadedMsg").show();
     }
   })
-    .on("error", console.error);
+  .on("error", console.error);
   
   marketplaceInstance.events.MarketTransaction().on("data", (event) => {
     var eventType = event.returnValues["TxType"].toString();

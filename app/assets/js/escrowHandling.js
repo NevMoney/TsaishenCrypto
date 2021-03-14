@@ -2,7 +2,7 @@ async function sellerEscrowInfo() {
   let userHomes = await usersInstance.methods.getUserHomes(user).call();
   for (i = 0; i < userHomes.length; i++) {
     let sellerEscrow = await marketplaceInstance.methods.escrowInfo(userHomes[i]).call();
-    // console.log("seller escrow", sellerEscrow);
+    console.log("seller escrow", sellerEscrow);
 
     $("#portfolioLoading").hide();
     $("#nextStep").hide();
@@ -133,7 +133,7 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
 // for buyer to confirm delivery
 async function deedConfirm(id) {
   try {
-    let confirm = await marketplaceInstance.methods.buyerVerify(id).send();
+    let confirm = await marketplaceInstance.methods.buyerVerify(id).send({ from: user });
     console.log("confirm delivery", confirm);
     goToPortfolio();
   }
@@ -160,6 +160,7 @@ async function requestReview(id) {
   try {
     let reviewHash = await marketplaceInstance.methods.buyerReviewRequest(id).send({ from: user });
     console.log("review request hash", reviewHash);
+    $("#escrowBuyerDisplay").append(`<p>Buyer is requesting file review.</p>`);
   }
   catch (err) {
     console.log(err);
@@ -207,29 +208,33 @@ async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
     token = "USDC";
   }
 
-  $("#userEscrowInfoDisplay").append(
-    `<table class="table">
-      <thead><b>Deed Info</b></thead>
-      <tbody>
-        <tr>
-          <td><b>Seller:</b> ${seller}</td>
-          <td><b>Buyer:</b><br> ${buyer}</td>
-        </tr>
-        <tr>
-          <td><b>Sale Price:</b> $${showPrice}</td>
-          <td><b>Purchased With:</b> ${token}</td>
-        </tr>
-        <tr>
-          <td><b>Deed Upload Date:</b> ${deedDate}</td>  
-          <td><b>Deed Link:</b> ${ipfsDeedLink}</td>
-        </tr>
-        <tr>
-          <td><b>Property ID</b> ${id}</td>  
-          <td><b>Deeds for this property:</b> ${indexDisplay}</td>
-        </tr>
-      </tbody>
-    </table>`
-  );
+  if (price <= 0) {
+    $("#userEscrowInfoDisplay").append(`<p>Seller hasn't uploaded the deed yet.</p>`);
+  } else {
+    $("#userEscrowInfoDisplay").append(
+      `<table class="table">
+        <thead><b>Deed Info</b></thead>
+        <tbody>
+          <tr>
+            <td><b>Seller:</b> ${seller}</td>
+            <td><b>Buyer:</b><br> ${buyer}</td>
+          </tr>
+          <tr>
+            <td><b>Sale Price:</b> $${showPrice}</td>
+            <td><b>Purchased With:</b> ${token}</td>
+          </tr>
+          <tr>
+            <td><b>Deed Upload Date:</b> ${deedDate}</td>  
+            <td><b>Deed Link:</b> ${ipfsDeedLink}</td>
+          </tr>
+          <tr>
+            <td><b>Property ID</b> ${id}</td>  
+            <td><b>Deeds for this property:</b> ${indexDisplay}</td>
+          </tr>
+        </tbody>
+      </table>`
+    );
+  }
 }
 
 async function uploadDeed(id) {
