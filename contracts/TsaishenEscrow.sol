@@ -161,13 +161,13 @@ contract TsaishenEscrow is Ownable, Storage{
         emit RefundsClosed("Refund closed.", escrowById[_tokenId].buyer, _tokenId);
     }  
 
+    function _resetState(uint256 _tokenId) internal {
+        escrowById[_tokenId].state = State.Active;
+    }
+
     // -- onlyOwner --
     function _cancelTimelock(uint256 _tokenId) internal onlyOwner {
         escrowById[_tokenId].timelock = 0;
-    } 
-
-    function _resetState(uint256 _tokenId) internal onlyOwner {
-        escrowById[_tokenId].state = State.Active;
-    }  
+    }   
 
 }

@@ -316,7 +316,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         require(offerDetails[tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow.");
         require(msg.sender == escrowById[tokenId].buyer, "Mp: Buyer only.");
     
-        // allow 3 days for seller to update documents
+        _resetState(tokenId);
         _extendTimelock(tokenId);
 
         emit MarketTransaction("3-day document update request issued.", escrowById[tokenId].buyer, tokenId);
