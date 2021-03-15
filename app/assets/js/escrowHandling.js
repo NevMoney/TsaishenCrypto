@@ -57,7 +57,6 @@ async function appendEscrowButtons(id, buyer, seller) {
     <div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}" onclick="deedConfirm(${id})">Confirm <i class="fas fa-envelope-open"></i></div>
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}" onclick="requestReview(${id})">Request Review <i class="fas fa-search"></i></div>
     <div class="btn btn-success-soft mr-1 lift mb-md-6" id="uploadDeedBtn${id}" onclick="uploadDeed(${id})">Upload Deed <i class="fas fa-file-upload"></i></div>
-    <div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}" onclick="cancelEscrow(${id})">Cancel <i class="fas fa-file-signature"></i></div>
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="deedInfoBtn${id}" onclick="fetchDeedInfo(${id})">Deed <i class="fas fa-info"></i></div>
     <div id="userEscrowInfoDisplay"></div>
     `
@@ -112,12 +111,18 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
   if (checkRefund == true) {
     checkRefund = `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}" onclick="requestRefund(${id})"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>`;
   } else {
-    checkRefund = "False*";
+    checkRefund = "False until unlock date";
+  }
+
+  if (checkWithdrawal == false) {
+    checkWithdrawal = "False until unlock date";
+  } else {
+    checkWithdrawal = "True, after unlock date"
   }
 
   $("#userEscrowInfoDisplay").append(
     `<table class="table">
-      <thead><b>Escrow Info</b></thead>
+      <thead><b>Escrow Info for Token ${id}</b></thead>
       <tbody>
         <tr>
           <td><b>Seller Address:</b> ${seller}</td>
@@ -129,11 +134,11 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
         </tr>
         <tr>
           <td><b>Refunds permitted?</b> ${checkRefund}</td>
-          <td><b>Funds/Next Step Unlock Date:</b> ${escrowDate}</td>
+          <td><b>Next Step Unlock Date:</b> ${escrowDate}</td>
         </tr>
         <tr>
-          <td><b>Withdrawals permited?</b> ${checkWithdrawal}*</td>
-          <td><i>* Please note that this could change with above date.</i></td>
+          <td><b>Withdrawals permited?</b> ${checkWithdrawal}</td>
+          <td><div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}" onclick="cancelEscrow(${id})">Cancel ${id} <i class="fas fa-file-signature"></i></div></td>
         </tr>
       </tbody>
     </table>`
