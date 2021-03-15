@@ -156,9 +156,10 @@ async function getHouses() {
     // first get array of all user homes
     arrayId = await usersInstance.methods.getUserHomes(user).call();
     console.log("ID array ", arrayId);
-    for (i = 0; i < arrayId.length; i++){
+    for (i = 0; i < arrayId.length; i++) {
       house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
-      
+      console.log("house", house);
+      console.log("house ID", arrayId[i]);
       appendCryptoHouse(arrayId[i], house.uri, NaN, user, 0);  
     }
   }

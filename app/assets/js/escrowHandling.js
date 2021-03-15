@@ -15,10 +15,8 @@ async function sellerEscrowInfo() {
         $(".escrowBuyer").hide();
         $("#portfolioTop").show();
       }
-    
       $("#escrowBuyerDisplay").empty();
-    
-      appendEscrowButtons(sellerEscrow.tokenId, sellerEscrow.buyer);
+      appendEscrowButtons(sellerEscrow.tokenId);
     } else {
         $(".escrowBuyer").hide();
         $("#portfolioTop").show();
@@ -40,33 +38,21 @@ async function fetchEscrowInfo() {
       $(".escrowBuyer").hide();
       $("#portfolioTop").show();
     }
-  
     $("#escrowBuyerDisplay").empty();
-  
-    appendEscrowButtons(escrowInfo.tokenId, escrowInfo.buyer, escrowInfo.seller);
+    appendEscrowButtons(escrowInfo.tokenId);
   } else {
       $(".escrowBuyer").hide();
       $("#portfolioTop").show();
   }
-  
 }
 
-async function appendEscrowButtons(id, buyer, seller) {
+async function appendEscrowButtons(id) {
   $("#escrowBuyerDisplay").append(
-    `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo(${id})">Escrow <i class="fas fa-info"></i></div>
-    
+    `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo(${id})">Escrow <i class="fas fa-info"></i></div>  
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="deedInfoBtn${id}" onclick="fetchDeedInfo(${id})">Deed <i class="fas fa-info"></i></div>
     <div id="userEscrowInfoDisplay"></div>
     `
   );
-
-  if (user == buyer) {
-    $(`#uploadDeedBtn${id}`).hide();
-  } else if (user == seller && user == buyer) {
-    $(`#uploadDeedBtn${id}`).show();
-  }  else if (user == seller) {
-    $(`#uploadDeedBtn${id}`).show();
-  }
 }
 
 // for individual escrow to get info

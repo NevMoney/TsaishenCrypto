@@ -79,23 +79,26 @@ async function getEscrowInfo() {
         list = list.substr(26);
         let begin = "0x";
         let tUserAdd = begin.concat(list);
+
         let tsaishenUserInfo = await usersInstance.methods.getUserInfo(tUserAdd).call();
-        console.log("users object" + i +":", tsaishenUserInfo);
-        let homeArray = tsaishenUserInfo.houses;
-        console.log("homes array" + i +":", homeArray);
-        for (n = 0; n < homeArray.length; n++){
-        let homes = homeArray[n].toString();
-        homes = homes.substr(26);
-        console.log("homes" + n +":", homes);
+        console.log("users object" + i + ":", tsaishenUserInfo);
         
-        let escrow = await marketplaceInstance.methods.escrowInfo(homes).call();
-        console.log("escrow Array" + i + "." + n +":", escrow);
-        // console.log("seller", escrow.seller, "buyer", escrow.buyer, "state", escrow.state, "amount", escrow.amount, "timelock", escrow.timelock);
+        let homeArray = tsaishenUserInfo.houses;
+        console.log("homes array" + i + ":", homeArray);
+        
+        for (n = 0; n < homeArray.length; n++) {
+            let homes = homeArray[n].toString();
+            homes = homes.substr(26);
+            console.log("homes" + n + ":", homes);
+            
+            let escrow = await marketplaceInstance.methods.escrowInfo(homes).call();
+            console.log("escrow Array" + i + "." + n + ":", escrow);
+            // console.log("seller", escrow.seller, "buyer", escrow.buyer, "state", escrow.state, "amount", escrow.amount, "timelock", escrow.timelock);
 
-        let escrowAmount = web3.utils.fromWei(escrow.amount);
-        let timeToEnd = new Date(escrow.timelock * 1000).toLocaleDateString();
+            let escrowAmount = web3.utils.fromWei(escrow.amount);
+            let timeToEnd = new Date(escrow.timelock * 1000).toLocaleDateString();
 
-        displayEscrows(homes, escrow.seller, escrow.buyer, escrow.state, escrowAmount, timeToEnd);
+            displayEscrows(homes, escrow.seller, escrow.buyer, escrow.state, escrowAmount, timeToEnd);
         }
     }
 }
