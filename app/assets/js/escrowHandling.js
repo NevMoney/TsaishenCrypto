@@ -43,7 +43,7 @@ async function fetchEscrowInfo() {
   
     $("#escrowBuyerDisplay").empty();
   
-    appendEscrowButtons(escrowInfo.tokenId, escrowInfo.buyer);
+    appendEscrowButtons(escrowInfo.tokenId, escrowInfo.buyer, escrowInfo.seller);
   } else {
       $(".escrowBuyer").hide();
       $("#portfolioTop").show();
@@ -51,12 +51,11 @@ async function fetchEscrowInfo() {
   
 }
 
-async function appendEscrowButtons(id, buyer) {
+async function appendEscrowButtons(id, buyer, seller) {
   $("#escrowBuyerDisplay").append(
     `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo(${id})">Escrow <i class="fas fa-info"></i></div>
     <div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}" onclick="deedConfirm(${id})">Confirm <i class="fas fa-envelope-open"></i></div>
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}" onclick="requestReview(${id})">Request Review <i class="fas fa-search"></i></div>
-    <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}" onclick="requestRefund(${id})"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>
     <div class="btn btn-success-soft mr-1 lift mb-md-6" id="uploadDeedBtn${id}" onclick="uploadDeed(${id})">Upload Deed <i class="fas fa-file-upload"></i></div>
     <div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}" onclick="cancelEscrow(${id})">Cancel <i class="fas fa-file-signature"></i></div>
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="deedInfoBtn${id}" onclick="fetchDeedInfo(${id})">Deed <i class="fas fa-info"></i></div>
@@ -69,7 +68,12 @@ async function appendEscrowButtons(id, buyer) {
     $(`#buyerVerifyBtn${id}`).show();
     $(`#refundBtn${id}`).show();
     $(`#uploadDeedBtn${id}`).hide();
-  } else {
+  } else if (user == seller && user == buyer) {
+    $(`#reviewRequestBtn${id}`).show();
+    $(`#buyerVerifyBtn${id}`).show();
+    $(`#refundBtn${id}`).show();
+    $(`#uploadDeedBtn${id}`).show();
+  }  else if (user == seller) {
     $(`#reviewRequestBtn${id}`).hide();
     $(`#buyerVerifyBtn${id}`).hide();
     $(`#refundBtn${id}`).hide();
@@ -105,6 +109,12 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
     token = "USDC";
   }
 
+  if (checkRefund == true) {
+    checkRefund = `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}" onclick="requestRefund(${id})"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>`;
+  } else {
+    checkRefund = "False*";
+  }
+
   $("#userEscrowInfoDisplay").append(
     `<table class="table">
       <thead><b>Escrow Info</b></thead>
@@ -118,7 +128,7 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
           <td><b>Escrow Is Now:</b> ${state}</td>
         </tr>
         <tr>
-          <td><b>Refunds permitted?</b> ${checkRefund}*</td>
+          <td><b>Refunds permitted?</b> ${checkRefund}</td>
           <td><b>Funds/Next Step Unlock Date:</b> ${escrowDate}</td>
         </tr>
         <tr>
