@@ -54,7 +54,7 @@ async function fetchEscrowInfo() {
 async function appendEscrowButtons(id, buyer, seller) {
   $("#escrowBuyerDisplay").append(
     `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo(${id})">Escrow <i class="fas fa-info"></i></div>
-    <div class="btn btn-success-soft mr-1 lift mb-md-6" id="uploadDeedBtn${id}" onclick="uploadDeed(${id})">Upload Deed <i class="fas fa-file-upload"></i></div>
+    
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="deedInfoBtn${id}" onclick="fetchDeedInfo(${id})">Deed <i class="fas fa-info"></i></div>
     <div id="userEscrowInfoDisplay"></div>
     `
@@ -81,7 +81,7 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
   let escrowDate = new Date(time * 1000);
   amount = web3.utils.fromWei(amount);
   let now = new Date();
-  console.log("Show Escrow Info", escrowDate, now);
+  // console.log("Show Escrow Info", escrowDate, now);
   
   if (state == 0) {
     state = "Active";
@@ -113,29 +113,58 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
     checkWithdrawal = `<div class="btn btn-success-soft mr-1 lift mb-md-6" id="sellerWithdrawBtn${id}" onclick="requestFunds(${id})">Withdraw <i class="fas fa-dollar-sign"></i></div>`
   }
 
-  $("#userEscrowInfoDisplay").append(
-    `<table class="table">
-      <thead><b>Escrow Info for Token ${id}</b></thead>
-      <tbody>
-        <tr>
-          <td><b>Seller Address:</b> ${seller}</td>
-          <td><b>Buyer Address:</b> ${buyer}</td>
-        </tr>
-        <tr>
-          <td><b>Escrow Amount:</b> ${amount} ${token}</td>  
-          <td><b>Escrow Is Now:</b> ${state}</td>
-        </tr>
-        <tr>
-          <td><b>Refunds permitted?</b> ${checkRefund}</td>
-          <td><b>Next Step Unlock Date:</b> ${escrowDate}</td>
-        </tr>
-        <tr>
-          <td><b>Withdrawals permited?</b> ${checkWithdrawal}</td>
-          <td><div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}" onclick="cancelEscrow(${id})">Cancel ${id} <i class="fas fa-file-signature"></i></div></td>
-        </tr>
-      </tbody>
-    </table>`
-  );
+  if (user == seller) {
+    $("#userEscrowInfoDisplay").append(
+      `<table class="table">
+        <thead><b>Escrow Info for Token ${id}</b></thead>
+        <tbody>
+          <tr>
+            <td><b>Seller Address:</b> ${seller}</td>
+            <td><b>Buyer Address:</b> ${buyer}</td>
+          </tr>
+          <tr>
+            <td><b>Escrow Amount:</b> ${amount} ${token}</td>  
+            <td><b>Escrow Is Now:</b> ${state}</td>
+          </tr>
+          <tr>
+            <td><b>Refunds permitted?</b> ${checkRefund}</td>
+            <td><b>Next Step Unlock Date:</b> ${escrowDate}</td>
+          </tr>
+          <tr>
+            <td><b>Withdrawals permited?</b> ${checkWithdrawal}</td>
+            <td><div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}" onclick="cancelEscrow(${id})">Cancel <i class="fas fa-file-signature"></i></div>
+            <div class="btn btn-success-soft mr-1 lift mb-md-6" id="uploadDeedBtn${id}" onclick="uploadDeed(${id})">Upload Deed <i class="fas fa-file-upload"></i></div></td>
+          </tr>
+        </tbody>
+      </table>`
+    );
+  } else {
+    $("#userEscrowInfoDisplay").append(
+      `<table class="table">
+        <thead><b>Escrow Info for Token ${id}</b></thead>
+        <tbody>
+          <tr>
+            <td><b>Seller Address:</b> ${seller}</td>
+            <td><b>Buyer Address:</b> ${buyer}</td>
+          </tr>
+          <tr>
+            <td><b>Escrow Amount:</b> ${amount} ${token}</td>  
+            <td><b>Escrow Is Now:</b> ${state}</td>
+          </tr>
+          <tr>
+            <td><b>Refunds permitted?</b> ${checkRefund}</td>
+            <td><b>Next Step Unlock Date:</b> ${escrowDate}</td>
+          </tr>
+          <tr>
+            <td><b>Withdrawals permited?</b> ${checkWithdrawal}</td>
+            <td><div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}" onclick="cancelEscrow(${id})">Cancel <i class="fas fa-file-signature"></i></div></td>
+          </tr>
+        </tbody>
+      </table>`
+    );
+  }
+  
+
 }
 
 // for buyer to confirm delivery
@@ -248,8 +277,8 @@ async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
   if (user == buyer) {
     $("#userEscrowInfoDisplay").append(
       `<tr>
-        <td><div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}" onclick="requestReview(${id})">Request Review ${id}<i class="fas fa-search"></i></div></td>
-        <td><div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}" onclick="deedConfirm(${id})">Confirm ${id}<i class="fas fa-envelope-open"></i></div></td>
+        <td><div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}" onclick="requestReview(${id})">Request Review <i class="fas fa-search"></i></div></td>
+        <td><div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}" onclick="deedConfirm(${id})">Confirm <i class="fas fa-envelope-open"></i></div></td>
       </tr>`
     );
   }
