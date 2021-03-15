@@ -287,6 +287,28 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         emit MarketTransaction("Seller uploaded docs.", msg.sender, _tokenId);
     }
 
+    function sellerWithdraw(uint256 tokenId) public payable nonReentrant {
+        require(msg.sender == escrowById[_tokenId].seller, "Mp: Seller only");
+        require(offerDetails[_tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow");
+        require(escrowById[_tokenId].state == State.Closed, "Mp: Escrow not closed");
+        require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
+        Offer storage offer = offerDetails[tokenId];
+
+        // transfer house to buyer
+        _houseToken.safeTransferFrom(offer.seller, escrowById[_tokenId].buyer, tokenId);
+
+        _tsaishenUsers.addHouseToUser(escrowById[_tokenId].buyer, tokenId);
+        _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
+
+        _beneficiaryWithdraw(offer.seller, tokenId, feeRecipient);
+
+        //remove from the array/mapping
+        delete offers[offer.index];
+        delete offerDetails[tokenId];  
+
+        emit MarketTransaction("Funds withdrawn", offer.seller, tokenId);
+    }
+
     // buyer to verifies receipt and escrow transfers complete
     function buyerVerify(uint256 tokenId) public payable nonReentrant {
         require(offerDetails[tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow.");
@@ -294,12 +316,8 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         
         _confirmDelivery(tokenId);
 
-        // // transfer house to buyer
-        // _houseToken.safeTransferFrom(offer.seller, escrowById[tokenId].buyer, tokenId);
         // transfer house to buyer
         _houseToken.safeTransferFrom(offer.seller, msg.sender, tokenId);
-        
-        // _beneficiaryWithdraw(offer.seller, tokenId, feeRecipient);
 
         // finalize transaction with users
         _tsaishenUsers.addHouseToUser(msg.sender, tokenId);

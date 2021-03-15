@@ -54,8 +54,6 @@ async function fetchEscrowInfo() {
 async function appendEscrowButtons(id, buyer, seller) {
   $("#escrowBuyerDisplay").append(
     `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo(${id})">Escrow <i class="fas fa-info"></i></div>
-    <div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}" onclick="deedConfirm(${id})">Confirm <i class="fas fa-envelope-open"></i></div>
-    <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}" onclick="requestReview(${id})">Request Review <i class="fas fa-search"></i></div>
     <div class="btn btn-success-soft mr-1 lift mb-md-6" id="uploadDeedBtn${id}" onclick="uploadDeed(${id})">Upload Deed <i class="fas fa-file-upload"></i></div>
     <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="deedInfoBtn${id}" onclick="fetchDeedInfo(${id})">Deed <i class="fas fa-info"></i></div>
     <div id="userEscrowInfoDisplay"></div>
@@ -63,19 +61,10 @@ async function appendEscrowButtons(id, buyer, seller) {
   );
 
   if (user == buyer) {
-    $(`#reviewRequestBtn${id}`).show();
-    $(`#buyerVerifyBtn${id}`).show();
-    $(`#refundBtn${id}`).show();
     $(`#uploadDeedBtn${id}`).hide();
   } else if (user == seller && user == buyer) {
-    $(`#reviewRequestBtn${id}`).show();
-    $(`#buyerVerifyBtn${id}`).show();
-    $(`#refundBtn${id}`).show();
     $(`#uploadDeedBtn${id}`).show();
   }  else if (user == seller) {
-    $(`#reviewRequestBtn${id}`).hide();
-    $(`#buyerVerifyBtn${id}`).hide();
-    $(`#refundBtn${id}`).hide();
     $(`#uploadDeedBtn${id}`).show();
   }
 }
@@ -89,8 +78,10 @@ async function houseEscrowInfo(id) {
 async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
   let checkRefund = await marketplaceInstance.methods.refundAllowed(id).call();
   let checkWithdrawal = await marketplaceInstance.methods.withdrawalAllowed(id).call();
-  let escrowDate = new Date(time * 1000).toLocaleString();
+  let escrowDate = new Date(time * 1000);
   amount = web3.utils.fromWei(amount);
+  let now = new Date();
+  console.log("Show Escrow Info", escrowDate, now);
   
   if (state == 0) {
     state = "Active";
@@ -111,13 +102,15 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
   if (checkRefund == true) {
     checkRefund = `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}" onclick="requestRefund(${id})"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>`;
   } else {
-    checkRefund = "False until unlock date";
+    checkRefund = "False";
   }
 
   if (checkWithdrawal == false) {
-    checkWithdrawal = "False until unlock date";
-  } else {
+    checkWithdrawal = "False";
+  } else if (checkWithdrawal == true) {
     checkWithdrawal = "True, after unlock date"
+  } else if (checkWithdrawal == true && now > escrowDate) {
+    checkWithdrawal = `<div class="btn btn-success-soft mr-1 lift mb-md-6" id="sellerWithdrawBtn${id}" onclick="requestFunds(${id})">Withdraw <i class="fas fa-dollar-sign"></i></div>`
   }
 
   $("#userEscrowInfoDisplay").append(
@@ -228,7 +221,7 @@ async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
   } else {
     $("#userEscrowInfoDisplay").append(
       `<table class="table">
-        <thead><b>Deed Info</b></thead>
+        <thead><b>Deed Info ${id}</b></thead>
         <tbody>
           <tr>
             <td><b>Seller:</b> ${seller}</td>
@@ -244,10 +237,20 @@ async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
           </tr>
           <tr>
             <td><b>Property ID</b> ${id}</td>  
-            <td><b>Deeds for this property:</b> ${indexDisplay}</td>
+            <td><b>Deeds for this property:</b> ${index}</td>
           </tr>
+          <tr id="buyerOnlyButtons${id}"></tr>
         </tbody>
       </table>`
+    );
+  }
+
+  if (user == buyer) {
+    $("#userEscrowInfoDisplay").append(
+      `<tr>
+        <td><div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}" onclick="requestReview(${id})">Request Review ${id}<i class="fas fa-search"></i></div></td>
+        <td><div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}" onclick="deedConfirm(${id})">Confirm ${id}<i class="fas fa-envelope-open"></i></div></td>
+      </tr>`
     );
   }
 }
@@ -283,4 +286,15 @@ async function combineResults(id) {
   }
   goToPortfolio();
   $("#escrowFinalSteps").show();
+}
+
+async function requestFunds(id) {
+  try {
+    let funds = await marketplaceInstance.methods.sellerWithdraw(id).send({ from: user });
+    console.log(funds);
+    alert("Funds successfully withdrawn. Congratulations on your sale!");
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
