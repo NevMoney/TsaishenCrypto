@@ -294,11 +294,15 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         
         _confirmDelivery(tokenId);
 
+        // // transfer house to buyer
+        // _houseToken.safeTransferFrom(offer.seller, escrowById[tokenId].buyer, tokenId);
         // transfer house to buyer
-        _houseToken.safeTransferFrom(offer.seller, escrowById[tokenId].buyer, tokenId);
+        _houseToken.safeTransferFrom(offer.seller, msg.sender, tokenId);
+        
+        // _beneficiaryWithdraw(offer.seller, tokenId, feeRecipient);
 
         // finalize transaction with users
-        _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
+        _tsaishenUsers.addHouseToUser(msg.sender, tokenId);
         _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
 
         //remove from the array/mapping

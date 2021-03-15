@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0x04ECd1849a3B252A9f55F0A3D610cF450BE6bbD2";
-var houseTokenAddress = "0x352ebD84619597F4ec3d18Bea793143eAa2f4c46";
-var marketplaceAddress = "0x5568CA4C8fc2ACd7D3f814A03a54A84Af9167CbC";
+var tsaishenUsersAddress = "0xEce13B7059ea8daB58BcD789302d838FC2676CeF";
+var houseTokenAddress = "0xbA465b9b7859eec9De880991bBdEB2CB4a41D9a6";
+var marketplaceAddress = "0xAf57A911e5BE42c608770d6203D1Fd38A103a82A";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -155,17 +155,11 @@ async function getHouses() {
   try {
     // first get array of all user homes
     arrayId = await usersInstance.methods.getUserHomes(user).call();
-    // console.log("ID array ", arrayId);
+    console.log("ID array ", arrayId);
     for (i = 0; i < arrayId.length; i++){
       house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
       
-      let id = arrayId[i];
-      let url = house.uri;
-      // console.log("id", id);
-      // console.log("house info ", house);
-      // console.log(url);
-      
-      appendCryptoHouse(id, url, NaN, user, 0);  
+      appendCryptoHouse(arrayId[i], house.uri, NaN, user, 0);  
     }
   }
   catch (err) {
@@ -250,15 +244,15 @@ function renderCryptoHouse(id, url, price, owner, state) {
         </tr>
         `
       )
-      // state 0 - not for sale, state 1 - active for sale, state 2 - in escrow
+      // state 0 - not for sale, state 1 - active for sale, state 2 - in escrow (offerState)
       if (state == 0) {
-        $("#houseDisplay").append(button);
+        // $("#houseDiv").append(button);
         $(`#buyBtn${id}`).hide();
         $(`#cancelBtn${id}`).show();
         $(`#selectSaleBtn${id}`).show();
       }
       else if (state == 1) {
-        $("#houseSale").append(button);
+        // $("#houseDivSale").append(button);
         $(`#selectSaleBtn${id}`).hide();
         
         if (owner === user) {

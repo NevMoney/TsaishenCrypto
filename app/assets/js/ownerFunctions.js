@@ -317,8 +317,7 @@ async function ownerRemoveUser() {
 async function getUserCount() {
     let userNumber = await usersInstance.methods.userCount().call();
     console.log(userNumber);
-    $("#balanceDisplay").append(
-        `<p>Currnet number of users: ${userNumber}</p>`);
+    $("#balanceDisplay").append(`<p>Current number of users: ${userNumber}</p>`);
 }
 
 async function ownerDeedInfo() {
