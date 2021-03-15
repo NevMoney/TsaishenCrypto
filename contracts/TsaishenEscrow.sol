@@ -126,12 +126,11 @@ contract TsaishenEscrow is Ownable, Storage{
 
         escrowById[_tokenId].state = State.Closed;
         escrowById[_tokenId].timelock = 0;
-        
+
         _beneficiaryWithdraw(escrowById[_tokenId].seller, _tokenId, feeRecipient);
     }   
 
     function _beneficiaryWithdraw(address payable _seller, uint256 _tokenId, address payable _feeRecipient) internal {
-        // require(msg.sender == escrowById[_tokenId].seller || msg.sender == owner(), "TE: Not authorized.");
         require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
         require(escrowById[_tokenId].state == State.Closed, "TE: Must be closed.");
 
@@ -145,10 +144,8 @@ contract TsaishenEscrow is Ownable, Storage{
         // transfer proceeds to seller
         escrowById[_tokenId].token.universalTransfer(escrowById[_tokenId].seller, paymentToSeller);
 
-        address _buyer = escrowById[_tokenId].buyer;
-
         delete escrowById[_tokenId];
-        delete escrowBuyerToId[_buyer];
+        delete escrowBuyerToId[escrowById[_tokenId].buyer];
 
         emit Withdrawn("Funds transferred to seller.", _seller, paymentToSeller);
     }
@@ -161,13 +158,13 @@ contract TsaishenEscrow is Ownable, Storage{
         emit RefundsClosed("Refund closed.", escrowById[_tokenId].buyer, _tokenId);
     }  
 
+    function _resetState(uint256 _tokenId) internal {
+        escrowById[_tokenId].state = State.Active;
+    }
+
     // -- onlyOwner --
     function _cancelTimelock(uint256 _tokenId) internal onlyOwner {
         escrowById[_tokenId].timelock = 0;
-    } 
-
-    function _resetState(uint256 _tokenId) internal onlyOwner {
-        escrowById[_tokenId].state = State.Active;
-    }  
+    }   
 
 }

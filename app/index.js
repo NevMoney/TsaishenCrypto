@@ -2,9 +2,9 @@ var houseTokenInstance;
 var marketplaceInstance;
 var usersInstance;
 
-var tsaishenUsersAddress = "0xC5aFE31AE505594B190AC71EA689B58139d1C354";
-var houseTokenAddress = "0x42D4BA5e542d9FeD87EA657f0295F1968A61c00A";
-var marketplaceAddress = "0x25AF99b922857C37282f578F428CB7f34335B379";
+var tsaishenUsersAddress = "0xEce13B7059ea8daB58BcD789302d838FC2676CeF";
+var houseTokenAddress = "0xbA465b9b7859eec9De880991bBdEB2CB4a41D9a6";
+var marketplaceAddress = "0xAf57A911e5BE42c608770d6203D1Fd38A103a82A";
 const contractOwnerAddress = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 const creatorAddress = "0xb0F6d897C9FEa7aDaF2b231bFbB882cfbf831D95";
 // approved token addresses
@@ -47,16 +47,34 @@ $(document).ready(async () => {
   marketplaceInstance = await new web3.eth.Contract(abi.Marketplace, marketplaceAddress, { from: user });
   // console.log("users ", usersInstance, "house ", houseTokenInstance, "marketplace ", marketplaceInstance);
 
+  $("#market-container").hide();
+  $("#deed-container").hide();
+  $("#upload-container").hide();
+  $("#upload-what").hide();
+  $("#portfolio").hide();
+  $("#learnMore").hide();
+  $("#aboutPage").hide();
+  $("#escrowPage").hide();
+
   // we'll put events here for notifications
   houseTokenInstance.events.Minted().on("data", function (event) {
+    let eventType = event.returnValues["uri"].toString();
     let owner = event.returnValues._owner;
     let houseId = event.returnValues.id;
     let houseUri = event.returnValues.uri;
     $("#houseUploadedMsg").append(`<strong>Congratulations ${owner}!</strong> You have successfully uploaded real property onto 
       the blockchain. <u>Your property ID is ${houseId}</u>. Head on over the Portfolio page and take a look.`);
     $("#houseUploadedMsg").show();
+    if (eventType == "Updated uri") {
+      $("#houseUploadedMsg").append(`Property ID ${houseId} owner with address: ${owner} has updated property information to ${houseUri}.`);
+      $("#houseUploadedMsg").show();
+    }
+    if (eventType == "Token burned") {
+      $("#houseUploadedMsg").append(`HOUS token owner, ${owner} has burned property ID: ${houseId}.`);
+      $("#houseUploadedMsg").show();
+    }
   })
-    .on("error", console.error);
+  .on("error", console.error);
   
   marketplaceInstance.events.MarketTransaction().on("data", (event) => {
     var eventType = event.returnValues["TxType"].toString();
@@ -123,9 +141,8 @@ $(document).ready(async () => {
     .on("error", console.error);
 });
 
-function appendCryptoHouse(id, url, isMarketplace, price, seller) {
-  // getHouses();
-  renderCryptoHouse(id, url, isMarketplace, price, seller)
+function appendCryptoHouse(id, url, price, seller, state) {
+  renderCryptoHouse(id, url, price, seller, state)
   // houseButtons(id, url, isMarketplace, price, seller);
   $("#marketplaceLoading").hide();
 }
@@ -138,17 +155,11 @@ async function getHouses() {
   try {
     // first get array of all user homes
     arrayId = await usersInstance.methods.getUserHomes(user).call();
-    // console.log("ID array ", arrayId);
+    console.log("ID array ", arrayId);
     for (i = 0; i < arrayId.length; i++){
       house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
       
-      let id = arrayId[i];
-      let url = house.uri;
-      // console.log("id", id);
-      // console.log("house info ", house);
-      // console.log(url);
-      
-      appendCryptoHouse(id, url, false, NaN, user);  
+      appendCryptoHouse(arrayId[i], house.uri, NaN, user, 0);  
     }
   }
   catch (err) {
@@ -157,11 +168,11 @@ async function getHouses() {
 }
 
 // get data from JSON and render display
-function renderCryptoHouse(id, url, isMarketplace, price, owner) {
+function renderCryptoHouse(id, url, price, owner, state) {
   fetch(url).then(function (res) {
     res.json().then(function (data) {
       // console.log("JSON file: ", data);
-      console.log("renderCryptoHouse", id, url, isMarketplace, price, owner);
+      console.log("renderCryptoHouse", id, url, price, owner, state);
 
       $("#portfolioLoading").hide();
       
@@ -233,54 +244,49 @@ function renderCryptoHouse(id, url, isMarketplace, price, owner) {
         </tr>
         `
       )
-      let inEscrow = false;
-      // top part if(!isMarketplace) is irrelevant -- buttons always display
-      if (!isMarketplace) {
-        $("#houseDisplay").append(button);
+      // state 0 - not for sale, state 1 - active for sale, state 2 - in escrow (offerState)
+      if (state == 0) {
+        // $("#houseDiv").append(button);
         $(`#buyBtn${id}`).hide();
         $(`#cancelBtn${id}`).show();
         $(`#selectSaleBtn${id}`).show();
       }
-      else {
-        $("#houseSale").append(button);
+      else if (state == 1) {
+        // $("#houseDivSale").append(button);
         $(`#selectSaleBtn${id}`).hide();
         
-    
-          if (owner === user) {
-            $(`#buyBtn${id}`).hide();
-            $(`#cancelBtn${id}`).show();
+        if (owner === user) {
+          $(`#buyBtn${id}`).hide();
+          $(`#cancelBtn${id}`).show();
+        }
+        else {
+          $(`#buyBtn${id}`).show();
+          $(`#cancelBtn${id}`).hide();
+        }
 
-            if (inEscrow) {
-              $(`#buyBtn${id}`).hide();
-              $(`#cancelBtn${id}`).hide();
-              $(`#propertyImage${id}`).addClass("inEscrow");
-              $(`#propertyImage${id}`).append("IN ESCROW");
-            }
-          }
-          else {
-            $(`#buyBtn${id}`).show();
-            $(`#cancelBtn${id}`).hide();
-            
-            if (inEscrow) {
-              $(`#buyBtn${id}`).hide();
-              $(`#cancelBtn${id}`).hide();
-              $(`#propertyImage${id}`).addClass("inEscrow");
-              $(`#propertyImage${id}`).append("IN ESCROW");
-            }
-          }
       }
-
-      
+      else if (state == 2) {
+        $(`#buyBtn${id}`).hide();
+        $(`#cancelBtn${id}`).hide();
+        $(`#selectSaleBtn${id}`).hide();
+        $(`#propertyImage${id}`).addClass("inEscrow");
+        $(`#propertyImage${id}`).append("IN ESCROW");
+      }    
 
     });
   });
 }
 
-async function appendHouse(id, price, seller) {
+async function appendHouse(id, price, seller, state) {
   // console.log("appendHouse ID", id, "aH price", price, "aH seller", seller);
-  var house = await houseTokenInstance.methods.getHouse(id).call();
-  console.log("appendHouse", house);
-  appendCryptoHouse(id, house.uri, true, price, seller);
+  try {
+    var house = await houseTokenInstance.methods.getHouse(id).call();
+    console.log("appendHouse", house);
+    appendCryptoHouse(id, house.uri, price, seller, state);
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
 
 async function checkOffer(id) {
@@ -289,7 +295,6 @@ async function checkOffer(id) {
     console.log("checkOffer x", x);
     var price = x.price;
     var seller = x.seller;
-    var loan = x.loan;
     var state = x.offerstate;
 
     price = web3.utils.fromWei(price);
@@ -306,12 +311,12 @@ async function sellCryptoHouse(id) {
   const offer = await checkOffer(id);
   if (offer.state != 0) return alert("This asset is already listed.");
 
-  var price = $("#housePrice").val();
+  var price = $("#housePriceInput").val();
   const { BN } = web3.utils;
   var amount = new BN(price);
   const isApproved = await houseTokenInstance.methods.isApprovedForAll(user, marketplaceAddress).call();
   // console.log(isApproved);
-  // console.log("sellCryptohouse Amount", amount);
+  console.log("sellCryptohouse Amount", amount);
   try {
     if (!isApproved) {
       await houseTokenInstance.methods
@@ -330,16 +335,15 @@ async function sellCryptoHouse(id) {
 
 async function getInventory() {
   try {
-    // perhaps we can call different function here!
     var arrayId = await marketplaceInstance.methods.getAllTokensOnSale().call();
-    console.log("getInventory array: ", arrayId);
+    // console.log("getInventory array: ", arrayId);
     for (i = 0; i < arrayId.length; i++){
       if (arrayId[i] != 0) {
         const offer = await checkOffer(arrayId[i]);
         console.log("getInventory", offer, arrayId[i]);
 
         if (offer.state) {
-          appendHouse(arrayId[i], offer.price, offer.seller);
+          appendHouse(arrayId[i], offer.price, offer.seller, offer.state);
         }
         
       }
@@ -351,21 +355,35 @@ async function getInventory() {
 }
 
 async function removeOffer(id) {
-  const offer = await checkOffer(id);
-  if (!offer.state) return alert("Nothing to cancel. This house is not listed.");
-  await marketplaceInstance.methods.removeOffer(id).send({ from: user });
-  goToInventory();
+  try {
+    const offer = await checkOffer(id);
+    if (offer.state == 0) {
+      return alert("Nothing to cancel. This property is not listed.");
+    } else if (offer.state == 2) {
+      return alert("You can't cancel this listing. This property is in escrow. To cancel escrow, please visit Portfolio Page and cancel there.");
+    }
+    await marketplaceInstance.methods.removeOffer(id).send({ from: user });
+    goToInventory();
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
 
 async function getRecentTokenPrice(id, price, token) {
-  // console.log("getRecentTokenPriceID", id, "recentTokenPrice", price, "tokenAdd", token);
-  let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(token).call();
-  let recentPrice, priceTime;
-  [recentPrice, priceTime] = Object.values(oracleObject);
-  let conversion = recentPrice / 100000000;
-  let priceInCrypto = (price / conversion);
-  // console.log("token price and time: ", priceInCrypto, priceTime);
-  return priceInCrypto;
+  try {
+    // console.log("getRecentTokenPriceID", id, "recentTokenPrice", price, "tokenAdd", token);
+    let oracleObject = await marketplaceInstance.methods.getOracleUsdPrice(token).call();
+    let recentPrice, priceTime;
+    [recentPrice, priceTime] = Object.values(oracleObject);
+    let conversion = recentPrice / 100000000;
+    let priceInCrypto = (price / conversion);
+    // console.log("token price and time: ", priceInCrypto, priceTime);
+    return priceInCrypto;
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
 
 async function selectToken(id) {
@@ -452,381 +470,4 @@ async function escrowBuy(id, price, token) {
   catch (err) {
     console.log(err);
   }
-}
-
-async function sellerEscrowInfo() {
-  let userHomes = await usersInstance.methods.getUserHomes(user).call();
-  for (i = 0; i < userHomes.length; i++) {
-    let sellerEscrow = await marketplaceInstance.methods.escrowInfo(userHomes[i]).call();
-    // console.log("seller escrow", sellerEscrow);
-
-    $("#portfolioLoading").hide();
-
-    if (sellerEscrow.amount > 0) {
-      if (user === sellerEscrow.buyer || user === sellerEscrow.seller) {
-        $(".escrowBuyer").show();
-        $("#portfolioTop").hide();
-      } else {
-        $(".escrowBuyer").hide();
-        $("#portfolioTop").show();
-      }
-    
-      $("#escrowBuyerDisplay").empty();
-    
-      appendEscrowButtons(sellerEscrow.tokenId, sellerEscrow.buyer);
-    } else {
-        $(".escrowBuyer").hide();
-        $("#portfolioTop").show();
-    }
-  }
-}
-
-async function fetchEscrowInfo() {
-  let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
-  let escrowInfo = await marketplaceInstance.methods.escrowInfo(escrow).call();
-  // console.log("escrowInfo", escrowInfo);
-  $("#portfolioLoading").hide();
-
-  if (escrowInfo.amount > 0) {
-    if (user === escrowInfo.buyer || user === escrowInfo.seller) {
-      $(".escrowBuyer").show();
-      $("#portfolioTop").hide();
-    } else {
-      $(".escrowBuyer").hide();
-      $("#portfolioTop").show();
-    }
-  
-    $("#escrowBuyerDisplay").empty();
-  
-    appendEscrowButtons(escrowInfo.tokenId, escrowInfo.buyer);
-  } else {
-      $(".escrowBuyer").hide();
-      $("#portfolioTop").show();
-  }
-  
-}
-
-async function appendEscrowButtons(id, buyer) {
-  $("#escrowBuyerDisplay").append(
-    `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${id}" onclick="houseEscrowInfo(${id})">Escrow <i class="fas fa-info"></i></div>
-    <div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}" onclick="deedConfirm(${id})">Confirm <i class="fas fa-envelope-open"></i></div>
-    <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}" onclick="requestReview(${id})">Request Review <i class="fas fa-search"></i></div>
-    <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}" onclick="requestRefund(${id})"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>
-    <div class="btn btn-danger-soft mr-1 lift mb-md-6" id="cancelEscrowBtn${id}" onclick="cancelEscrow(${id})">Cancel <i class="fas fa-file-signature"></i></div>
-    <div id="userEscrowInfoDisplay"></div>`
-  );
-
-  if (user == buyer) {
-    $(`#reviewRequestBtn${id}`).show();
-    $(`#buyerVerifyBtn${id}`).show();
-    $(`#refundBtn${id}`).show();
-  } else {
-    $(`#reviewRequestBtn${id}`).hide();
-    $(`#buyerVerifyBtn${id}`).hide();
-    $(`#refundBtn${id}`).hide();
-  }
-}
-
-// for individual escrow to get info
-async function houseEscrowInfo(id) {
-  let escrowInfo = await marketplaceInstance.methods.escrowInfo(id).call();
-  showEscrowInfo(escrowInfo.tokenId, escrowInfo.seller, escrowInfo.buyer, escrowInfo.state, escrowInfo.amount, escrowInfo.timelock, escrowInfo.token);
-}
-
-async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
-  let checkRefund = await marketplaceInstance.methods.refundAllowed(id).call();
-  let checkWithdrawal = await marketplaceInstance.methods.withdrawalAllowed(id).call();
-  let escrowDate = new Date(time * 1000).toUTCString();
-  amount = web3.utils.fromWei(amount);
-  
-  if (state == 0) {
-    state = "Active";
-  } else if (state == 1) {
-    state = "Refunding";
-  } else if (state == 2) {
-    state = "Closed";
-  }
-
-  if (token == ethAddress) {
-    token = "ETH";
-  } else if (token == daiAddress) {
-    token = "DAI";
-  } else if (token == usdcAddress) {
-    token = "USDC";
-  }
-
-  $("#userEscrowInfoDisplay").append(
-    `<table class="table">
-      <tbody>
-        <tr>
-          <td><b>Seller Address:</b> ${seller}</td>
-          <td><b>Buyer Address:</b> ${buyer}</td>
-        </tr>
-        <tr>
-          <td><b>Escrow Amount:</b> ${amount} ${token}</td>  
-          <td><b>Escrow State:</b> ${state}</td>
-        </tr>
-        <tr>
-          <td><b>Refund permitted currently?</b> ${checkRefund}</td>
-          <td><b>Withdrawals permited currently?</b> ${checkWithdrawal}</td>
-        </tr>
-        <tr>
-          <td><b>Current State Ends:</b> ${escrowDate}</td>
-        </tr>
-      </tbody>
-    </table>`
-  );
-}
-
-// for buyer to confirm delivery
-async function deedConfirm(id) {
-  try {
-    let confirm = await marketplaceInstance.methods.buyerVerify(id).send({ from: user });
-    console.log("confirm delivery", confirm);
-    goToPortfolio();
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
-
-// for buyer/seller to cancel escrow
-async function cancelEscrow(id) {
-  let penalty = web3.utils.toWei("2", "ether");
-  try {
-    let cancelHash = await marketplaceInstance.methods.cancelEscrowSale(id).send({ from: user, value: penalty });
-    console.log("cancel escrow hash", cancelHash);
-    goToPortfolio();
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
-
-// for buyer to request review
-async function requestReview(id) {
-  try {
-    let reviewHash = await marketplaceInstance.methods.buyerReviewRequest(id).send({ from: user });
-    console.log("review request hash", reviewHash);
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
-
-// for buyer refund
-async function requestRefund(id) {
-  try {
-    let refundHash = await marketplaceInstance.methods.refundEscrow(id).send({ from: user });
-    console.log("review request hash", refundHash);
-    goToPortfolio();
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
-
-// for seller to confirm delivery (if this failes to automatically run when deed is uploaded, I may need to add a button)
-async function deedUploaded(id) {
-  try {
-    let confirmed = await marketplaceInstance.methods.sellerComplete(id).send({ from: user });
-    console.log("review request hash", confirmed);
-    goToPortfolio();
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
-
-// ---- OWNER ONLY FUNCTIONS ----
-async function ownerInitializeContracts() {
-  await usersInstance.methods.setHouseTokenAddress(houseTokenAddress).send(); 
-  await usersInstance.methods.setMarketplaceAddress(marketplaceAddress).send();
-  // console.log("Marketplace: ", marketplaceAddress);
-  // console.log("HouseToken: ", houseTokenAddress);
-}
-
-async function getAllTsaishenUsers() {
-  let userList = await usersInstance.methods.getAllUsers().call();
-  // console.log("user array", userList); 
-
-  for (i = 0; i < userList.length; i++) {
-    let list = userList[i].toString();
-    list = list.substr(26);
-    let begin = "0x";
-    let tUserAdd = begin.concat(list);
-    // console.log("user address" + i + ":", tUserAdd);
-
-    let tsaishenUserInfo = await usersInstance.methods.getUserInfo(tUserAdd).call();
-
-    let userAddress = userList[i];
-    let owner = tsaishenUserInfo.houseOwner;
-    let borrowed = tsaishenUserInfo.borrower;
-    let lended = tsaishenUserInfo.lender;
-    let rewarded = tsaishenUserInfo.reward;
-    let properties = tsaishenUserInfo.houses;
-
-    displayTsaishenUsers(userAddress, owner, borrowed, lended, rewarded, properties);
-  }
-}
-
-async function displayTsaishenUsers(userAddress, owner, borrowed, lended, rewarded, properties) {
-  userAddress = userAddress.substr(26);
-  let start = "0x";
-  let address = start.concat(userAddress);
-  // console.log("address", address);
-  // console.log("properties", properties);
-
-  $("#userDisplayTable").show();
-  
-  $("#userDisplayTable").append(
-      `<table class="table table-responsive">
-        <thead class="thead-dark">
-          <th scope="col">User Address</th>
-          <th scope="col">Owner?</th>
-          <th scope="col">Borrower?</th>
-          <th scope="col">Lender?</th>
-          <th scope="col">Reward?</th>
-          <th scope="col">Properties</th>
-        </thead>
-        <tbody>
-          <tr>
-            <td>${address}</td>
-            <td>${owner}</td>
-            <td>${borrowed}</td>
-            <td>${lended}</td>
-            <td>${rewarded}</td>
-            <td class="btn" onclick="displayPurchase(${properties})" data-toggle="modal" data-target="#buyHouseModal">${properties}</td>
-          </tr>
-        </tbody>
-      </table>`
-  );
-}
-
-// for owner only
-async function getEscrowInfo() {
-  let userList = await usersInstance.methods.getAllUsers().call();
-
-  for (i = 0; i < userList.length; i++) {
-    let list = userList[i].toString();
-    list = list.substr(26);
-    let begin = "0x";
-    let tUserAdd = begin.concat(list);
-    let tsaishenUserInfo = await usersInstance.methods.getUserInfo(tUserAdd).call();
-    console.log("users object" + i +":", tsaishenUserInfo);
-    let homeArray = tsaishenUserInfo.houses;
-    console.log("homes array" + i +":", homeArray);
-    for (n = 0; n < homeArray.length; n++){
-      let homes = homeArray[n].toString();
-      homes = homes.substr(26);
-      console.log("homes" + n +":", homes);
-      
-      let escrow = await marketplaceInstance.methods.escrowInfo(homes).call();
-      console.log("escrow Array" + i + "." + n +":", escrow);
-      // console.log("seller", escrow.seller, "buyer", escrow.buyer, "state", escrow.state, "amount", escrow.amount, "timelock", escrow.timelock);
-
-      let escrowAmount = web3.utils.fromWei(escrow.amount);
-      let timeToEnd = new Date(escrow.timelock * 1000).toLocaleDateString();
-
-      displayEscrows(homes, escrow.seller, escrow.buyer, escrow.state, escrowAmount, timeToEnd);
-    }
-  }
-}
-
-async function displayEscrows(houseId, seller, buyer, state, amount, timelock) {
-  $("#escrowDisplayTable").show();
-
-  if (state == 0) {
-    state = "active";
-  }
-  else if (state == 1) {
-    state = "refunding";
-  }
-  else if (state == 2) {
-    state = "closed";
-  }
-
-  if (amount > 0) {
-    $("#escrowDisplayTable").append(
-      `<table class="table table-responsive">
-        <thead class="thead-dark">
-        <th scope="col">Escrow House ID</th>
-          <th scope="col">Seller</th>
-          <th scope="col">Buyer</th>
-          <th scope="col">State</th>
-          <th scope="col">Amount</th>
-          <th scope="col">Locked Until</th>
-        </thead>
-        <tbody>
-          <tr>
-            <td>${houseId}</td>
-            <td>${seller}</td>
-            <td>${buyer}</td>
-            <td>${state}</td>
-            <td>${amount}</td>
-            <td>${timelock}</td>
-          </tr>
-        </tbody>
-      </table>`
-    );
-  }
-}
-
-/** @Dev when adding new token, make sure you:
- *  add buttons in renderCryptoHouse()
- *  add token in selectToken()
-*/ 
-async function addNewToken() {
-  let tokenAddress = $("#tokenAddressInput").val();
-  let oracleAddress = $("#oracleAddressInput").val();
-  let tokenName = $("#tokenName").val();
-  let tokenAdded = await marketplaceInstance.methods.addOracle(tokenAddress, oracleAddress).send();
-  console.log(tokenAdded);
-  console.log("token added", tokenName);
-  $("#tokenAdded").append(`<strong>Wahoo!</strong> We just added another token you can use to transact with: <strong>${tokenName}</strong>.`);
-  $("#tokenAlert").show();
-}
-
-/** @Dev when removing token, make sure you:
- * remove functionality in renderCryptoHouse() and selectToken()
-*/
-async function removeTokens() {
-  let tokenAddress = $("#tokenAddressInput").val();
-  let tokenName = $("#tokenName").val();
-  let tokenRemoved = await marketplaceInstance.methods.removeOracle(tokenAddress).send();
-  console.log(tokenRemoved);
-  console.log("token removed", tokenName);
-  $("#tokenRemoved").append(`<strong>Attention!</strong> For security reasons, we had to remove <strong>${tokenName}</strong> from the platform. Our sincere apologies.`);
-  $("#tokenAlert2").show();
-}
-    
-async function checkContractBalance() {
-  let balance = await web3.eth.getBalance(houseTokenAddress);
-  balance = web3.utils.fromWei(balance);
-  console.log(balance, "ETH");
-  $("#balanceDisplay").html(balance + " ETH");
-  $("#balanceDisplay").show();
-  $("#ownerCloseBtn").show();
-}
-
-async function withdrawFunds() {
-  let withdrawal = await houseTokenInstance.methods.withdrawAll().send({ to: user });
-  console.log("Funds sent", withdrawal);
-}
-
-async function pauseHouseTokenContract() {
-  let pause = await houseTokenInstance.methods.pause().send();
-  console.log("Contract Paused", pause);
-}
-
-async function unPauseHouseTokenContract() {
-  let unPause = await houseTokenInstance.methods.unpause().send();
-  console.log("Contract Paused", unPause);
-}
-
-async function mintHouse() {
-  // probably want to have a modal to add info about the house then mint
-  // use this is to create ZERO house
-  let minted = await houseTokenInstance.methods.mint(user).send();
-  console.log("house minted", minted);
 }

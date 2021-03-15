@@ -38,13 +38,13 @@ contract TsaishenUsers is Ownable, Storage {
         return _users = users._inner._values;
     }
 
-    function borrowedMoney(address borrower) public view returns(bool){
-        return userInfo[borrower].borrower;
-    }
+    // function borrowedMoney(address borrower) public view returns(bool){
+    //     return userInfo[borrower].borrower;
+    // }
 
-    function lentMoney(address lender) public view returns(bool){
-        return userInfo[lender].lender;
-    }
+    // function lentMoney(address lender) public view returns(bool){
+    //     return userInfo[lender].lender;
+    // }
 
     function getUserInfo(address user) public view returns(bool houseOwner, bool borrower, bool lender, bool reward, bytes32[] memory houses){
         houseOwner = userInfo[user].houseOwner;

@@ -214,46 +214,6 @@ var abi = {
         "inputs": [
           {
             "internalType": "address",
-            "name": "borrower",
-            "type": "address"
-          }
-        ],
-        "name": "borrowedMoney",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "lender",
-            "type": "address"
-          }
-        ],
-        "name": "lentMoney",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
             "name": "user",
             "type": "address"
           }
@@ -1422,6 +1382,19 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "destroyHouse",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
             "name": "id",
             "type": "uint256"
           }
@@ -1469,12 +1442,43 @@ var abi = {
         "constant": true
       },
       {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_marketplace",
+            "type": "address"
+          }
+        ],
+        "name": "setMarketplaceAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "withdrawAll",
         "outputs": [],
         "stateMutability": "payable",
         "type": "function",
         "payable": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_ipfsHash",
+            "type": "string"
+          }
+        ],
+        "name": "updateUri",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       }
     ],
 
@@ -1862,16 +1866,46 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "tokenId",
+            "name": "_tokenId",
             "type": "uint256"
           }
         ],
-        "name": "getOfferState",
+        "name": "getDeedInfo",
         "outputs": [
           {
-            "internalType": "enum Storage.OfferState",
-            "name": "",
-            "type": "uint8"
+            "internalType": "address",
+            "name": "seller",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "buyer",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "index",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "salePrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deedDate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "deedHash",
+            "type": "string"
           }
         ],
         "stateMutability": "view",
@@ -1919,6 +1953,24 @@ var abi = {
           }
         ],
         "name": "removeOracle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "ipfsHash",
+            "type": "string"
+          }
+        ],
+        "name": "updateHouseUri",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -2023,8 +2075,13 @@ var abi = {
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "tokenId",
+            "name": "_tokenId",
             "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_deedHash",
+            "type": "string"
           }
         ],
         "name": "sellerComplete",

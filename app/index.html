@@ -1076,6 +1076,7 @@
       <div id="fileName" style="display: none">
         <h5></h5>
         <button id="upload" type="button" class="btn btn-dark" value="SUBMIT">Upload</button>
+        <div id="dynamicUpload"></div>
         <div id="ipfsResult" class="mt-4 font-size-lg mb-2 mb-md-4"></div>
         <!-- alert that house upload is successful -->
         <div class="alert alert-warning alert-dismissible fade show" id="newUserMsg" role="alert">
@@ -1097,18 +1098,27 @@
     <div class="py-8 py-md-11 deedContainer">
         <div id="deed-container">
           <h2 class="display-3 font-weight-bold">Upload Deed</h2>
-          <p>Congrats on your sale. Let's finalize it and get you paid! Here are the 5 simple steps to make you successful:</p>
-          <ol>
+          <p class="font-size-lg">Congrats on your sale. Let's finalize it and get you paid! You can use title or attorney services 
+            to help you complete this process. If you wish to do it yourself, here are the 5 simple steps to make you successful:</p>
+          <ol class="font-size-lg">
             <li>Grab an online <a href="https://www.formstemplates.com/warranty-deed/" target="_blank" rel="noopener noreferrer" style="color: gray;"> warranty <i class="fas fa-external-link-alt"></i></a> 
               or <a href="https://www.formstemplates.com/quit-claim-deed/" target="_blank" rel="noopener noreferrer" style="color: gray;"> quit-claim <i class="fas fa-external-link-alt"></i></a> deed form.</li>
             <li>Use the state in which the property is located and the name of a person(s) or entity that holds legal title to the property.</li>
-            <li>For the buyer information, ensure you use the name(s) they gave you.</li>
-            <li>Once you complete the form, <b>don't sign</b> quite yet! Find a local notary to witness and verify your signature.*</li>
+            <li>For the buyer information, ensure you use the name(s) they gave you.*</li>
+            <li>Once you complete the form, <b>don't sign</b> quite yet! Find a local notary to witness and verify your signature.**</li>
             <li>Save the signed and notarized document and upload.</li>
           </ol>
 
+          <p class="font-size-lg text-muted mb-7 mb-md-4">
+            * Because of how decentralized this process is having a name of your buyer may not be possible. You can leave it blank and have them fill it out 
+            OR you can connect with them on our 
+            <a href="https://discord.gg/ZE5QCbh2je" target="_blank" rel="noopener noreferrer" class="text-decoration-none" style="color: gray;">Discord <i class="fas fa-external-link-alt"></i></a> 
+            server (#marketplace channel). From there, you can direct message them and finalize the 
+            process.
+          </p>
+
           <p class="font-size-lg text-muted mb-7 mb-md-9">
-            *If you are looking for an online notary, here are a few resources to get you started: 
+            ** If you are looking for an online notary, here are a few resources to get you started: 
             <a href="https://onenotary.us/" target="_blank" rel="noopener noreferrer" style="color: gray;"> OneNotary <i class="fas fa-external-link-alt"></i></a>&nbsp; 
             <a href="https://www.livenotaries.com/" target="_blank" rel="noopener noreferrer" style="color: gray;"> LiveNotaries <i class="fas fa-external-link-alt"></i></a>&nbsp; 
             <a href="https://www.signnow.com/" target="_blank" rel="noopener noreferrer" style="color: gray;"> SignNow <i class="fas fa-external-link-alt"></i></a>.
@@ -1119,36 +1129,20 @@
         </div>
   
         <div id="deedFileName" style="display: none">
-          <h5></h5>
+          <h5 id="uploadedFileName"></h5>
           <button id="deedUpload" type="button" class="btn btn-dark" value="SUBMIT">Upload</button>
           
-          <div id="ipfsDeedResult" class="mt-4"></div>
           <div id="nextStep">
             <br>
-            <p>Here is your deed transfer link, cryptographically protected on a decentralized network. 
-              Save it for your records.</p>
-            <p><b>What Happens Next?</b></p>
-            <ul>
-              <li>We'll notify the buyer right away, so they can inspect the document (please note they have 3 
-                calendar days). If there are any issues, we'll be sure to let you know immediately.</li>
-              <li>Once they confirm everything is in order or 3 days have passed, whichever comes first, the funds 
-                will be automatically transfered into your wallet.</li>
-              <li>Finally, we recommend you check with the land-registry in about 6-12 weeks to ensure that the buyer 
-                has mailed the deed for recording and transfer is complete. If you discover that property is still in 
-                your name, feel free to mail it on their behalf.</li>
-            </ul>
-            <!-- fix review link-->
-            <p>Thanks for using Tsaishen Crypto. We sincerely hope that this was the fastest, cheapest, and
-              simplest house selling process ever. <i>We secretly hope it was fun, too!</i> 
-              If so, will you kindly leave us <a href="https://TRUSTPILOT REVIEW LINK" target="_blank" rel="noopener noreferrer" style="color: gray;">
-                a raving review <i class="fas fa-external-link-alt"></i></a> ?
-              If there were any issues, please <a href ="mailto:tsaishenco@gmail.com"> tell us </a>
-              so that we can fix them.
+            <p class="font-size-lg">Here is the cryptographic has of your deed transfer:
+              <div id="ipfsDeedResult" class="mt-4"></div>
+              Review your document and then finalize.
             </p>
+            <div id="finishDeedUpload"></div>
           </div>
-        
+
         </div>
-  
+
     </div>
 
     <!-- Marketplace -->
@@ -1218,17 +1212,23 @@
           <h3 class="display-4 mb-2 mb-md-6 text-center">Contract Owner Playground</h3>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="initializeBtn" onclick="ownerInitializeContracts()">Init. <i class="fas fa-file-signature"></i></div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="getAllUsersBtn"><i class="fas fa-users"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="userCountBtn"><i class="fas fa-users"></i> #</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="getEscrowInfoBtn">Escrow</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="tokenBtn" data-toggle="modal" data-target="#tokenInputModal"><i class="far fa-plus-square"></i> Tokens</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="balanceBtn"><i class="fas fa-check"></i> Balance</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="withdrawBtn">Withdraw</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="getDeedInfoBtn">Deed <i class="fas fa-info"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="tokenBtn" data-toggle="modal" data-target="#tokenInputModal"><i class="fas fa-plus"></i> <i class="fas fa-coins"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="balanceBtn"><i class="fas fa-check"></i> Bal</div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="withdrawBtn"><i class="fas fa-hand-holding-usd"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="mintBtn">Mint <i class="fas fa-home"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="updateUriBtn"><i class="far fa-edit"></i> URI</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="pauseBtn"><i class="fas fa-pause"></i> HT</div>
           <div class="btn btn-dark mr-1 lift mb-md-6" id="unpauseBtn"><i class="fas fa-play"></i> HT</div>
-          <div class="btn btn-dark mr-1 lift mb-md-6" id="mintBtn">Mint <i class="fas fa-home"></i></div>
+          <div class="btn btn-dark mr-1 lift mb-md-6" id="ownerFunctionsBtn" data-toggle="modal" data-target="#inputInfoModal">Admin <i class="fas fa-code-branch"></i></div>
+          
           <div id="balanceDisplay"></div>
           <div class="btn btn-primary" id="ownerCloseBtn">CLOSE</div>
           <div class="table table-responsive" id="userDisplayTable"></div>
           <div class="table table-responsive" id="escrowDisplayTable"></div>
+          <div class="table table-responsive" id="deedDisplayTable"></div>
         </div> 
 
         <!-- Spinner -->
@@ -1239,26 +1239,53 @@
         </div>
 
         <!-- Escrow Buyer Display -->
+        <div id="escrowFinalSteps" class="container">
+          <p class="display-4 mb-2 mb-md-6 text-center">What Happens Next?</p>
+          <ul class="font-size-lg">
+            <li>The buyer has 3 days to inspect and approve your upload. If there are issues, you will notice that Escrow Info
+              date has changed and that escrow is no longer closed.</li>
+            <li>Once they confirm everything is in order, or 3 days have passed, whichever comes first, the fund transfer
+              can occur.</li>
+            <li>It is a good practice to check with your land-registry in about 6-12 weeks to ensure that the buyer 
+              has mailed the deed for recording. If you discover that property is still in your name, you can always mail 
+              it yourself.*</li>
+          </ul>
+          <p class="font-size-lg text-muted mb-7 mb-md-9"><i>* Leaving the property registered to you can cause problems should 
+            the new owner fail with upkeep or pay taxes, etc. As far as the government is concerned, you are the registered owner 
+            and as such responsible. And while it can be tempting (for some) to keep the property and perhaps sell it again, doing 
+            so would be considered illegal and not recommended. Utilize our Discord server to connect with the buyer, whenever possible.
+          </i></p>
+          <!--fix review link-->
+          <p class="font-size-lg mb-7 mb-md-11"><b>Thank you for using Tsaishen</b> to keep, buy and sell property. We sincerely hope 
+            that this was the fastest, cheapest, and easiest house transaction process ever. <br>If so, will you kindly leave us 
+            <a href="https://TRUSTPILOT REVIEW LINK" target="_blank" rel="noopener noreferrer">
+              a raving review <i class="fas fa-external-link-alt"></i></a>?
+            If there were any issues, please <a href ="mailto:tsaishenco@gmail.com"> tell us </a>
+            so that we can fix them.
+          </p>
+        </div>
         <div class="escrowBuyer container text-lg-left text-center py-md-11">
           <h3 class="display-3 mb-2 mb-md-6 text-center">Welcome Escrow Participant</h3>
-          <p class="font-size-lg text-center"><strong>Congrats</strong> for being in escrow. Here are a few items that 
-            we believe could be helpful to know:</p>
-            <ul>
-              <li><strong>Seller</strong>, you have <strong>10 days</strong> to complete and submit deed to transfer ownership. 
-                Click the "Upload" link on the top menu for more information.</li>
-              <li>Once the seller is done, <strong>buyer</strong>, you have <strong>3 days</strong> to review and verify seller's submission. 
-                Failure to complete the taks within set time period will automatically approve submission and complete transfer.</li>
-                <ol>
-                  <li><strong>All good?</strong> Buyer, click <u>Confirm</u> button to complete transaction.</li>
-                  <li><strong>Wrong document or incorrect information?</strong> Buyer, click <u>Request Review</u> button toa raise flag that there are issues. 
-                    Seller will get additional <strong>3 days</strong> to correct and resubmit.</li>
-                </ol>
-              <li>If the seller fails to successfully complete their task within aloted time, buyer can request refund.</li>
-              <li><strong>Changed your mind?</strong> Either party may request cancellation at any time after 
-                paying the cancellation fee. Click <u>Cancel</u> button below. </li>
-            </ul>
-            <br>
-            <div id="escrowBuyerDisplay"></div>
+          <p class="font-size-lg text-center"><strong>Congrats</strong> for being in escrow. Here are a few items to know:</p>
+          <ul class="font-size-lg">
+            <li><strong>Seller</strong>, you have <strong>10 days</strong> to prepare and submit deed to transfer ownership. 
+              Use the light green Upload button.</li>
+            <li>Once the deed is uploaded, <strong>buyer</strong>, you have <strong>3 days</strong> to review and verify documents. 
+              You can find document link by clicking the Deed button (it will show up once available for review).</li>
+              <ol>
+                <li><strong>All good?</strong> Click <u>Confirm</u> button to complete the transaction.</li>
+                <li><strong>Wrong document or incorrect information?</strong> Click <u>Request Review</u> to raise flag that there are issues. 
+                  Seller will get <strong>3 additional days</strong> to correct and resubmit (you will notice upload date change as well as the link).</li>
+              </ol>
+            <li>Buyer can request refund should the seller fail to successfully complete their task within aloted time.</li>
+            <li><strong>Changed your mind?</strong> Either party may request cancellation at any time. Click <u>Cancel</u> button below. 
+              <i>Please note there is a fee associated with cancelling.</i></li>
+          </ul>
+          <p class="font-size-lg text-center">If you have questions for each other or wish to connect with other platform users, feel free to use our 
+            <a href="https://discord.gg/ZE5QCbh2je" target="_blank" rel="noopener noreferrer" class="text-decoration-none" style="color: gray;">Discord
+              <i class="fas fa-external-link-alt"></i></a> server. <i>And remember, <b>time is of the essence</b>.</i></p>
+          <br>
+          <div id="escrowBuyerDisplay"></div>
         </div> 
 
         <!-- Asset Owner DISPLAY -->
@@ -2882,6 +2909,58 @@
           </div>
         </div>
       </div>
+
+      <!-- Input Info Modal -->
+      <div class="modal fade bd-example-modal-lg" id="inputInfoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeTokenModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title h3">Owner Functions Input</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-md-12 justify-content-center" align="left">
+                    <div class="input-group-append">
+                      <input class="form-control col-md-4" id="houseIdInput" placeholder="House ID">&nbsp;
+                      <button class="btn btn-danger-soft light-b-shadow" id="burnTokenBtn">Burn Token</button>   
+                    </div>
+                    <br>
+                    <div class="input-group-append" id="addRemoveUsers">
+                      <input class="form-control col-md-9" id="addresOfUserInput" placeholder="User Address">&nbsp;
+                      <button class="btn btn-success-soft light-b-shadow" id="addUserToContractBtn"><i class="fas fa-user-plus"></i></button>&nbsp;
+                      <button class="btn btn-danger-soft light-b-shadow" id="removeUserBtn"><i class="fas fa-user-minus"></i></button>
+                    </div>
+                    <br>
+                    <div class="row">
+                      <div class="col-md-6 justify-content-right" align="left">
+                        <button class="btn btn-success-soft light-b-shadow" id="addTokenToUserBtn"><i class="fas fa-plus"></i> <i class="fas fa-house-user"></i></button>
+                      </div>
+                      <div class="col-md-6 justify-content-right" align="left">
+                        <button class="btn btn-danger-soft light-b-shadow" id="deleteTokenFromUserBtn"><i class="fas fa-minus"></i> <i class="fas fa-house-user"></i></button>
+                      </div>
+                    </div>
+                    <br>
+                    <input class="form-control" id="houseUrlInput" placeholder="IPFS hash">
+                    <br>
+                    <div class="row">
+                      <div class="col-md-6 justify-content-right" align="left">
+                        <button class="btn btn-primary-soft light-b-shadow" id="updateHouseListingBtn"><i class="fas fa-file-upload"></i> URI</button>
+                      </div>
+                      <div class="col-md-6 justify-content-right" align="right">
+                        <button class="btn btn-primary-soft light-b-shadow" id="updateHouseDeedBtn"><i class="fas fa-file-upload"></i> Deed</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <!-- Sell House Modal -->
       <div class="modal fade bd-example-modal-lg" id="sellHouseModal" tabindex="-1" role="dialog" aria-labelledby="myLargeSaleModal" aria-hidden="true">
@@ -2900,7 +2979,7 @@
                     <div class="row justify-content-center" align="center" id="sellBox">
                       <div class="col-lg-6 p-1">
                         <div class="input-group-append">
-                          <input class="form-control" id="housePrice" placeholder="Enter Amount">
+                          <input class="form-control" id="housePriceInput" placeholder="Enter Amount">
                           <span class="input-group-text form-inline" id="basic-addon2"><b>USD</b></span>
                         </div>
                       </div>
@@ -2977,37 +3056,38 @@
         </div>
       </div>
 
-      <!-- House ID Input Modal
-      <div class="modal fade bd-example-modal-lg" id="inputHouseId" tabindex="-1" role="dialog" aria-labelledby="myLargeSaleModal" aria-hidden="true">
+      <!-- Owners Escrow House Modal -->
+      <div class="modal fade bd-example-modal-lg" id="usersEscrowsModal" tabindex="-1" role="dialog" aria-labelledby="myLargeBuyModal" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
+
             <div class="modal-header">
+              <h5 class="modal-title h3">Help them get it done!</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
+
             <div class="modal-body">
               <div class="container-fluid">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="row justify-content-center" align="center">
-                      <div class="col-lg-6 p-1">
-                        <input class="form-control" id="houseId" placeholder="Enter House Id">
-                      </div>
-                      <div class="col-lg-4 p-1">
-                        <button class="btn btn-primary light-b-shadow" id="getEscrowBtn"><b>Get Escrow Info</b></button>
-                      </div>                      
-                    </div>
+               
+                  <div class="col-md-12 justify-content-center" align="center">
+                    <div class="table table-responsive finalizingEscrowDisplay" id="escrowModalDisplay"></div>
                   </div>
-                </div>
+                  
+                  <hr>
+                    <p class="font-size-md text-muted text-center"><b>Close:</b> turns state to closed and gives 3 days to buyer.<br>
+                      <b>Payout:</b> completes the transaction (funds and property).
+                    </p>
               </div>
             </div>
+
           </div>
         </div>
-      </div>  -->
+      </div>
 
-      <!-- NOT USING AT THE MOMENT!!! Escrow Info Modal -->
-      <div class="modal fade" id="escrowInfoModal" tabindex="-1" role="dialog" aria-labelledby="escrowInfo" aria-hidden="true">
+      <!-- Seller Finalize Sale Modal -->
+      <div class="modal fade bd-example-modal-lg" id="finalizeSaleModal" tabindex="-1" role="dialog" aria-labelledby="finalizeSale" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-body">
@@ -3017,27 +3097,54 @@
                 <span aria-hidden="true">×</span>
               </button>
 
-              <!-- Image -->
-              <div class="text-center">
-                <img src="Landkit-1.2.1/dist/assets/img/illustrations/illustration-7.png" alt="..." class="img-fluid mb-3" style="width: 200px;">
-              </div>
-
               <!-- Heading -->
               <h2 class="font-weight-bold text-center mb-1" >
-                Property Escrow Information
+                Confirm Property For Which You're Upload Deed
               </h2>
 
               <!-- Table -->
-              <div class="table table-responsive" id="escrowInfoDisplay"></div>
-
-              <button type="button" class="close btn btn-block btn-primary mt-3 lift" data-dismiss="modal" aria-label="Close">
-                OK
-              </button>
+              <div class="table table-responsive" id="allMyHouses"></div>
 
             </div>
           </div>
         </div>
       </div> 
+
+      <!-- Confirm House Modal -->
+      <div class="modal fade bd-example-modal-lg" id="confirmHouseModal" tabindex="-1" role="dialog" aria-labelledby="myLargeSaleModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title h3">Confirm Your House Selection!</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="row justify-content-center" align="center" id="confirmBox">
+                      <div class="col-lg-6 p-1">
+                        <div id="sellerConfirmHouseDisplay"></div>
+                      </div>
+                    </div>
+                    <div class="row justify-content-center" align="center">
+                      <button class="btn btn-primary light-b-shadow" id="confirmBtn"><b>Confirm</b></button>
+                    </div>
+                    <div class="col-lg-10">
+                      <br>
+                      <p class="font-size-sm text-muted text-center"><i><u>Please note:</u> once confirmed, this cannot be undone.</i>
+                      </p>
+                    </div>
+                     
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Add/Remove Tokens Modal -->
       <div class="modal fade bd-example-modal-lg" id="tokenInputModal" tabindex="-1" role="dialog" aria-labelledby="myLargeTokenModal" aria-hidden="true">
@@ -3608,10 +3715,10 @@
               <li class="list-inline-item list-social-item">
                 <a href="https://www.facebook.com/groups/realestateinvestingsecrets" target="_blank" rel="noopener noreferrer" class="text-decoration-none"><i class="fab fa-facebook"></i></a>
               </li>
-              <!--<li class="list-inline-item list-social-item mr-3">
-                <a href="#!" target="_blank" rel="noopener noreferrer" class="text-decoration-none"><i class="fab fa-discord"></i></a>
-              </li>
               <li class="list-inline-item list-social-item mr-3">
+                <a href="https://discord.gg/ZE5QCbh2je" target="_blank" rel="noopener noreferrer" class="text-decoration-none"><i class="fab fa-discord"></i></a>
+              </li>
+              <!--<li class="list-inline-item list-social-item mr-3">
                 <a href="#!" target="_blank" rel="noopener noreferrer" class="text-decoration-none"><i class="fab fa-twitter"></i></a>
               </li>
               <li class="list-inline-item list-social-item">
@@ -3728,7 +3835,7 @@
               Copyright 2020 -
               <script>
                 document.write(new Date().getFullYear())
-              </script> Tsaishen. All rights reserved
+              </script> Tsaishen Crypto. All rights reserved
             </div>
             <div class="col-2 text-gray-500" id="privacy">
               <a href="assets/docFiles/Tsaishen Privacy Policy.pdf" target="_blank"> <p>Privacy Policy</p></a>
@@ -3786,6 +3893,8 @@
     <script src="./abi.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
     <script src="assets/js/indexFunctionality.js"></script>
+    <script src="assets/js/ownerFunctions.js"></script>
+    <script src="assets/js/escrowHandling.js"></script>
 
   </body>
 </html>

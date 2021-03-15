@@ -17,20 +17,29 @@ contract Storage {
     mapping (string => bool) _boolStorage;
     mapping (string => string) _stringStorage;
     mapping (string => bytes4) _bytesStorage;
+
     // house mapping
     mapping (uint256 => House) internal houseInfo;
+
     // user mapping
     mapping(address => User) internal userInfo;
+
     // escrow mapping
     mapping(uint256 => Escrow) escrowById;
+    mapping(address => uint256) escrowBuyerToId;
+
     // marketplace mapping
     mapping (address => address) availableOracles;
     mapping(uint256 => Offer) internal offerDetails;
-    mapping(address => uint256) escrowBuyerToId;
+    mapping(uint256 => Deed) deedInfo;
+
     // marketplace array
     Offer [] offers;
+    Deed [] deeds;
+
     // escrow options
     enum State { Active, Refunding, Closed }
+    
     // marketplace listing options
     enum OfferState { Dormant, Active, Escrow }
 
@@ -65,5 +74,15 @@ contract Storage {
         uint256 index;
         uint256 tokenId;
         OfferState offerstate;
+    }
+
+    struct Deed {
+        address seller;
+        address buyer;
+        uint256 tokenId;
+        uint256 index;
+        uint256 salePrice;
+        uint256 deedDate;
+        string deedHash;
     }
 }

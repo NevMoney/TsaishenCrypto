@@ -303,12 +303,20 @@ contract("Positive tests", (accounts) => {
             await time.advanceBlock();
             await time.increase(864000);
             await marketplaceInstance.refundEscrow(1);
+            console.log("refundEscrow runs...");
             let userBalance = await tsaishenTokenInstance.balanceOf(user3);
             assert.equal(web3.utils.fromWei(userBalance,'ether'),0.8,"user balance should be 0.8");
             let marketBalance = await tsaishenTokenInstance.balanceOf(marketplaceInstance.address);
             assert.equal(web3.utils.fromWei(marketBalance,'ether'),0.1,"market balance should be 0.1");
         });
-        it("Should NOT refund money in escrow for house1 to user3 now", async() => {
+        it("Should NOT refund money in escrow for house1 to user3 now", async () => {
+            var info = await marketplaceInstance.escrowInfo(1);
+            var state = info.state.toString();
+            console.log("state should be 1", state);
+            var tokenId = info.tokenId.toString();
+            console.log("tokenId should be 0", tokenId);
+            var amount = info.amount.toString();
+            console.log("amount should be 0", amount);
             await truffleAssert.reverts(marketplaceInstance.refundEscrow(1),"Must be active.");
         });
         it("Should put money in escrow for house3 from user3", async () => {

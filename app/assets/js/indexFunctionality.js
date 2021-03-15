@@ -1,13 +1,6 @@
-$(document).ready(async () => {
-    $("#market-container").hide();
-    $("#deed-container").hide();
-    $("#upload-container").hide();
-    $("#upload-what").hide();
-    $("#portfolio").hide();
-    $("#learnMore").hide();
-    $("#aboutPage").hide();
-    $("#escrowPage").hide();
-});  
+var saleId;
+var salePrice;
+var saleToken;
 
 $(".marketLink").on("click", function () {
     goToInventory();
@@ -66,7 +59,13 @@ $(".uploadLinkBtn").on("click", function () {
     $("#houseUploadedMsg").hide();
     $("#newUserMsg").hide();
 
-    $("#upload-container").show();    
+    $("#upload-container").show();
+    
+    if (user === contractOwnerAddress) {
+        $("#dynamicUpload").show();
+    } else {
+        $("#dynamicUpload").hide();
+    }
 });
 
 $(".deedLinkBtn").on("click", function () {
@@ -242,12 +241,13 @@ function goToPortfolio() {
     } else {
         $(".contractOwner").hide();
     }
+
+    $("#escrowFinalSteps").hide();
     
     getHouses();
     fetchEscrowInfo();
     sellerEscrowInfo();
 }
-
 
 function certificationValidation() {
     if ($("#certification").prop("checked") == false){
@@ -258,10 +258,6 @@ function certificationValidation() {
 $("#file").on("click", function () {
     certificationValidation();
 });
-
-var saleId;
-var salePrice;
-var saleToken;
     
 function selectHouseForSale(id) {
     saleId = id;
@@ -295,19 +291,25 @@ $("#escrowBuyBtn").on("click", function () {
     });
 });
 
+// for individual house escrow info
+$("#escrowInfoBtn").on("click", function () {
+    houseEscrowInfo().then(() => {
+        $("#escrowInfoModal").modal("show"); 
+    });
+});
+
 function cancelSale(id) {
     saleId = id;
     removeOffer(id);
 }
 
-// for owner to get all users
+// --- ADMIN USE BUTTONS & FUNCTIONS ---
 $("#getAllUsersBtn").on("click", function () {
     $("#ownerCloseBtn").show();
     $("#userDisplayTable").empty();
     getAllTsaishenUsers();
 });
 
-// for owner to get all escrow info
 $("#getEscrowInfoBtn").on("click", function () {
     $("#ownerCloseBtn").show();
     $("#escrowDisplayTable").empty();
@@ -343,7 +345,12 @@ $("#unpauseBtn").on("click", function () {
 });
 
 $("#mintBtn").on("click", function () {
-    mintHouse(); 
+    mintHouse();
+});
+
+$("#getDeedInfoBtn").on("click", function () {
+    ownerDeedInfo();
+    $("#ownerCloseBtn").show();
 });
 
 $("#ownerCloseBtn").hide();
@@ -353,11 +360,55 @@ $("#ownerCloseBtn").on("click", function () {
     $("#escrowDisplayTable").hide()
     $("#ownerCloseBtn").hide();
     $("#userDisplayTable").hide();
-})
+});
 
-// for individual house escrow info
-$("#escrowInfoBtn").on("click", function () {
-    houseEscrowInfo().then(() => {
-        $("#escrowInfoModal").modal("show"); 
+$("#burnTokenBtn").on("click", function () {
+    burnHouseToken().then(() => {
+        $("#inputInfoModal").modal("hide");
     });
+});
+
+$("#addTokenToUserBtn").on("click", function () {
+    ownerAddHouseToUser().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
+});
+
+$("#deleteTokenFromUserBtn").on("click", function () {
+    ownerRemoveHouseFromUser().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
+});
+
+$("#addUserToContractBtn").on("click", function () {
+    ownerAddUser().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
+});
+
+$("#removeUserBtn").on("click", function () {
+    ownerRemoveUser().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
+});
+
+$("#updateHouseListingBtn").on("click", function () {
+    ownerUpdateUri().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
+});
+
+$("#updateHouseDeedBtn").on("click", function () {
+    ownerUpdateDeed().then(() => {
+        $("#inputInfoModal").modal("hide");
+    });
+});
+
+$("#userCountBtn").on("click", function () {
+    getUserCount();
+    $("#ownerCloseBtn").show();
+});
+
+$("#updateUriBtn").on("click", function () {
+    ownerUploadUriInfo();
 });
