@@ -1,51 +1,61 @@
 async function choseEscrow() {
-  let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
-  console.log("escrow", escrow);
-  let userHomes = await usersInstance.methods.getUserHomes(user).call();
-  console.log("userHomes", userHomes);
+  let escrowByBuyer = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
+  console.log("escrowByBuyer", escrowByBuyer);
+  let usersHomes = await usersInstance.methods.getUserHomes(user).call();
+  console.log("usersHomes", usersHomes);
   $("#portfolioLoading").hide();
 
-  if (escrowInfo.amount > 0) {
-    if (user === escrowInfo.buyer || user === escrowInfo.seller) {
-      $(".escrowBuyer").show();
-      $("#portfolioTop").hide();
-    } else {
-      $(".escrowBuyer").hide();
-      $("#portfolioTop").show();
-    }
+  if (user === escrowInfo.buyer || user === escrowInfo.seller) {
+    $(".escrowBuyer").show();
+    $("#portfolioTop").hide();
   } else {
-      $(".escrowBuyer").hide();
-      $("#portfolioTop").show();
+    $(".escrowBuyer").hide();
+    $("#portfolioTop").show();
   }
 
-  if (escrow > 0) {
-    // this is a buyer only
-    fetchEscrowInfo();
-  }
-  // if user has homes they can be buyer or seller
-  else if (escrow == 0 && userHomes.length > 0) {
+  if (escrowByBuyer == 0 && usersHomes.length > 0) {
     // this is a seller only
     sellerEscrowInfo();
+    console.log("seller only");
   }
-  else if (escrow > 0 && userHomes.length > 0) {
+  else if (escrowByBuyer > 0 && usersHomes.length > 0) {
     // this is a buyer and seller
     console.log("could be a buyer and seller");
+
+    $(".escrowBuyer").show();
+    $("#portfolioTop").hide();
+
+    let buyer = await marketplaceInstance.methods.escrowInfo(escrowByBuyer).call();
+    console.log("this is buyer escrow info", buyer);
+    $("#escrowBuyerDisplay").empty();
+    $("#escrowBuyerDisplay").append(
+      `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${buyer.tokenId}" onclick="houseEscrowInfo(${buyer.tokenId})">Buyer Escrow <i class="fas fa-info"></i></div>  
+      <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="deedInfoBtn${buyer.tokenId}" onclick="fetchDeedInfo(${buyer.tokenId})">Buyer Deed <i class="fas fa-info"></i></div>
+      <div id="userEscrowInfoDisplay"></div>
+      `
+    );
+
+    for (i = 0; i < usersHomes.length; i++) {
+      let seller = await marketplaceInstance.methods.escrowInfo(usersHomes[i]).call();
+      console.log("this is seller escrow info", seller);
+      // $("#portfolioLoading").hide();
+      // $("#nextStep").hide();
+      // $("#escrowBuyerDisplay").empty();
+      $("#escrowBuyerDisplay").append(
+        `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${seller.tokenId}" onclick="houseEscrowInfo(${seller.tokenId})">Seller Escrow <i class="fas fa-info"></i></div>  
+        <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="deedInfoBtn${seller.tokenId}" onclick="fetchDeedInfo(${seller.tokenId})">Seller Deed <i class="fas fa-info"></i></div>
+        <div id="userEscrowInfoDisplay"></div>
+        `
+      );
+    }
+
   }
-    // for (i = 0; i < userHomes.length; i++) {
-    //   let sellerEscrow = await marketplaceInstance.methods.escrowInfo(userHomes[i]).call();
-    //   console.log("seller escrow", sellerEscrow);
-
-    //   if (escrow == 0) {
-    //     user = buyer;
-    //   } else {
-    //     user = seller;
-    //   }
-
-    //   $("#portfolioLoading").hide();
-    //   $("#nextStep").hide();
-
-    // }
-  
+  else if (escrowByBuyer > 0) {
+    // this is a buyer only
+    fetchEscrowInfo();
+    console.log("buyer only");
+  }
+    
 }
 
 async function sellerEscrowInfo() {
@@ -164,7 +174,7 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
   if (user == seller) {
     $("#userEscrowInfoDisplay").append(
       `<table class="table">
-        <thead><b>Escrow Info for Token ${id}</b></thead>
+        <thead><b>Seller's Escrow Info</b></thead>
         <tbody>
           <tr>
             <td><b>Seller Address:</b> ${seller}</td>
@@ -189,7 +199,7 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
   } else {
     $("#userEscrowInfoDisplay").append(
       `<table class="table">
-        <thead><b>Escrow Info for Token ${id}</b></thead>
+        <thead><b>Buyer's Escrow Info</b></thead>
         <tbody>
           <tr>
             <td><b>Seller Address:</b> ${seller}</td>
@@ -211,7 +221,6 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
       </table>`
     );
   }
-
 }
 
 // for buyer to confirm delivery
@@ -345,7 +354,7 @@ async function uploadDeed(id) {
   
   $("#deed-container").show();
   $("#finishDeedUpload").append(
-    `<div class="btn btn-primary mr-1 lift mb-md-6" id="finalizeSaleBtn${id}" onclick="combineResults(${id})">Finalize Sale</div>`
+    `<div class="btn btn-primary mr-1 lift mb-md-6" id="finalizeSaleBtn${id}" onclick="combineResults(${id})">Confirm & Upload</div>`
   );
 }
 
