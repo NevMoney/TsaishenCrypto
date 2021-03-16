@@ -16,7 +16,8 @@ contract TsaishenEscrow is Ownable, Storage{
     event RefundsClosed(string, address, uint256);
     event RefundsEnabled(string, address, uint256);
 
-    uint256 private constant _TIMELOCK= 10 days;
+    // uint256 private constant _TIMELOCK= 10 days;
+    uint256 private constant _TIMELOCK= 1 minutes; //for current test only
     address payable internal feeRecipient;
     uint256 fee = 3;
 
@@ -94,7 +95,8 @@ contract TsaishenEscrow is Ownable, Storage{
 
     // this extends escrow by 3 days
     function _extendTimelock(uint256 _tokenId) internal {
-        escrowById[_tokenId].timelock = now.add(3 days);
+        // escrowById[_tokenId].timelock = now.add(3 days);
+        escrowById[_tokenId].timelock = now.add(30 seconds); //for current test only
     }
 
     function _enableRefunds(uint256 _tokenId) internal {

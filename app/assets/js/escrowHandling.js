@@ -1,32 +1,52 @@
-// async function choseEscrow() {
-//   let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
-//   console.log("escrow", escrow);
-//   let userHomes = await usersInstance.methods.getUserHomes(user).call();
-//   console.log("userHomes", userHomes);
+async function choseEscrow() {
+  let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
+  console.log("escrow", escrow);
+  let userHomes = await usersInstance.methods.getUserHomes(user).call();
+  console.log("userHomes", userHomes);
+  $("#portfolioLoading").hide();
 
-//   // if user has no homes then they are buyer only
-//   if (userHomes.length == 0) {
-//     let buyerEscrow = await marketplaceInstance.methods.escrowInfo(escrow).call();
-//     console.log("buyer escrow", buyerEscrow);
-//   }
-//   // if user has homes they can be buyer or seller
-//   else {
-//     for (i = 0; i < userHomes.length; i++) {
-//       let sellerEscrow = await marketplaceInstance.methods.escrowInfo(userHomes[i]).call();
-//       console.log("seller escrow", sellerEscrow);
+  if (escrowInfo.amount > 0) {
+    if (user === escrowInfo.buyer || user === escrowInfo.seller) {
+      $(".escrowBuyer").show();
+      $("#portfolioTop").hide();
+    } else {
+      $(".escrowBuyer").hide();
+      $("#portfolioTop").show();
+    }
+  } else {
+      $(".escrowBuyer").hide();
+      $("#portfolioTop").show();
+  }
 
-//       if (escrow == 0) {
-//         user = buyer;
-//       } else {
-//         user = seller;
-//       }
+  if (escrow > 0) {
+    // this is a buyer only
+    fetchEscrowInfo();
+  }
+  // if user has homes they can be buyer or seller
+  else if (escrow == 0 && userHomes.length > 0) {
+    // this is a seller only
+    sellerEscrowInfo();
+  }
+  else if (escrow > 0 && userHomes.length > 0) {
+    // this is a buyer and seller
+    console.log("could be a buyer and seller");
+  }
+    // for (i = 0; i < userHomes.length; i++) {
+    //   let sellerEscrow = await marketplaceInstance.methods.escrowInfo(userHomes[i]).call();
+    //   console.log("seller escrow", sellerEscrow);
 
-//       $("#portfolioLoading").hide();
-//       $("#nextStep").hide();
+    //   if (escrow == 0) {
+    //     user = buyer;
+    //   } else {
+    //     user = seller;
+    //   }
 
-//     }
-//   }
-// }
+    //   $("#portfolioLoading").hide();
+    //   $("#nextStep").hide();
+
+    // }
+  
+}
 
 async function sellerEscrowInfo() {
   let userHomes = await usersInstance.methods.getUserHomes(user).call();
@@ -34,7 +54,7 @@ async function sellerEscrowInfo() {
     let sellerEscrow = await marketplaceInstance.methods.escrowInfo(userHomes[i]).call();
     console.log("seller escrow", sellerEscrow);
 
-    $("#portfolioLoading").hide();
+    // $("#portfolioLoading").hide();
     $("#nextStep").hide();
 
     if (sellerEscrow.amount > 0) {
@@ -56,10 +76,10 @@ async function sellerEscrowInfo() {
   
 async function fetchEscrowInfo() {
   let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
-  console.log("escrow", escrow);
+  console.log("buyer escrow", escrow);
   let escrowInfo = await marketplaceInstance.methods.escrowInfo(escrow).call();
-  // console.log("escrowInfo", escrowInfo);
-  $("#portfolioLoading").hide();
+  console.log("buyerEscrowInfo", escrowInfo);
+  // $("#portfolioLoading").hide();
 
   if (escrowInfo.amount > 0) {
     if (user === escrowInfo.buyer || user === escrowInfo.seller) {
@@ -75,6 +95,7 @@ async function fetchEscrowInfo() {
       $(".escrowBuyer").hide();
       $("#portfolioTop").show();
   }
+
 }
 
 async function appendEscrowButtons(id) {
@@ -116,18 +137,28 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
     token = "USDC";
   }
 
-  if (checkRefund == true) {
+  if (user === buyer && now > escrowDate && state == "Active") {
     checkRefund = `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="refundBtn${id}" onclick="requestRefund(${id})"><i class="fas fa-undo-alt"></i> <i class="fas fa-dollar-sign"></i> Refund</div>`;
-  } else {
+  } else if (user === seller && now > escrowDate && state == "Active") {
+    checkRefund = "True";
+  }
+
+  if (checkRefund == false) {
     checkRefund = "False";
   }
 
+  // STILL NEED TO CHECK THIS!!
   if (checkWithdrawal == false) {
     checkWithdrawal = "False";
-  } else if (checkWithdrawal == true) {
-    checkWithdrawal = "True, after unlock date"
-  } else if (checkWithdrawal == true && now > escrowDate) {
-    checkWithdrawal = `<div class="btn btn-success-soft mr-1 lift mb-md-6" id="sellerWithdrawBtn${id}" onclick="requestFunds(${id})">Withdraw <i class="fas fa-dollar-sign"></i></div>`
+  }
+  else if (user === seller && checkWithdrawal == true && now > escrowDate) {
+    checkWithdrawal = `<div class="btn btn-success-soft mr-1 lift mb-md-6" id="sellerWithdrawBtn${id}" onclick="requestFunds(${id})">Withdraw <i class="fas fa-dollar-sign"></i></div>`;
+  }
+  else if (checkWithdrawal == true && now > escrowDate) {
+    checkWithdrawal = "True";
+  }
+  else if (checkWithdrawal == true) {
+    checkWithdrawal = "True, after unlock date";
   }
 
   if (user == seller) {
@@ -180,7 +211,6 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
       </table>`
     );
   }
-  
 
 }
 
@@ -263,11 +293,12 @@ async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
   }
 
   if (price <= 0) {
-    $("#userEscrowInfoDisplay").append(`<p>Seller hasn't uploaded the deed yet.</p>`);
+    $("#userEscrowInfoDisplay").append(`<p>This property does not have any deeds on blockchain yet.</p>`);
   } else {
     $("#userEscrowInfoDisplay").append(
       `<table class="table">
-        <thead><b>Deed Info ${id}</b></thead>
+        <thead><b>Deed Info ${id} </b> <i> Please note this could be a previously uploaded deed. Check the addresses and date for context.</i>
+        </thead>
         <tbody>
           <tr>
             <td><b>Seller:</b> ${seller}</td>
@@ -279,7 +310,7 @@ async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
           </tr>
           <tr>
             <td><b>Deed Upload Date:</b> ${deedDate}</td>  
-            <td><b>Deed Link:</b> ${ipfsDeedLink}</td>
+            <td><b>Latest Uploaded Deed:</b> ${ipfsDeedLink}</td>
           </tr>
           <tr>
             <td><b>Property ID</b> ${id}</td>  
@@ -339,6 +370,7 @@ async function requestFunds(id) {
     let funds = await marketplaceInstance.methods.sellerWithdraw(id).send({ from: user });
     console.log(funds);
     alert("Funds successfully withdrawn. Congratulations on your sale!");
+    goToPortfolio();
   }
   catch (err) {
     console.log(err);

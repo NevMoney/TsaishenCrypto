@@ -245,8 +245,9 @@ function goToPortfolio() {
     $("#escrowFinalSteps").hide();
     
     getHouses();
-    fetchEscrowInfo();
-    sellerEscrowInfo();
+    // fetchEscrowInfo();
+    // sellerEscrowInfo();
+    choseEscrow();
 }
 
 function certificationValidation() {

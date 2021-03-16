@@ -288,16 +288,16 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
     }
 
     function sellerWithdraw(uint256 tokenId) public payable nonReentrant {
-        require(msg.sender == escrowById[_tokenId].seller, "Mp: Seller only");
-        require(offerDetails[_tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow");
-        require(escrowById[_tokenId].state == State.Closed, "Mp: Escrow not closed");
-        require(now >= escrowById[_tokenId].timelock, "TE: Timelocked.");
+        require(msg.sender == escrowById[tokenId].seller, "Mp: Seller only");
+        require(offerDetails[tokenId].offerstate == OfferState.Escrow, "Mp: Not in escrow");
+        require(escrowById[tokenId].state == State.Closed, "Mp: Escrow not closed");
+        require(now >= escrowById[tokenId].timelock, "TE: Timelocked.");
         Offer storage offer = offerDetails[tokenId];
 
         // transfer house to buyer
-        _houseToken.safeTransferFrom(offer.seller, escrowById[_tokenId].buyer, tokenId);
+        _houseToken.safeTransferFrom(offer.seller, escrowById[tokenId].buyer, tokenId);
 
-        _tsaishenUsers.addHouseToUser(escrowById[_tokenId].buyer, tokenId);
+        _tsaishenUsers.addHouseToUser(escrowById[tokenId].buyer, tokenId);
         _tsaishenUsers.deleteHouseFromUser(offer.seller, tokenId);
 
         _beneficiaryWithdraw(offer.seller, tokenId, feeRecipient);
@@ -376,7 +376,7 @@ contract Marketplace is ReentrancyGuard, TsaishenEscrow {
         offerDetails[tokenId].offerstate = OfferState.Active;
 
         emit MarketTransaction("Escrow Cancelled.", msg.sender, tokenId);
-    }   
+    }
 
     //*** INTERNAL ***
     function _ownsHouse(address _address, uint256 _tokenId) internal view returns (bool) {

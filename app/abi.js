@@ -2097,6 +2097,20 @@ var abi = {
             "type": "uint256"
           }
         ],
+        "name": "sellerWithdraw",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function",
+        "payable": true
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
         "name": "buyerVerify",
         "outputs": [],
         "stateMutability": "payable",
