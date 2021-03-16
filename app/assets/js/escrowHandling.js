@@ -1,3 +1,33 @@
+// async function choseEscrow() {
+//   let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
+//   console.log("escrow", escrow);
+//   let userHomes = await usersInstance.methods.getUserHomes(user).call();
+//   console.log("userHomes", userHomes);
+
+//   // if user has no homes then they are buyer only
+//   if (userHomes.length == 0) {
+//     let buyerEscrow = await marketplaceInstance.methods.escrowInfo(escrow).call();
+//     console.log("buyer escrow", buyerEscrow);
+//   }
+//   // if user has homes they can be buyer or seller
+//   else {
+//     for (i = 0; i < userHomes.length; i++) {
+//       let sellerEscrow = await marketplaceInstance.methods.escrowInfo(userHomes[i]).call();
+//       console.log("seller escrow", sellerEscrow);
+
+//       if (escrow == 0) {
+//         user = buyer;
+//       } else {
+//         user = seller;
+//       }
+
+//       $("#portfolioLoading").hide();
+//       $("#nextStep").hide();
+
+//     }
+//   }
+// }
+
 async function sellerEscrowInfo() {
   let userHomes = await usersInstance.methods.getUserHomes(user).call();
   for (i = 0; i < userHomes.length; i++) {
@@ -26,6 +56,7 @@ async function sellerEscrowInfo() {
   
 async function fetchEscrowInfo() {
   let escrow = await marketplaceInstance.methods.getEscrowByBuyer(user).call();
+  console.log("escrow", escrow);
   let escrowInfo = await marketplaceInstance.methods.escrowInfo(escrow).call();
   // console.log("escrowInfo", escrowInfo);
   $("#portfolioLoading").hide();

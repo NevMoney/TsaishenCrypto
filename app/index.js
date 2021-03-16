@@ -155,11 +155,11 @@ async function getHouses() {
   try {
     // first get array of all user homes
     arrayId = await usersInstance.methods.getUserHomes(user).call();
-    console.log("ID array ", arrayId);
+    // console.log("ID array ", arrayId);
     for (i = 0; i < arrayId.length; i++) {
       house = await houseTokenInstance.methods.getHouse(arrayId[i]).call();
-      console.log("house", house);
-      console.log("house ID", arrayId[i]);
+      // console.log("house", house);
+      // console.log("house ID", arrayId[i]);
       appendCryptoHouse(arrayId[i], house.uri, NaN, user, 0);  
     }
   }
@@ -173,7 +173,7 @@ function renderCryptoHouse(id, url, price, owner, state) {
   fetch(url).then(function (res) {
     res.json().then(function (data) {
       // console.log("JSON file: ", data);
-      console.log("renderCryptoHouse", id, url, price, owner, state);
+      // console.log("renderCryptoHouse", id, url, price, owner, state);
 
       $("#portfolioLoading").hide();
       
