@@ -14,14 +14,11 @@ async function choseEscrow() {
   }
 
   if (escrowByBuyer == 0 && usersHomes.length > 0) {
-    // this is a seller only
     sellerEscrowInfo();
     console.log("seller only");
   }
   else if (escrowByBuyer > 0 && usersHomes.length > 0) {
-    // this is a buyer and seller
-    console.log("could be a buyer and seller");
-
+    console.log("could be a buyer and a seller");
     $(".escrowBuyer").show();
     $("#portfolioTop").hide();
 
@@ -31,27 +28,20 @@ async function choseEscrow() {
     $("#escrowBuyerDisplay").append(
       `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${buyer.tokenId}" onclick="houseEscrowInfo(${buyer.tokenId})">Buyer Escrow <i class="fas fa-info"></i></div>  
       <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="deedInfoBtn${buyer.tokenId}" onclick="fetchDeedInfo(${buyer.tokenId})">Buyer Deed <i class="fas fa-info"></i></div>
-      <div id="userEscrowInfoDisplay"></div>
-      `
+      <div id="userEscrowInfoDisplay"></div>`
     );
 
     for (i = 0; i < usersHomes.length; i++) {
       let seller = await marketplaceInstance.methods.escrowInfo(usersHomes[i]).call();
       console.log("this is seller escrow info", seller);
-      // $("#portfolioLoading").hide();
-      // $("#nextStep").hide();
-      // $("#escrowBuyerDisplay").empty();
       $("#escrowBuyerDisplay").append(
         `<div class="btn btn-primary-soft mr-1 lift mb-md-6" id="checkEscrowBtn${seller.tokenId}" onclick="houseEscrowInfo(${seller.tokenId})">Seller Escrow <i class="fas fa-info"></i></div>  
         <div class="btn btn-primary-soft mr-1 lift mb-md-6" id="deedInfoBtn${seller.tokenId}" onclick="fetchDeedInfo(${seller.tokenId})">Seller Deed <i class="fas fa-info"></i></div>
-        <div id="userEscrowInfoDisplay"></div>
-        `
+        <div id="userEscrowInfoDisplay"></div>`
       );
     }
-
   }
   else if (escrowByBuyer > 0) {
-    // this is a buyer only
     fetchEscrowInfo();
     console.log("buyer only");
   }
@@ -157,7 +147,6 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
     checkRefund = "False";
   }
 
-  // STILL NEED TO CHECK THIS!!
   if (checkWithdrawal == false) {
     checkWithdrawal = "False";
   }
@@ -172,7 +161,7 @@ async function showEscrowInfo(id, seller, buyer, state, amount, time, token) {
   }
 
   if (user == seller) {
-    $("#userEscrowInfoDisplay").append(
+    $("#escrowSellerDisplay").append(
       `<table class="table">
         <thead><b>Seller's Escrow Info</b></thead>
         <tbody>
@@ -304,8 +293,35 @@ async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
   if (price <= 0) {
     $("#userEscrowInfoDisplay").append(`<p>This property does not have any deeds on blockchain yet.</p>`);
   } else {
-    $("#userEscrowInfoDisplay").append(
-      `<table class="table">
+    if (user === buyer) {
+      $("#userEscrowInfoDisplay").append(
+        `<table class="table">
+          <thead><b>Deed Info ${id} </b> <i> Please note this could be a previously uploaded deed. Check the addresses and date for context.</i>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Seller:</b> ${seller}</td>
+              <td><b>Buyer:</b><br> ${buyer}</td>
+            </tr>
+            <tr>
+              <td><b>Sale Price:</b> $${showPrice}</td>
+              <td><b>Purchased With:</b> ${token}</td>
+            </tr>
+            <tr>
+              <td><b>Deed Upload Date:</b> ${deedDate}</td>  
+              <td><b>Latest Uploaded Deed:</b> ${ipfsDeedLink}</td>
+            </tr>
+            <tr>
+              <td><b>Property ID</b> ${id}</td>  
+              <td><b>Deeds for this property:</b> ${index}</td>
+            </tr>
+            <tr id="buyerOnlyButtons${id}"></tr>
+          </tbody>
+        </table>`
+      );
+    } else {
+      $("#escrowSellerDisplay").append(
+        `<table class="table">
         <thead><b>Deed Info ${id} </b> <i> Please note this could be a previously uploaded deed. Check the addresses and date for context.</i>
         </thead>
         <tbody>
@@ -328,7 +344,8 @@ async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
           <tr id="buyerOnlyButtons${id}"></tr>
         </tbody>
       </table>`
-    );
+      );
+    }
   }
 
   if (user == buyer) {
@@ -336,6 +353,7 @@ async function showDeedInfo(id, seller, buyer, price, date, hash, index) {
       `<tr>
         <td><div class="btn btn-primary-soft mr-1 lift mb-md-6" id="reviewRequestBtn${id}" onclick="requestReview(${id})">Request Review <i class="fas fa-search"></i></div></td>
         <td><div class="btn btn-success-soft mr-1 lift mb-md-6" id="buyerVerifyBtn${id}" onclick="deedConfirm(${id})">Confirm <i class="fas fa-envelope-open"></i></div></td>
+      <br>
       </tr>`
     );
   }
